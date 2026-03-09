@@ -13,7 +13,7 @@ import ForgeButton from '../components/ForgeButton'
 import {
   ChevronLeft, ChevronRight, Play, Droplets, Check, Pill,
   ClipboardCheck, BookOpen, BarChart3, TrendingUp, Target,
-  Flame, Dumbbell, Moon, Zap
+  Flame, Dumbbell, Moon, Zap, Link2, Camera, ScanLine
 } from 'lucide-react'
 
 const dateKey = () => new Date().toDateString()
@@ -336,8 +336,41 @@ export default function TodayScreen({ onStartWorkout, onNavigate }) {
         </motion.div>
       )}
 
-      {/* Quick Actions */}
+      {/* Streak card */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={stagger(6)}>
+        <GlassCard className="mb-4 p-4" accent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{
+                  background: `${theme.warning}12`, border: `1px solid ${theme.warning}25`,
+                  boxShadow: `0 0 20px ${theme.warning}10`,
+                }}>
+                  <Flame size={22} color={theme.warning} />
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                  style={{ background: theme.warning, boxShadow: `0 0 10px ${theme.warning}60` }}>
+                  <span style={{ fontSize: 8, fontWeight: 800, color: '#000', fontFamily: "'JetBrains Mono', monospace" }}>
+                    12
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: theme.t1, fontFamily: "'JetBrains Mono', monospace",
+                  animation: 'streak-pulse 3s ease-in-out infinite' }}>
+                  12 Day Streak
+                </div>
+                <div style={{ fontSize: 10, color: theme.t4, fontFamily: "'JetBrains Mono', monospace" }}>
+                  Personal best! Keep pushing.
+                </div>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Quick Actions */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={stagger(7)}>
         <div style={{ fontSize: 8, fontWeight: 700, color: theme.accent, fontFamily: "'JetBrains Mono', monospace",
           letterSpacing: '0.15em', marginBottom: 8, marginTop: 4 }}>
           QUICK ACTIONS
@@ -345,9 +378,11 @@ export default function TodayScreen({ onStartWorkout, onNavigate }) {
         <div className="grid grid-cols-2 gap-3">
           {[
             { label: 'Check-In', Icon: ClipboardCheck, view: 'checkin' },
+            { label: 'Snap Meal', Icon: Camera, view: 'scanner' },
             { label: 'Progress', Icon: TrendingUp, view: 'progress' },
-            { label: 'Guide', Icon: BookOpen, view: 'guide' },
             { label: 'Goals', Icon: Target, view: 'goals' },
+            { label: 'Guide', Icon: BookOpen, view: 'guide' },
+            { label: 'Integrations', Icon: Link2, view: 'integrations' },
           ].map(({ label, Icon, view }) => (
             <GlassCard key={view} onClick={() => onNavigate(view)} className="p-4 flex items-center gap-3" hover>
               <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{

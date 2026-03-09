@@ -1,0 +1,19 @@
+{
+  "name": "FORGE — AI Fitness Coaching",
+  "short_name": "FORGE",
+  "description": "World-class AI-powered fitness coaching. Training, nutrition, recovery — all optimized by your personal AI coach.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#010102",
+  "theme_color": "#010102",
+  "orientation": "portrait-primary",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

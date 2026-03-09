@@ -6,10 +6,10 @@ import GlassCard from '../components/GlassCard'
 import ForgeButton from '../components/ForgeButton'
 import {
   User, Palette, Image, Bell, Shield, Award, LogOut, ChevronRight,
-  Check, Moon, Zap, Dumbbell, Scale, Flame, Settings
+  Check, Moon, Zap, Dumbbell, Scale, Flame, Settings, Link2
 } from 'lucide-react'
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ onNavigate }) {
   const { theme, themeId, changeTheme, bgId, changeBg } = useTheme()
   const { user, logout, updateUser } = useAuth()
   const [notifications, setNotifications] = useState({
@@ -198,8 +198,36 @@ export default function ProfileScreen() {
         </GlassCard>
       </motion.div>
 
-      {/* Logout */}
+      {/* Integrations */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Link2 size={14} color={theme.accent} />
+          <span style={{ fontSize: 8, fontWeight: 700, color: theme.accent, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.15em' }}>
+            INTEGRATIONS
+          </span>
+        </div>
+        <GlassCard className="p-4 mb-6" accent onClick={() => onNavigate?.('integrations')}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                background: `${theme.accent}10`, border: `1px solid ${theme.accent}20`,
+              }}>
+                <Link2 size={18} color={theme.accent} />
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: theme.t1 }}>Connected Apps & Devices</div>
+                <div style={{ fontSize: 10, color: theme.t4, fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>
+                  Strava, Fitbit, Apple Health, smart scales & more
+                </div>
+              </div>
+            </div>
+            <ChevronRight size={16} color={theme.t4} />
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Logout */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
         <ForgeButton onClick={logout} variant="danger" fullWidth icon={<LogOut size={14} />}>
           SIGN OUT
         </ForgeButton>

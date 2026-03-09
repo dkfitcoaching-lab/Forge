@@ -19,36 +19,71 @@
   --color-forge-t4: #484850;
   --color-forge-t5: #282830;
   --color-forge-border: #f0f0f2;
-
-  --color-ember-bg: #0a0204;
-  --color-ember-card: #120408;
-  --color-ember-accent: #ff6b4a;
-  --color-ember-accent2: #e8523a;
-
-  --color-royal-bg: #020108;
-  --color-royal-card: #06040e;
-  --color-royal-accent: #8b5cf6;
-  --color-royal-accent2: #7c3aed;
-
-  --color-titan-bg: #040402;
-  --color-titan-card: #0a0a06;
-  --color-titan-accent: #eab308;
-  --color-titan-accent2: #ca8a04;
-
-  --color-arctic-bg: #020206;
-  --color-arctic-card: #060610;
-  --color-arctic-accent: #38bdf8;
-  --color-arctic-accent2: #0ea5e9;
-
-  --color-phantom-bg: #060606;
-  --color-phantom-card: #0e0e0e;
-  --color-phantom-accent: #a3a3a3;
-  --color-phantom-accent2: #737373;
 }
 
 @layer base {
   ::selection {
     background: rgba(92, 224, 208, 0.3);
     color: #f0f0f2;
+  }
+
+  /* Premium scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(92, 224, 208, 0.12) transparent;
+  }
+
+  /* Focus styles for accessibility */
+  input:focus, textarea:focus, select:focus, button:focus-visible {
+    outline: 1px solid rgba(92, 224, 208, 0.3);
+    outline-offset: 2px;
+  }
+
+  /* Smooth transitions on all interactive elements */
+  button, a, input, textarea, select {
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  /* GPU acceleration for animated elements */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  /* Prevent text selection on buttons */
+  button {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Placeholder styling */
+  ::placeholder {
+    color: rgba(120, 120, 128, 0.5);
+  }
+
+  /* Number input - hide spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Range input styling */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #5ce0d0;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(92, 224, 208, 0.4);
   }
 }

@@ -16,6 +16,7 @@ import CheckInScreen from './pages/CheckInScreen'
 import GuideScreen from './pages/GuideScreen'
 import GoalsScreen from './pages/GoalsScreen'
 import BarcodeScannerScreen from './pages/BarcodeScannerScreen'
+import IntegrationsScreen from './pages/IntegrationsScreen'
 import { Dumbbell } from 'lucide-react'
 
 export default function App() {
@@ -23,7 +24,7 @@ export default function App() {
   const { isLoggedIn, hasOnboarded } = useAuth()
   const { isOpen, setIsOpen } = useCoach()
   const [tab, setTab] = useState('today')
-  const [view, setView] = useState('main') // main, workout, checkin, guide, goals, scanner, progress
+  const [view, setView] = useState('main') // main, workout, checkin, guide, goals, scanner, progress, integrations
   const [workoutDay, setWorkoutDay] = useState(null)
 
   // Not logged in
@@ -51,12 +52,13 @@ export default function App() {
     if (view === 'guide') return <GuideScreen onBack={goBack} />
     if (view === 'goals') return <GoalsScreen onBack={goBack} />
     if (view === 'scanner') return <BarcodeScannerScreen onBack={goBack} />
+    if (view === 'integrations') return <IntegrationsScreen onBack={goBack} />
     if (view === 'progress') return <DataScreen />
 
     // Tab views
     if (tab === 'today') return <TodayScreen onStartWorkout={startWorkout} onNavigate={setView} />
     if (tab === 'data') return <DataScreen />
-    if (tab === 'profile') return <ProfileScreen />
+    if (tab === 'profile') return <ProfileScreen onNavigate={setView} />
     return <TodayScreen onStartWorkout={startWorkout} onNavigate={setView} />
   }
 
@@ -73,24 +75,27 @@ export default function App() {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 shrink-0" style={{
           borderBottom: `1px solid ${theme.border}`,
-          background: `${theme.bg}cc`,
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          background: `${theme.bg}e0`,
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          boxShadow: `0 1px 0 ${theme.accent}06`,
         }}>
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{
               background: `${theme.accent}10`, border: `1px solid ${theme.accent}20`,
+              boxShadow: `0 0 12px ${theme.accent}10`,
             }}>
               <Dumbbell size={16} color={theme.accent} />
             </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: theme.t1, fontFamily: "'Cinzel', serif", letterSpacing: '0.08em' }}>
-                FORGE
-              </div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: theme.t1, fontFamily: "'Cinzel', serif", letterSpacing: '0.08em' }}>
+              FORGE
             </div>
           </div>
-          <div style={{ fontSize: 8, color: theme.t5, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>
-            v6.0
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: theme.success, boxShadow: `0 0 6px ${theme.success}80` }} />
+            <span style={{ fontSize: 8, color: theme.t5, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>
+              v6.0
+            </span>
           </div>
         </div>
 

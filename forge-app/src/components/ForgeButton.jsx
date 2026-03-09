@@ -9,7 +9,7 @@ export default function ForgeButton({
 
   const sizes = {
     sm: 'px-4 py-2 text-xs',
-    md: 'px-6 py-3 text-sm',
+    md: 'px-6 py-3.5 text-sm',
     lg: 'px-8 py-4 text-base',
   }
 
@@ -19,6 +19,7 @@ export default function ForgeButton({
       color: theme.bg,
       border: 'none',
       fontWeight: 700,
+      boxShadow: `0 4px 20px ${theme.accent}25`,
     },
     secondary: {
       background: `${theme.accent}10`,
@@ -33,9 +34,9 @@ export default function ForgeButton({
       fontWeight: 500,
     },
     danger: {
-      background: `${theme.danger}15`,
+      background: `${theme.danger}10`,
       color: theme.danger,
-      border: `1px solid ${theme.danger}30`,
+      border: `1px solid ${theme.danger}25`,
       fontWeight: 600,
     },
   }
@@ -43,8 +44,8 @@ export default function ForgeButton({
   return (
     <motion.button
       onClick={disabled ? undefined : onClick}
-      whileHover={disabled ? {} : { scale: 1.02, boxShadow: theme.glow }}
-      whileTap={disabled ? {} : { scale: 0.98 }}
+      whileHover={disabled ? {} : { scale: 1.02, boxShadow: theme.glowStrong }}
+      whileTap={disabled ? {} : { scale: 0.97 }}
       className={`
         relative overflow-hidden rounded-xl font-mono tracking-wider uppercase
         transition-all duration-200 flex items-center justify-center gap-2
@@ -62,7 +63,7 @@ export default function ForgeButton({
       {children}
       {variant === 'primary' && !disabled && (
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
           backgroundSize: '200% 100%',
           animation: 'shimmer 3s linear infinite',
         }} />

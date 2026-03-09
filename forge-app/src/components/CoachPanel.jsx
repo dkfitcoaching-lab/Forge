@@ -105,12 +105,14 @@ export default function CoachPanel() {
     setInput('')
   }
 
-  const quickActions = [
-    'How should I train today?',
-    'Adjust my meals',
-    'I feel tired',
-    'Show my progress',
-  ]
+  const hour = new Date().getHours()
+  const quickActions = hour < 10
+    ? ['What\'s my workout today?', 'Pre-workout nutrition?', 'I slept poorly', 'Morning check-in']
+    : hour < 15
+    ? ['Adjust my workout', 'Post-workout meal?', 'Form check tips', 'Show my progress']
+    : hour < 20
+    ? ['Evening meal advice', 'Recovery protocol?', 'How am I trending?', 'Tomorrow\'s preview']
+    : ['Optimize my sleep', 'Bedtime supplements?', 'Weekly summary', 'Adjust tomorrow']
 
   return (
     <AnimatePresence>
