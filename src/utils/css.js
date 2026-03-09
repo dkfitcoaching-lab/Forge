@@ -1,9 +1,9 @@
 export function makeStyles(C) {
   return `
 :root {
-  --d: 'Cinzel', serif;
-  --m: 'JetBrains Mono', monospace;
-  --b: 'Inter', sans-serif;
+  --d: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --m: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --b: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; background: ${C.bg}; overscroll-behavior: none; }
