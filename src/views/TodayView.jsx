@@ -87,6 +87,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                   fontSize: 30, fontWeight: 800, lineHeight: 1.15, fontFamily: "var(--d)", marginTop: 4,
                   background: C.gradient, backgroundSize: "300% 100%",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                  animation: "goldShimmer 12s ease-in-out infinite",
                 }}>
                   Athlete.
                 </div>
@@ -170,7 +171,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
             </div>
           </Card>
         ) : (
-          <Card C={C} style={{ borderLeft: `3px solid ${C.accent}`, padding: 20 }} glow>
+          <Card C={C} style={{ borderLeft: `3px solid ${C.accent}`, padding: 20 }} accentGlow>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
                 <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".16em", marginBottom: 4 }}>TODAY&apos;S WORKOUT</div>
@@ -385,6 +386,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 width: 36, height: 36, borderRadius: 10,
                 background: C.accent005, border: `1px solid ${C.accent015}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: `0 0 12px ${C.accent008}`,
               }}>
                 {icon}
               </div>
@@ -409,7 +411,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 { v: stats.totalVolumeAllTime > 0 ? `${Math.round(stats.totalVolumeAllTime / 1000)}k` : "—", l: "TOTAL VOL" },
               ].map(({ v, l }) => (
                 <div key={l} style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{v}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 16px ${C.accent030}` }}>{v}</div>
                   <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 2 }}>{l}</div>
                 </div>
               ))}

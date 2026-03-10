@@ -50,6 +50,7 @@ export default function LoginScreen({ C, onLogin }) {
         <div style={{
           fontSize: 38, fontWeight: 800, fontFamily: "var(--d)", color: C.text1,
           letterSpacing: ".14em",
+          textShadow: `0 0 40px ${C.accent020}, 0 0 80px ${C.accent008}`,
           opacity: stage >= 3 ? 1 : 0,
           transform: stage >= 3 ? "translateY(0)" : "translateY(12px)",
           transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)", marginBottom: 6,

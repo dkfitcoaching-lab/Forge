@@ -158,9 +158,9 @@ function TierCard({ tier, C, onSelect }) {
       padding: 20,
       position: "relative",
       boxShadow: tier.accent
-        ? `0 4px 24px ${C.accent010}, 0 0 40px ${C.accent005}`
+        ? `0 4px 24px ${C.accent015}, 0 0 48px ${C.accent008}`
         : `0 2px 12px rgba(0,0,0,0.2)`,
-      animation: tier.accent ? "neonBreathe 4s ease-in-out infinite" : "none",
+      animation: tier.accent ? "accentBreathe 5s ease-in-out infinite" : "none",
     }}>
       {tier.badge && (
         <div style={{

@@ -198,19 +198,26 @@ export default function App() {
           style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "14px 16px 12px",
-            borderBottom: `1px solid ${C.structBorder}`,
+            borderBottom: "none",
             position: "sticky", top: 0,
             background: C.headerBg,
             backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
             zIndex: 10,
           }}
         >
+          {/* Gradient glow border line at bottom */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: 1,
+            background: C.dividerGrad,
+            boxShadow: `0 1px 8px ${C.accent008}`,
+          }} />
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <ForgeLogo C={C} size="sm" />
             <div>
               <div style={{
                 fontSize: 14, fontWeight: 700, color: C.text1,
                 fontFamily: "var(--d)", letterSpacing: ".08em",
+                textShadow: `0 0 20px ${C.accent015}`,
               }}>
                 FORGE
               </div>
@@ -274,13 +281,19 @@ export default function App() {
             background: C.navBg,
             backdropFilter: "blur(28px)",
             WebkitBackdropFilter: "blur(28px)",
-            borderTop: `1px solid ${C.structBorder}`,
+            borderTop: "none",
             display: "flex",
             justifyContent: "space-around",
             padding: "8px 0 max(8px, env(safe-area-inset-bottom))",
             zIndex: 30,
           }}
         >
+          {/* Gradient glow border at top */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 1,
+            background: C.dividerGrad,
+            boxShadow: `0 -1px 8px ${C.accent008}`,
+          }} />
           {tabs.map((t) => {
             const active = tab === t.k && view === "main";
             return (
@@ -308,12 +321,23 @@ export default function App() {
                 }}
               >
                 {active && (
-                  <div style={{
-                    position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
-                    width: 28, height: 2, borderRadius: 1,
-                    background: C.accent,
-                    boxShadow: `0 0 12px ${C.glow}`,
-                  }} />
+                  <>
+                    {/* Radial glow halo behind icon */}
+                    <div style={{
+                      position: "absolute", top: "50%", left: "50%",
+                      transform: "translate(-50%, -55%)",
+                      width: 48, height: 48, borderRadius: "50%",
+                      background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)`,
+                      pointerEvents: "none",
+                    }} />
+                    {/* Top accent line */}
+                    <div style={{
+                      position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
+                      width: 32, height: 2, borderRadius: 1,
+                      background: C.gradient, backgroundSize: "300% 100%",
+                      boxShadow: `0 0 14px ${C.accent030}, 0 0 28px ${C.accent010}`,
+                    }} />
+                  </>
                 )}
                 <div style={{
                   animation: active ? "iconGlow 4s ease-in-out infinite" : "none",
@@ -321,7 +345,10 @@ export default function App() {
                 }}>
                   {icons[t.k]}
                 </div>
-                <span style={{ marginTop: 1 }}>{t.l}</span>
+                <span style={{
+                  marginTop: 1,
+                  textShadow: active ? `0 0 12px ${C.accent040}` : "none",
+                }}>{t.l}</span>
               </div>
             );
           })}

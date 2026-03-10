@@ -38,7 +38,7 @@ export default function DataView({ C, onNav }) {
           { v: stats.cyclesCompleted || "0", l: "CYCLES" },
         ].map(({ v, l }) => (
           <Card key={l} C={C} style={{ textAlign: "center", padding: 16 }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{v}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 16px ${C.accent030}` }}>{v}</div>
             <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>{l}</div>
           </Card>
         ))}

@@ -58,7 +58,14 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   border-color: ${C.accent};
-  box-shadow: 0 0 0 3px ${C.accent008};
+  box-shadow: 0 0 0 3px ${C.accent015}, 0 0 16px ${C.accent008};
+}
+
+/* Card hover/active feedback */
+.forge-card-interactive:active {
+  transform: scale(0.985);
+  border-color: ${C.accent020} !important;
+  box-shadow: ${C.cardShadow}, 0 0 12px ${C.accent008} !important;
 }
 
 input::placeholder, textarea::placeholder { color: ${C.text4}; }
@@ -130,6 +137,18 @@ input[type="number"] { -moz-appearance: textfield; }
   50% {
     box-shadow: 0 0 18px rgba(180,195,210,.35), 0 0 40px rgba(170,185,200,.2), 0 0 70px rgba(160,175,190,.08), inset 0 0 25px rgba(170,185,200,.04);
     border-color: rgba(180,195,210,.35);
+  }
+}
+
+/* Accent-tinted breathing glow for primary CTA cards */
+@keyframes accentBreathe {
+  0%, 100% {
+    box-shadow: 0 0 12px ${C.accent015}, 0 0 32px ${C.accent008}, 0 4px 20px rgba(0,0,0,.3);
+    border-color: ${C.accent020};
+  }
+  50% {
+    box-shadow: 0 0 20px ${C.accent030}, 0 0 48px ${C.accent015}, 0 4px 20px rgba(0,0,0,.3);
+    border-color: ${C.accent040};
   }
 }
 
