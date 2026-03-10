@@ -130,7 +130,7 @@ export default function LoginScreen({ C, onLogin }) {
           transform: stage >= 4 ? "translateY(0)" : "translateY(8px)",
           transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)", marginBottom: 40,
         }}>
-          PERFORMANCE SYSTEM
+          fitnessforge.ai
         </div>
 
         {/* Feature pillars — 3 columns */}

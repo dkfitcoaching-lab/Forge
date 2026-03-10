@@ -217,7 +217,11 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button onClick={phase === "paused" ? handleResume : handlePause} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.accent, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", padding: "6px 10px", minWidth: 44, minHeight: 44, letterSpacing: ".08em", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {phase === "paused" ? "▶" : "⏸"}
+            {phase === "paused" ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={C.accent} stroke="none"><polygon points="5,3 19,12 5,21" /></svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2.5" strokeLinecap="round"><line x1="7" y1="4" x2="7" y2="20" /><line x1="17" y1="4" x2="17" y2="20" /></svg>
+            )}
           </button>
           <div style={{ fontSize: 12, color: C.accent, fontFamily: "var(--m)", fontWeight: 600, minWidth: 44, textAlign: "right" }}>{formatTime(elapsed)}</div>
         </div>

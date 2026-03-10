@@ -5,7 +5,7 @@ import { NavIcons, Toast, ForgeLogo } from "./components/Primitives";
 import storage from "./utils/storage";
 
 import WorkoutPlayer from "./components/WorkoutPlayer";
-import CoachPanel from "./components/CoachPanel";
+import CoachPanel, { CoachFAB } from "./components/CoachPanel";
 import TodayView from "./views/TodayView";
 import DataView from "./views/DataView";
 import GuideView from "./views/GuideView";
@@ -15,6 +15,8 @@ import CheckIn from "./views/CheckIn";
 import SettingsView from "./views/SettingsView";
 import LoginScreen from "./views/LoginScreen";
 import OnboardingScreen from "./views/OnboardingScreen";
+import Walkthrough from "./components/Walkthrough";
+import PosingView from "./views/PosingView";
 
 export default function App() {
   const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
@@ -30,6 +32,8 @@ export default function App() {
   const [view, setView] = useState("main");
   const [workoutDay, setWorkoutDay] = useState(null);
   const [toast, setToast] = useState(null);
+  const [coachOpen, setCoachOpen] = useState(false);
+  const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [splashDone, setSplashDone] = useState(() => !!sessionStorage.getItem("forge_splash"));
 
   // Toast system
@@ -102,7 +106,7 @@ export default function App() {
             letterSpacing: ".3em", marginTop: 16,
             animation: "badgeFade 0.6s ease 1.4s both",
           }}>
-            BUILT FOR PERFORMANCE
+            fitnessforge.ai
           </div>
         </div>
         <style>{css}</style>
@@ -124,7 +128,7 @@ export default function App() {
   if (screen === "ob") {
     return (
       <>
-        <OnboardingScreen C={C} onComplete={() => setScreen("app")} changeAccent={changeAccent} changeSurface={changeSurface} />
+        <OnboardingScreen C={C} onComplete={() => { setScreen("app"); if (!storage.get("wt_done")) setShowWalkthrough(true); }} changeAccent={changeAccent} changeSurface={changeSurface} />
         <style>{css}</style>
       </>
     );
@@ -135,6 +139,8 @@ export default function App() {
     return (
       <>
         <WorkoutPlayer day={workoutDay} onExit={exitWorkout} C={C} showToast={showToast} />
+        {!coachOpen && <CoachFAB C={C} onClick={() => setCoachOpen(true)} />}
+        {coachOpen && <CoachPanel C={C} isOverlay onClose={() => setCoachOpen(false)} />}
         <style>{css}</style>
       </>
     );
@@ -147,6 +153,7 @@ export default function App() {
     if (view === "vl") return <VolumeLog C={C} onBack={goMain} />;
     if (view === "ci") return <CheckIn C={C} onBack={goMain} />;
     if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
+    if (view === "posing") return <PosingView C={C} onBack={goMain} />;
     if (view === "settings") return (
       <SettingsView
         C={C}
@@ -160,7 +167,7 @@ export default function App() {
     switch (tab) {
       case "today": return <TodayView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} showToast={showToast} />;
       case "program": return <ProgramView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} />;
-      case "coach": return <CoachPanel C={C} />;
+      case "coach": return <CoachPanel C={C} isOverlay={false} />;
       case "data": return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} />;
       default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
     }
@@ -231,7 +238,7 @@ export default function App() {
                 fontSize: 8, color: C.text4, fontFamily: "var(--m)",
                 letterSpacing: ".22em", marginTop: 1,
               }}>
-                PERFORMANCE SYSTEM
+                fitnessforge.ai
               </div>
             </div>
           </div>
@@ -269,6 +276,14 @@ export default function App() {
         >
           {content()}
         </div>
+
+        {/* ─── COACH OVERLAY ─── */}
+        {coachOpen && <CoachPanel C={C} isOverlay onClose={() => setCoachOpen(false)} />}
+
+        {/* ─── COACH FAB (shown on non-coach tabs) ─── */}
+        {tab !== "coach" && view === "main" && !coachOpen && (
+          <CoachFAB C={C} onClick={() => setCoachOpen(true)} />
+        )}
 
         {/* ─── TOAST ─── */}
         {toast && <Toast message={toast} C={C} />}
@@ -359,6 +374,9 @@ export default function App() {
           })}
         </div>
       </div>
+
+      {/* ─── WALKTHROUGH (first-use tour) ─── */}
+      {showWalkthrough && <Walkthrough C={C} onComplete={() => setShowWalkthrough(false)} />}
 
       <style>{css}</style>
     </div>

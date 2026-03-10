@@ -28,7 +28,7 @@ const ACCENTS = {
     secondary: '#4ecdc4',
     ok: '#78c878', warn: '#C06070', danger: '#C06070',
     gradient: 'linear-gradient(135deg, #455A64, #90A4AE, #ECEFF1, #90A4AE, #455A64)',
-    gradientBtn: 'linear-gradient(135deg, #546E7A, #90A4AE, #CFD8DC, #90A4AE, #546E7A)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
   forge: {
     id: 'forge', name: 'Forge',
@@ -37,7 +37,7 @@ const ACCENTS = {
     secondary: '#7eb8ff',
     ok: '#5ce0d0', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #1a7868, #40b8a8, #7EFFF0, #40b8a8, #1a7868)',
-    gradientBtn: 'linear-gradient(135deg, #1a7868, #5ce0d0, #7EFFF0, #5ce0d0, #1a7868)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.12), rgba(220,230,240,0.18), rgba(200,215,225,0.12))',
   },
   obsidian: {
     id: 'obsidian', name: 'Obsidian',
@@ -46,7 +46,7 @@ const ACCENTS = {
     secondary: '#4ecdc4',
     ok: '#a78bfa', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #5b3fc4, #8b6ff0, #c4b5fd, #8b6ff0, #5b3fc4)',
-    gradientBtn: 'linear-gradient(135deg, #5b3fc4, #a78bfa, #c4b5fd, #a78bfa, #5b3fc4)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
   ember: {
     id: 'ember', name: 'Ember',
@@ -55,7 +55,7 @@ const ACCENTS = {
     secondary: '#4ecdc4',
     ok: '#78c878', warn: '#ff4444', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #a04e10, #e0762e, #ffb366, #e0762e, #a04e10)',
-    gradientBtn: 'linear-gradient(135deg, #a04e10, #ff8c42, #ffb366, #ff8c42, #a04e10)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
   arctic: {
     id: 'arctic', name: 'Arctic',
@@ -64,7 +64,7 @@ const ACCENTS = {
     secondary: '#48d9a4',
     ok: '#78c878', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #1565c0, #42a5f5, #90caf9, #42a5f5, #1565c0)',
-    gradientBtn: 'linear-gradient(135deg, #1565c0, #64b5f6, #90caf9, #64b5f6, #1565c0)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
   crimson: {
     id: 'crimson', name: 'Crimson',
@@ -73,7 +73,7 @@ const ACCENTS = {
     secondary: '#4ecdc4',
     ok: '#78c878', warn: '#ffab40', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #b71c1c, #e53935, #ff8a80, #e53935, #b71c1c)',
-    gradientBtn: 'linear-gradient(135deg, #b71c1c, #ef5350, #ff8a80, #ef5350, #b71c1c)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
   gold: {
     id: 'gold', name: 'Gold',
@@ -82,7 +82,7 @@ const ACCENTS = {
     secondary: '#4ecdc4',
     ok: '#78c878', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #f9a825, #ffca28, #ffe082, #ffca28, #f9a825)',
-    gradientBtn: 'linear-gradient(135deg, #f9a825, #ffd54f, #ffe082, #ffd54f, #f9a825)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
   rose: {
     id: 'rose', name: 'Rose',
@@ -91,7 +91,7 @@ const ACCENTS = {
     secondary: '#4ecdc4',
     ok: '#78c878', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #c2185b, #ec407a, #f8bbd0, #ec407a, #c2185b)',
-    gradientBtn: 'linear-gradient(135deg, #c2185b, #f48fb1, #f8bbd0, #f48fb1, #c2185b)',
+    gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.10), rgba(220,230,240,0.16), rgba(200,215,225,0.10))',
   },
 };
 
@@ -234,8 +234,8 @@ export function getThemeColors(accentId, surfaceId) {
       ? 'rgba(242,242,246,0.96)'
       : `rgba(${hexToRgb(s.bg2).r},${hexToRgb(s.bg2).g},${hexToRgb(s.bg2).b},0.96)`,
 
-    // Button text
-    btnText: s.isLight ? '#1a1a2e' : '#020202',
+    // Button text (silver buttons use light text)
+    btnText: s.isLight ? '#1a1a2e' : '#E8ECF0',
   };
 }
 
