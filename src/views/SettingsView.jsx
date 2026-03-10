@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Card, Label, Button, SectionDivider } from "../components/Primitives";
+import { Card, Label, Button, SectionDivider, Modal } from "../components/Primitives";
 import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
 
 export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast, onBack }) {
   const [notifications, setNotifications] = useState(() => storage.get("nf", { a: true, b: true, c: true, d: true, e: true }));
+  const [showResetModal, setShowResetModal] = useState(false);
   const stats = computeStats();
   const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
 
@@ -22,6 +23,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           BACK
         </button>
       )}
+
       {/* Profile Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
         <div style={{
@@ -84,25 +86,61 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         ))}
       </div>
 
-      {/* ─── BACKGROUND SURFACE ─── */}
+      {/* ─── BACKGROUND SURFACE — Premium Swatches ─── */}
       <Label C={C}>BACKGROUND SURFACE</Label>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6, marginBottom: 24 }}>
-        {Object.values(SURFACES).map(surface => (
-          <button key={surface.id} onClick={() => changeSurface(surface.id)}
-            style={{
-              padding: "12px 4px", background: surfaceId === surface.id ? C.accent010 : surface.bg,
-              border: `1.5px solid ${surfaceId === surface.id ? C.accent : C.structBorderHover}`,
-              borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
-            }}>
-            <div style={{
-              width: "100%", height: 24, borderRadius: 4,
-              background: `linear-gradient(180deg, ${surface.bg} 0%, ${surface.card} 100%)`,
-              border: `1px solid ${surfaceId === surface.id ? C.accent : 'rgba(255,255,255,0.05)'}`,
-              marginBottom: 4,
-            }} />
-            <div style={{ fontSize: 8, fontWeight: 600, color: surfaceId === surface.id ? C.accent : C.text4, fontFamily: "var(--m)" }}>{surface.name}</div>
-          </button>
-        ))}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 24 }}>
+        {Object.values(SURFACES).map(surface => {
+          const isActive = surfaceId === surface.id;
+          const accent = ACCENTS[accentId] || ACCENTS.forge;
+          return (
+            <button key={surface.id} onClick={() => changeSurface(surface.id)}
+              style={{
+                padding: "10px 4px 8px", background: isActive ? C.accent008 : "transparent",
+                border: `1.5px solid ${isActive ? C.accent : C.structBorderHover}`,
+                borderRadius: 10, cursor: "pointer", transition: "all 0.25s",
+                boxShadow: isActive ? `0 0 16px ${C.accent015}` : "none",
+              }}>
+              {/* Multi-layer surface preview */}
+              <div style={{
+                width: "100%", height: 40, borderRadius: 6,
+                background: surface.bg,
+                position: "relative", overflow: "hidden",
+                border: `1px solid ${isActive ? accent.accent + '30' : surface.isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'}`,
+                boxShadow: isActive ? `inset 0 0 12px ${accent.accent}15` : "none",
+              }}>
+                {/* Card layer preview */}
+                <div style={{
+                  position: "absolute", bottom: 3, left: 3, right: 3, height: 14,
+                  background: surface.card,
+                  borderRadius: 3,
+                  border: `1px solid ${surface.isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.04)'}`,
+                }} />
+                {/* Accent glow dot — shows how accent looks on this surface */}
+                <div style={{
+                  position: "absolute", top: 5, right: 5,
+                  width: 6, height: 6, borderRadius: 3,
+                  background: accent.accent,
+                  boxShadow: `0 0 6px ${accent.accent}60`,
+                }} />
+                {/* Text preview line */}
+                <div style={{
+                  position: "absolute", top: 6, left: 5,
+                  width: 14, height: 2, borderRadius: 1,
+                  background: surface.text1,
+                  opacity: 0.7,
+                }} />
+                <div style={{
+                  position: "absolute", top: 11, left: 5,
+                  width: 10, height: 1.5, borderRadius: 1,
+                  background: surface.text3,
+                  opacity: 0.5,
+                }} />
+              </div>
+              <div style={{ fontSize: 8, fontWeight: 600, color: isActive ? C.accent : C.text3, fontFamily: "var(--m)", marginTop: 6 }}>{surface.name}</div>
+              <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", marginTop: 1, letterSpacing: ".04em" }}>{surface.desc}</div>
+            </button>
+          );
+        })}
       </div>
 
       <SectionDivider C={C} />
@@ -113,8 +151,8 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         {[
           { k: "units", l: "Units", v: "Imperial (lbs)" },
           { k: "lang", l: "Language", v: "English" },
-        ].map(({ k, l, v }) => (
-          <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+        ].map(({ k, l, v }, i, arr) => (
+          <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none" }}>
             <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
             <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>{v}</div>
           </div>
@@ -124,10 +162,19 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       {/* ─── NOTIFICATIONS ─── */}
       <Label C={C}>NOTIFICATIONS</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
-        {[{ k: "a", l: "Workouts" }, { k: "b", l: "Weight Reminders" }, { k: "c", l: "Meal Tracking" }, { k: "d", l: "Supplements" }, { k: "e", l: "Check-Ins" }].map(({ k, l }, i, arr) => (
+        {[
+          { k: "a", l: "Workouts", desc: "Daily training reminders" },
+          { k: "b", l: "Weight Reminders", desc: "Morning weigh-in" },
+          { k: "c", l: "Meal Tracking", desc: "Meal timing alerts" },
+          { k: "d", l: "Supplements", desc: "Daily supplement check" },
+          { k: "e", l: "Check-Ins", desc: "Weekly body check-in" },
+        ].map(({ k, l, desc }, i, arr) => (
           <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none", cursor: "pointer" }}>
-            <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
-            <div style={{ width: 40, height: 22, borderRadius: 11, background: notifications[k] ? C.accent : C.accent010, position: "relative", transition: "background 0.2s", boxShadow: notifications[k] ? `0 0 8px ${C.accent020}` : "none" }}>
+            <div>
+              <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
+            </div>
+            <div style={{ width: 40, height: 22, borderRadius: 11, background: notifications[k] ? C.accent : C.accent010, position: "relative", transition: "background 0.2s", boxShadow: notifications[k] ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12 }}>
               <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: notifications[k] ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
             </div>
           </div>
@@ -155,14 +202,25 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       <button
         style={{ width: "100%", padding: 14, background: `${C.danger}06`, border: `1.5px solid ${C.danger}25`, borderRadius: 10, color: C.danger, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44 }}
-        onClick={() => {
-          if (window.confirm("Reset all Forge data? This cannot be undone.")) {
-            Object.keys(localStorage).filter(k => k.startsWith("f_")).forEach(k => localStorage.removeItem(k));
-            window.location.reload();
-          }
-        }}>
+        onClick={() => setShowResetModal(true)}>
         RESET ALL DATA
       </button>
+
+      {showResetModal && (
+        <Modal
+          C={C}
+          title="Reset All Data?"
+          message="This will permanently delete all your workouts, check-ins, meals, and progress data. This action cannot be undone."
+          onClose={() => setShowResetModal(false)}
+          actions={[
+            { label: "CANCEL", onClick: () => setShowResetModal(false), variant: "ghost" },
+            { label: "RESET", onClick: () => {
+              Object.keys(localStorage).filter(k => k.startsWith("f_")).forEach(k => localStorage.removeItem(k));
+              window.location.reload();
+            }, variant: "danger" },
+          ]}
+        />
+      )}
 
       {/* ─── ABOUT ─── */}
       <SectionDivider C={C} />

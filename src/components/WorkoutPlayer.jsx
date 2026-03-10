@@ -5,7 +5,7 @@ import { formatTime } from "../utils/helpers";
 import { detectNewPRs, getWorkoutHistory } from "../utils/analytics";
 import storage from "../utils/storage";
 
-export default function WorkoutPlayer({ day, onExit, C, showToast }) {
+export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) {
   const exercises = day.x || [];
   const [phase, setPhase] = useState("overview");
   const [exerciseIndex, setExerciseIndex] = useState(0);
@@ -19,7 +19,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
   const [exitConfirm, setExitConfirm] = useState(false);
   const restRef = useRef();
   const startTimeRef = useRef(null);
-  const pauseTimeRef = useRef(0);
+  const elapsedAtPauseRef = useRef(0);
 
   const exercise = exercises[exerciseIndex] || {};
   const numSets = exercise.ns || 2;
@@ -34,7 +34,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
 
   useEffect(() => {
     if (phase === "active") {
-      if (!startTimeRef.current) startTimeRef.current = Date.now() - pauseTimeRef.current * 1000;
+      if (!startTimeRef.current) startTimeRef.current = Date.now() - elapsedAtPauseRef.current * 1000;
       const timer = setInterval(() => setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000)), 1000);
       return () => clearInterval(timer);
     }
@@ -50,7 +50,11 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
     return () => clearTimeout(restRef.current);
   }, [resting, restSeconds, phase]);
 
-  const saveValue = (field, value) => {
+  const saveValue = (field, rawValue) => {
+    // Validate: only allow positive numbers, strip non-numeric except decimal
+    const cleaned = rawValue.replace(/[^0-9.]/g, '');
+    const num = parseFloat(cleaned);
+    const value = cleaned === '' ? '' : (isNaN(num) || num < 0) ? '' : cleaned;
     const next = { ...trackingData, [`${trackKey}_${field}`]: value };
     setTrackingData(next);
     storage.set(`wp_${day.d}`, next);
@@ -100,8 +104,8 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
     try { navigator.vibrate?.([50, 50, 100]); } catch {}
   };
 
-  const handlePause = () => { pauseTimeRef.current = elapsed; startTimeRef.current = null; setPhase("paused"); };
-  const handleResume = () => { startTimeRef.current = Date.now() - pauseTimeRef.current * 1000; setPhase("active"); };
+  const handlePause = () => { elapsedAtPauseRef.current = elapsed; startTimeRef.current = null; setPhase("paused"); };
+  const handleResume = () => { startTimeRef.current = Date.now() - elapsedAtPauseRef.current * 1000; setPhase("active"); };
   const handleExit = () => { if (phase === "active" || phase === "paused") setExitConfirm(true); else onExit(); };
 
   const completedSetsTotal = exercises.reduce((acc, ex, exIdx) => {

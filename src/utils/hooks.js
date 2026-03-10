@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 
-export function useStaggeredReveal(count, delay = 55) {
+export function useStaggeredReveal(count, delay = 50) {
   const [visible, setVisible] = useState([]);
 
   useEffect(() => {
+    if (!count) { setVisible([]); return; }
     const timers = [];
     for (let i = 0; i < count; i++) {
       timers.push(

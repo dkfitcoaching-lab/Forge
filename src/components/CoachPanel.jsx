@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { getCoachResponse, getProactiveInsight } from "../utils/coach-engine";
+import { ForgeLogo } from "./Primitives";
 
 // Floating coach button for use in WorkoutPlayer and other views
 export function CoachFAB({ C, onClick }) {
@@ -11,7 +12,7 @@ export function CoachFAB({ C, onClick }) {
       border: `1.5px solid ${C.accent030}`,
       backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
       display: "flex", alignItems: "center", justifyContent: "center",
-      cursor: "pointer", zIndex: 40,
+      cursor: "pointer", zIndex: 55,
       boxShadow: `0 0 20px ${C.accent015}, 0 4px 16px rgba(0,0,0,0.3), 0 0 40px ${C.accent005}`,
       animation: "accentBreathe 5s ease-in-out infinite",
       transition: "all 0.2s",
@@ -28,15 +29,17 @@ export function CoachFAB({ C, onClick }) {
 // ══════════════════════════════════════════════════════════════
 // FORGE COACH — FULL TAB VIEW
 // Intelligent, data-driven coaching as a dedicated tab
+// isWorkout: when true, shows as overlay during workout without blocking rest timer
 // ══════════════════════════════════════════════════════════════
 
-export default function CoachPanel({ C, isOverlay, onClose }) {
+export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
   const [messages, setMessages] = useState(() => {
     const insight = getProactiveInsight();
     return [{ role: "assistant", text: insight, time: Date.now() }];
   });
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
+  const [showPrompts, setShowPrompts] = useState(true);
   const scrollRef = useRef();
 
   useEffect(() => {
@@ -58,9 +61,12 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
     }, thinkTime);
   };
 
-  const quickPrompts = ["How am I progressing?", "Analyze my fatigue", "Nutrition check", "Sleep quality"];
+  const quickPrompts = isWorkout
+    ? ["Form check tips", "Adjust my rest time", "How's my volume today?", "Motivation boost"]
+    : ["How am I progressing?", "Analyze my fatigue", "Nutrition check", "Sleep quality"];
 
   const sendQuick = (prompt) => {
+    setShowPrompts(false);
     setMessages((prev) => [...prev, { role: "user", text: prompt, time: Date.now() }]);
     setTyping(true);
     setTimeout(() => {
@@ -71,12 +77,22 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
 
   const formatTime = (ts) => new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-  const wrapStyle = isOverlay ? {
+  // During workout: slide up from bottom as a half-screen panel, NOT full takeover
+  const wrapStyle = isOverlay ? (isWorkout ? {
+    position: "fixed", left: 0, right: 0, bottom: 0, top: "25%",
+    zIndex: 90,
+    background: C.bg,
+    display: "flex", flexDirection: "column",
+    animation: "slideUp 0.3s cubic-bezier(0.16,1,0.3,1)",
+    borderTop: `1px solid ${C.structBorderStrong}`,
+    borderRadius: "20px 20px 0 0",
+    boxShadow: `0 -8px 40px rgba(0,0,0,0.5), 0 0 20px ${C.accent010}`,
+  } : {
     position: "fixed", inset: 0, zIndex: 100,
     background: C.bg,
     display: "flex", flexDirection: "column",
     animation: "slideUp 0.3s cubic-bezier(0.16,1,0.3,1)",
-  } : {
+  }) : {
     display: "flex", flexDirection: "column",
     height: "calc(100vh - 180px)", marginTop: -4,
   };
@@ -97,19 +113,12 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
           </button>
         )}
-        <div style={{
-          width: 36, height: 36, borderRadius: 10,
-          background: C.structGlass,
-          border: `1px solid ${C.accent030}`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14, fontWeight: 900, color: C.accent, fontFamily: "var(--d)",
-          boxShadow: `0 0 16px ${C.accent015}, 0 0 32px ${C.accent005}`,
-        }}>
-          F
-        </div>
+        <ForgeLogo C={C} size="sm" />
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Coach</div>
-          <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
+          <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>
+            {isWorkout ? "WORKOUT MODE" : "fitnessforge.ai"}
+          </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
           <div style={{ width: 6, height: 6, borderRadius: 3, background: C.secondary, boxShadow: `0 0 8px ${C.secondary030}`, animation: "pulse 3s ease-in-out infinite" }} />
@@ -176,8 +185,8 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
         )}
       </div>
 
-      {/* Quick Prompts */}
-      {messages.length <= 2 && (
+      {/* Quick Prompts — togglable, always accessible */}
+      {showPrompts && (
         <div style={{ padding: isOverlay ? "8px 20px" : "8px 0", display: "flex", gap: 6, overflowX: "auto", flexShrink: 0 }}>
           {quickPrompts.map((prompt) => (
             <button key={prompt} onClick={() => sendQuick(prompt)} style={{
@@ -198,6 +207,17 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
           ))}
         </div>
       )}
+      {!showPrompts && messages.length > 2 && (
+        <div style={{ padding: isOverlay ? "4px 20px" : "4px 0", flexShrink: 0 }}>
+          <button onClick={() => setShowPrompts(true)} style={{
+            padding: "6px 12px", background: "none", border: `1px solid ${C.structBorderHover}`,
+            borderRadius: 16, color: C.text4, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer",
+            letterSpacing: ".06em",
+          }}>
+            SUGGESTIONS
+          </button>
+        </div>
+      )}
 
       {/* Input */}
       <div style={{ padding: isOverlay ? "12px 20px max(12px, env(safe-area-inset-bottom))" : "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
@@ -205,7 +225,7 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Ask about your training data..."
+          placeholder={isWorkout ? "Ask about your current workout..." : "Ask about your training data..."}
           style={{
             flex: 1, padding: "12px 16px",
             background: C.structGlass,

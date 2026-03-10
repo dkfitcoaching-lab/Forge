@@ -3,40 +3,45 @@ import { useState, useEffect } from "react";
 // ══════════════════════════════════════════════════════════════
 // FORGE CELEBRATION SYSTEM
 // Particle effects for workout completion and PRs
+// GPU-accelerated with translate3d, consistent timing
 // ══════════════════════════════════════════════════════════════
 
 function Particle({ x, y, color, delay, size }) {
-  const [style, setStyle] = useState({
-    position: "absolute",
-    left: x,
-    top: y,
-    width: size,
-    height: size,
-    borderRadius: "50%",
-    background: color,
-    opacity: 0,
-    transform: "scale(0)",
-    transition: `all ${0.6 + Math.random() * 0.4}s cubic-bezier(0.16, 1, 0.3, 1)`,
-    pointerEvents: "none",
-  });
+  const [phase, setPhase] = useState("init"); // init → in → out
+  const angleRef = useState(() => Math.random() * Math.PI * 2)[0];
+  const distRef = useState(() => 80 + Math.random() * 160)[0];
 
   useEffect(() => {
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 80 + Math.random() * 160;
-    const timer = setTimeout(() => {
-      setStyle((s) => ({
-        ...s,
-        opacity: 1,
-        transform: `scale(1) translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`,
-      }));
-      setTimeout(() => {
-        setStyle((s) => ({ ...s, opacity: 0, transform: `scale(0) translate(${Math.cos(angle) * distance * 1.5}px, ${Math.sin(angle) * distance * 1.5}px)` }));
-      }, 400);
-    }, delay);
-    return () => clearTimeout(timer);
-  }, []);
+    const t1 = setTimeout(() => setPhase("in"), delay);
+    const t2 = setTimeout(() => setPhase("out"), delay + 450);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [delay]);
 
-  return <div style={style} />;
+  const dx = Math.cos(angleRef) * distRef;
+  const dy = Math.sin(angleRef) * distRef;
+
+  const transforms = {
+    init: "scale(0) translate3d(0, 0, 0)",
+    in: `scale(1) translate3d(${dx}px, ${dy}px, 0)`,
+    out: `scale(0) translate3d(${dx * 1.5}px, ${dy * 1.5}px, 0)`,
+  };
+
+  return (
+    <div style={{
+      position: "absolute",
+      left: x,
+      top: y,
+      width: size,
+      height: size,
+      borderRadius: "50%",
+      background: color,
+      opacity: phase === "in" ? 1 : 0,
+      transform: transforms[phase],
+      transition: `all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+      pointerEvents: "none",
+      willChange: "transform, opacity",
+    }} />
+  );
 }
 
 export function CelebrationBurst({ C, count = 30 }) {
@@ -133,7 +138,7 @@ export function ReadinessGauge({ score, label, color, C }) {
               height: i < filled ? 16 + (i / segments) * 8 : 8,
               borderRadius: 2,
               background: i < filled ? C[color] || C.accent : C.accent010,
-              transition: `all 0.3s ease ${i * 20}ms`,
+              transition: `height 0.3s ease ${i * 20}ms, background 0.3s ease ${i * 20}ms`,
             }}
           />
         ))}

@@ -35,6 +35,7 @@ export default function App() {
   const [coachOpen, setCoachOpen] = useState(false);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [splashDone, setSplashDone] = useState(() => !!sessionStorage.getItem("forge_splash"));
+  const [splashFading, setSplashFading] = useState(false);
 
   // Toast system
   const showToast = useCallback((msg) => {
@@ -42,14 +43,15 @@ export default function App() {
     setTimeout(() => setToast(null), 2500);
   }, []);
 
-  // Splash screen
+  // Splash screen — tighter timing + fade-out instead of hard unmount
   useEffect(() => {
     if (!splashDone && screen === "lg") {
-      const timer = setTimeout(() => {
+      const fadeTimer = setTimeout(() => setSplashFading(true), 1800);
+      const doneTimer = setTimeout(() => {
         setSplashDone(true);
         sessionStorage.setItem("forge_splash", "1");
-      }, 2400);
-      return () => clearTimeout(timer);
+      }, 2200);
+      return () => { clearTimeout(fadeTimer); clearTimeout(doneTimer); };
     }
     if (!splashDone) setSplashDone(true);
   }, []);
@@ -60,8 +62,7 @@ export default function App() {
   // Scroll to top on any navigation change
   const scrollRef = useRef(null);
   const scrollToTop = useCallback(() => {
-    if (scrollRef.current) scrollRef.current.scrollTo(0, 0);
-    window.scrollTo(0, 0);
+    (scrollRef.current || window).scrollTo(0, 0);
   }, []);
 
   const startWorkout = (day) => { setWorkoutDay(day); setView("wp"); };
@@ -77,16 +78,17 @@ export default function App() {
         <div style={{
           minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden",
+          ...(splashFading ? { animation: "splashFadeOut 0.4s ease forwards" } : {}),
         }}>
           {/* Atmospheric orbs */}
-          <div style={{
+          <div className="forge-orb" style={{
             position: "absolute", top: "30%", left: "50%",
             width: 600, height: 600, borderRadius: "50%",
             background: `radial-gradient(circle, ${C.accent008} 0%, transparent 70%)`,
             animation: "orbFloat 6s ease-in-out infinite",
             pointerEvents: "none",
           }} />
-          <div style={{
+          <div className="forge-orb" style={{
             position: "absolute", top: "60%", left: "40%",
             width: 400, height: 400, borderRadius: "50%",
             background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 70%)`,
@@ -94,17 +96,17 @@ export default function App() {
             pointerEvents: "none",
           }} />
           {/* Logo */}
-          <div style={{ animation: "logoGlowRise 1.4s cubic-bezier(0.16,1,0.3,1) forwards" }}>
+          <div style={{ animation: "logoGlowRise 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards", willChange: "transform, opacity, filter" }}>
             <ForgeLogo C={C} size="lg" />
           </div>
           <div style={{
             height: 1, background: C.dividerGrad,
-            animation: "lineGrow 0.8s ease 1s both", marginTop: 20,
+            animation: "lineGrow 0.6s ease 0.8s both", marginTop: 20,
           }} />
           <div style={{
             fontSize: 8, color: C.text4, fontFamily: "var(--m)",
             letterSpacing: ".3em", marginTop: 16,
-            animation: "badgeFade 0.6s ease 1.4s both",
+            animation: "badgeFade 0.5s ease 1.1s both",
           }}>
             fitnessforge.ai
           </div>
@@ -138,9 +140,13 @@ export default function App() {
   if (view === "wp" && workoutDay) {
     return (
       <>
-        <WorkoutPlayer day={workoutDay} onExit={exitWorkout} C={C} showToast={showToast} />
-        {!coachOpen && <CoachFAB C={C} onClick={() => setCoachOpen(true)} />}
-        {coachOpen && <CoachPanel C={C} isOverlay onClose={() => setCoachOpen(false)} />}
+        <WorkoutPlayer day={workoutDay} onExit={exitWorkout} C={C} showToast={showToast} coachOpen={coachOpen} />
+        {!coachOpen && (
+          <div style={{ animation: "coachFabIn 0.3s ease" }}>
+            <CoachFAB C={C} onClick={() => setCoachOpen(true)} />
+          </div>
+        )}
+        {coachOpen && <CoachPanel C={C} isOverlay onClose={() => setCoachOpen(false)} isWorkout />}
         <style>{css}</style>
       </>
     );
@@ -190,13 +196,13 @@ export default function App() {
           width: "120%", height: "60%",
           background: C.atmosphereGrad,
         }} />
-        <div style={{
+        <div className="forge-orb" style={{
           position: "absolute", top: "15%", left: "50%",
           width: 600, height: 600, borderRadius: "50%",
           background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
           animation: "orbFloat 8s ease-in-out infinite",
         }} />
-        <div style={{
+        <div className="forge-orb" style={{
           position: "absolute", top: "60%", left: "30%",
           width: 400, height: 400, borderRadius: "50%",
           background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
@@ -207,14 +213,14 @@ export default function App() {
       <div style={{ maxWidth: 640, margin: "0 auto", minHeight: "100vh", position: "relative", zIndex: 1 }}>
         {/* ─── HEADER ─── */}
         <div
-          className="forge-header"
+          className="forge-header forge-header-blur"
           style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "16px 16px 14px",
             borderBottom: "none",
             position: "sticky", top: 0,
             background: C.headerBg,
-            backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             zIndex: 10,
           }}
         >
@@ -280,9 +286,11 @@ export default function App() {
         {/* ─── COACH OVERLAY ─── */}
         {coachOpen && <CoachPanel C={C} isOverlay onClose={() => setCoachOpen(false)} />}
 
-        {/* ─── COACH FAB (shown on non-coach tabs) ─── */}
+        {/* ─── COACH FAB (shown on non-coach tabs, not during sub-views) ─── */}
         {tab !== "coach" && view === "main" && !coachOpen && (
-          <CoachFAB C={C} onClick={() => setCoachOpen(true)} />
+          <div style={{ animation: "coachFabIn 0.3s ease" }}>
+            <CoachFAB C={C} onClick={() => setCoachOpen(true)} />
+          </div>
         )}
 
         {/* ─── TOAST ─── */}
@@ -290,7 +298,7 @@ export default function App() {
 
         {/* ─── BOTTOM NAVIGATION — 4 TABS ─── */}
         <div
-          className="forge-nav"
+          className="forge-nav forge-nav-blur"
           style={{
             position: "fixed",
             bottom: 0,
@@ -299,8 +307,8 @@ export default function App() {
             width: "100%",
             maxWidth: 640,
             background: C.navBg,
-            backdropFilter: "blur(28px)",
-            WebkitBackdropFilter: "blur(28px)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
             borderTop: "none",
             display: "flex",
             justifyContent: "space-around",
@@ -360,7 +368,7 @@ export default function App() {
                   </>
                 )}
                 <div style={{
-                  animation: active ? "iconGlow 4s ease-in-out infinite" : "none",
+                  animation: active ? "iconGlow 2.5s ease-in-out infinite" : "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
                   {icons[t.k]}

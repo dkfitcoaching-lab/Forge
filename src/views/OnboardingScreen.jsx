@@ -159,6 +159,7 @@ function UserMsg({ text, C }) {
 }
 
 function TierCard({ tier, C, onSelect }) {
+  const isComingSoon = tier.badge === "COMING SOON";
   return (
     <div style={{
       background: tier.accent ? C.accent005 : C.cardGradient,
@@ -170,6 +171,7 @@ function TierCard({ tier, C, onSelect }) {
         ? `0 4px 24px ${C.accent015}, 0 0 48px ${C.accent008}`
         : `0 2px 12px rgba(0,0,0,0.2)`,
       animation: tier.accent ? "accentBreathe 5s ease-in-out infinite" : "none",
+      opacity: isComingSoon ? 0.6 : 1,
     }}>
       {tier.badge && (
         <div style={{
@@ -200,8 +202,8 @@ function TierCard({ tier, C, onSelect }) {
           </div>
         ))}
       </div>
-      <Button C={C} variant={tier.accent ? "primary" : "ghost"} onClick={onSelect}>
-        {tier.cta}
+      <Button C={C} variant={tier.accent ? "primary" : "ghost"} onClick={isComingSoon ? undefined : onSelect} disabled={isComingSoon}>
+        {isComingSoon ? "COMING SOON" : tier.cta}
       </Button>
     </div>
   );
@@ -298,7 +300,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
       display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
     }}>
       {/* Atmosphere */}
-      <div style={{
+      <div className="forge-orb" style={{
         position: "fixed", top: "10%", left: "50%",
         width: 600, height: 600, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.accent008} 0%, transparent 70%)`,

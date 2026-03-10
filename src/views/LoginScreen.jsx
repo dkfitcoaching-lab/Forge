@@ -31,7 +31,7 @@ export default function LoginScreen({ C, onLogin }) {
       {/* ─── BACKGROUND LAYERS ─── */}
 
       {/* Primary atmosphere orb — large, slow */}
-      <div style={{
+      <div className="forge-orb" style={{
         position: "absolute", top: "5%", left: "50%", width: 800, height: 800, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.accent008} 0%, ${C.accent005} 30%, transparent 60%)`,
         animation: "orbFloat 10s ease-in-out infinite", pointerEvents: "none",
@@ -40,7 +40,7 @@ export default function LoginScreen({ C, onLogin }) {
       }} />
 
       {/* Secondary orb — offset, secondary color */}
-      <div style={{
+      <div className="forge-orb" style={{
         position: "absolute", top: "50%", left: "20%", width: 500, height: 500, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.secondary005} 0%, transparent 60%)`,
         animation: "orbFloat2 12s ease-in-out infinite", pointerEvents: "none",
