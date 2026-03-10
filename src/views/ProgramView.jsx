@@ -42,15 +42,19 @@ export default function ProgramView({ C, onWork, onNav }) {
           {DAYS.map((day) => {
             const completed = history.some(h => h.dayNum === day.d);
             const isCurrent = day.d === currentDay;
+            const isClickable = !day.rest;
             return (
-              <div key={day.d} style={{
-                textAlign: "center", padding: "10px 4px",
-                background: isCurrent ? C.accent010 : C.cardGradient,
-                border: `1.5px solid ${isCurrent ? C.accent : C.structBorderHover}`,
-                borderRadius: 8,
-                boxShadow: isCurrent ? `0 0 12px ${C.accent008}` : C.cardShadow,
-                transition: "all 0.2s",
-              }}>
+              <div key={day.d}
+                onClick={() => isClickable && onWork(day)}
+                style={{
+                  textAlign: "center", padding: "10px 4px",
+                  background: isCurrent ? C.accent010 : C.cardGradient,
+                  border: `1.5px solid ${isCurrent ? C.accent030 : C.structBorderHover}`,
+                  borderRadius: 8,
+                  boxShadow: isCurrent ? `0 0 12px ${C.accent008}` : C.cardShadow,
+                  transition: "all 0.2s",
+                  cursor: isClickable ? "pointer" : "default",
+                }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: completed ? C.secondary : isCurrent ? C.accent : C.text3, fontFamily: "var(--m)" }}>{day.d}</div>
                 <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>
                   {day.rest ? "REST" : day.t.split(" ")[0]}

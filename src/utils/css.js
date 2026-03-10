@@ -144,15 +144,15 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 }
 
-/* Accent-tinted breathing glow for primary CTA cards */
+/* Accent-tinted breathing glow for primary CTA cards — subtle border glow */
 @keyframes accentBreathe {
   0%, 100% {
-    box-shadow: 0 0 12px ${C.accent015}, 0 0 32px ${C.accent008}, 0 4px 20px rgba(0,0,0,.3);
+    box-shadow: 0 0 8px ${C.accent010}, 0 0 24px ${C.accent005}, 0 4px 20px rgba(0,0,0,.3);
     border-color: ${C.accent020};
   }
   50% {
-    box-shadow: 0 0 20px ${C.accent030}, 0 0 48px ${C.accent015}, 0 4px 20px rgba(0,0,0,.3);
-    border-color: ${C.accent040};
+    box-shadow: 0 0 16px ${C.accent020}, 0 0 40px ${C.accent010}, 0 4px 20px rgba(0,0,0,.3);
+    border-color: ${C.accent030};
   }
 }
 

@@ -84,7 +84,7 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
           ? `1.5px solid ${C.danger}30`
           : isGhost
             ? `1.5px solid ${C.structBorderHover}`
-            : "none",
+            : `1.5px solid ${C.accent030}`,
         borderRadius: 8,
         color: isDanger ? C.danger : isGhost ? C.text2 : C.btnText,
         fontSize: 11,
@@ -95,7 +95,7 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
         transition: "all 0.2s",
         animation: isPrimary && !disabled ? "shimmerSlow 8s ease-in-out infinite" : "none",
         boxShadow: isPrimary
-          ? `0 4px 20px ${C.accent030}, 0 0 40px ${C.accent010}`
+          ? `0 0 16px ${C.accent020}, 0 0 40px ${C.accent008}, inset 0 1px 0 rgba(255,255,255,0.06)`
           : "none",
         textTransform: "uppercase",
         opacity: disabled ? 0.4 : 1,
@@ -252,9 +252,11 @@ export function NavIcons() {
     ),
     coach: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6l-.8.6V18h-6v-2.4l-.8-.6A7 7 0 0 1 12 2z" />
-        <line x1="9" y1="18" x2="15" y2="18" />
-        <line x1="10" y1="21" x2="14" y2="21" />
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" />
+        <path d="M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10" />
+        <path d="M12 2c-2.5 3-4 6.5-4 10s1.5 7 4 10" />
+        <path d="M2 12h20" />
+        <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
       </svg>
     ),
     data: (

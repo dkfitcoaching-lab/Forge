@@ -1,12 +1,36 @@
 import { useState, useRef, useEffect } from "react";
 import { getCoachResponse, getProactiveInsight } from "../utils/coach-engine";
 
+// Floating coach button for use in WorkoutPlayer and other views
+export function CoachFAB({ C, onClick }) {
+  return (
+    <button onClick={onClick} style={{
+      position: "fixed", bottom: 100, right: 20,
+      width: 48, height: 48, borderRadius: 14,
+      background: C.structGlass,
+      border: `1.5px solid ${C.accent030}`,
+      backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      cursor: "pointer", zIndex: 40,
+      boxShadow: `0 0 20px ${C.accent015}, 0 4px 16px rgba(0,0,0,0.3), 0 0 40px ${C.accent005}`,
+      animation: "accentBreathe 5s ease-in-out infinite",
+      transition: "all 0.2s",
+    }}>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6l-.8.6V18h-6v-2.4l-.8-.6A7 7 0 0 1 12 2z" />
+        <line x1="9" y1="18" x2="15" y2="18" />
+        <line x1="10" y1="21" x2="14" y2="21" />
+      </svg>
+    </button>
+  );
+}
+
 // ══════════════════════════════════════════════════════════════
 // FORGE COACH — FULL TAB VIEW
 // Intelligent, data-driven coaching as a dedicated tab
 // ══════════════════════════════════════════════════════════════
 
-export default function CoachPanel({ C }) {
+export default function CoachPanel({ C, isOverlay, onClose }) {
   const [messages, setMessages] = useState(() => {
     const insight = getProactiveInsight();
     return [{ role: "assistant", text: insight, time: Date.now() }];
@@ -47,22 +71,44 @@ export default function CoachPanel({ C }) {
 
   const formatTime = (ts) => new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+  const wrapStyle = isOverlay ? {
+    position: "fixed", inset: 0, zIndex: 100,
+    background: C.bg,
+    display: "flex", flexDirection: "column",
+    animation: "slideUp 0.3s cubic-bezier(0.16,1,0.3,1)",
+  } : {
+    display: "flex", flexDirection: "column",
+    height: "calc(100vh - 180px)", marginTop: -4,
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 180px)", marginTop: -4 }}>
+    <div style={wrapStyle}>
       {/* Coach Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 12,
+        padding: isOverlay ? "14px 20px" : "0 0 16px",
+        borderBottom: `1px solid ${C.structBorder}`,
+        background: isOverlay ? C.headerBg : "transparent",
+        backdropFilter: isOverlay ? "blur(20px)" : "none",
+        flexShrink: 0,
+      }}>
+        {isOverlay && (
+          <button onClick={onClose} style={{ background: "none", border: "none", color: C.accent, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", minWidth: 36, minHeight: 44 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
+          </button>
+        )}
         <div style={{
-          width: 40, height: 40, borderRadius: 12,
-          background: C.gradient, backgroundSize: "300% 100%",
+          width: 36, height: 36, borderRadius: 10,
+          background: C.structGlass,
+          border: `1px solid ${C.accent030}`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 16, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
-          animation: "goldShimmer 10s ease-in-out infinite",
-          boxShadow: `0 4px 16px ${C.accent030}, 0 0 24px ${C.accent010}`,
+          fontSize: 14, fontWeight: 900, color: C.accent, fontFamily: "var(--d)",
+          boxShadow: `0 0 16px ${C.accent015}, 0 0 32px ${C.accent005}`,
         }}>
           F
         </div>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Coach</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Coach</div>
           <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".14em" }}>DATA-DRIVEN INTELLIGENCE</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
@@ -72,7 +118,7 @@ export default function CoachPanel({ C }) {
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12, paddingBottom: 8 }}>
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12, padding: isOverlay ? "16px 20px 8px" : "16px 0 8px" }}>
         {messages.map((m, i) => (
           <div key={i} style={{ display: "flex", gap: 8, flexDirection: m.role === "assistant" ? "row" : "row-reverse", animation: i === messages.length - 1 ? "fadeIn 0.3s ease" : "none" }}>
             {m.role === "assistant" && (
@@ -132,7 +178,7 @@ export default function CoachPanel({ C }) {
 
       {/* Quick Prompts */}
       {messages.length <= 2 && (
-        <div style={{ padding: "8px 0", display: "flex", gap: 6, overflowX: "auto", flexShrink: 0 }}>
+        <div style={{ padding: isOverlay ? "8px 20px" : "8px 0", display: "flex", gap: 6, overflowX: "auto", flexShrink: 0 }}>
           {quickPrompts.map((prompt) => (
             <button key={prompt} onClick={() => sendQuick(prompt)} style={{
               padding: "8px 14px",
@@ -154,7 +200,7 @@ export default function CoachPanel({ C }) {
       )}
 
       {/* Input */}
-      <div style={{ padding: "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
+      <div style={{ padding: isOverlay ? "12px 20px max(12px, env(safe-area-inset-bottom))" : "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
