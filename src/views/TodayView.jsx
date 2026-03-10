@@ -220,7 +220,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
       {/* ─── QUICK ACTIONS (above nutrition — immediately accessible) ─── */}
       <StaggerItem index={4} visible={visible}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "14px 0" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, margin: "14px 0" }}>
           {[
             { l: "Check-In", d: "Body tracking", v: "ci", tone: C.secondary, icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -232,7 +232,12 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             )},
-            { l: "Guide", d: "Training blueprint", v: "gd", tone: C.accent, icon: (
+            { l: "Posing", d: "Mandatory poses", v: "posing", tone: C.accent, icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="5" r="3" /><path d="M12 8v4" /><path d="M9 12l-2 8h2l3-4 3 4h2l-2-8" /><path d="M8 14h8" />
+              </svg>
+            )},
+            { l: "Guide", d: "Training info", v: "gd", tone: C.accent, icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
               </svg>
