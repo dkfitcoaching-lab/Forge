@@ -197,7 +197,7 @@ export default function App() {
           className="forge-header"
           style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "14px 16px 12px",
+            padding: "16px 16px 14px",
             borderBottom: "none",
             position: "sticky", top: 0,
             background: C.headerBg,
@@ -211,19 +211,19 @@ export default function App() {
             background: C.dividerGrad,
             boxShadow: `0 1px 8px ${C.accent008}`,
           }} />
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <ForgeLogo C={C} size="sm" />
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <ForgeLogo C={C} size="md" />
             <div>
               <div style={{
-                fontSize: 14, fontWeight: 700, color: C.text1,
-                fontFamily: "var(--d)", letterSpacing: ".08em",
-                textShadow: `0 0 20px ${C.accent015}`,
+                fontSize: 18, fontWeight: 800, color: C.text1,
+                fontFamily: "var(--d)", letterSpacing: ".1em",
+                textShadow: `0 0 24px ${C.accent020}`,
               }}>
                 FORGE
               </div>
               <div style={{
-                fontSize: 7, color: C.text4, fontFamily: "var(--m)",
-                letterSpacing: ".2em",
+                fontSize: 8, color: C.text4, fontFamily: "var(--m)",
+                letterSpacing: ".22em", marginTop: 1,
               }}>
                 PERFORMANCE SYSTEM
               </div>
