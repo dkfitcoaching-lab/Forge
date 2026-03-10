@@ -105,11 +105,11 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
           gap: 6, margin: "16px 0",
         }}>
           {[
-            { v: `${mealsCompleted}/${MEALS.length}`, l: "MEALS", pct: mealsCompleted / MEALS.length, color: C.accent },
-            { v: `${waterCount}/${waterGoal}`, l: "WATER", pct: waterCount / waterGoal, color: C.accentDark },
-            { v: `${suppDone}/${suppTotal}`, l: "SUPPS", pct: suppDone / suppTotal, color: C.accentDeep },
-            { v: readiness ? readiness.score : "—", l: "READY", pct: readiness ? readiness.score / 100 : 0, color: readiness?.color || C.text4 },
-          ].map(({ v, l, pct, color }) => (
+            { v: `${mealsCompleted}/${MEALS.length}`, l: "MEALS", pct: mealsCompleted / MEALS.length, color: C.accent, glow: C.accent020 },
+            { v: `${waterCount}/${waterGoal}`, l: "WATER", pct: waterCount / waterGoal, color: C.secondary, glow: C.secondary020 },
+            { v: `${suppDone}/${suppTotal}`, l: "SUPPS", pct: suppDone / suppTotal, color: C.secondary, glow: C.secondary020 },
+            { v: readiness ? readiness.score : "—", l: "READY", pct: readiness ? readiness.score / 100 : 0, color: readiness?.color || C.text4, glow: C.accent020 },
+          ].map(({ v, l, pct, color, glow }) => (
             <div key={l} style={{
               padding: "12px 6px", textAlign: "center",
               background: C.cardGradient, borderRadius: 10,
@@ -117,16 +117,16 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               boxShadow: C.cardShadow,
               position: "relative", overflow: "hidden",
             }}>
-              {/* Accent progress underline */}
+              {/* Progress underline */}
               <div style={{
                 position: "absolute", bottom: 0, left: 0,
                 width: `${Math.min(pct * 100, 100)}%`, height: 2,
                 background: color, borderRadius: 1,
                 transition: "width 0.4s ease",
-                boxShadow: pct > 0 ? `0 0 8px ${C.accent020}` : "none",
+                boxShadow: pct > 0 ? `0 0 8px ${glow}` : "none",
               }} />
               <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, fontFamily: "var(--m)" }}>{v}</div>
-              <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 3 }}>{l}</div>
+              <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 3 }}>{l}</div>
             </div>
           ))}
         </div>
@@ -268,11 +268,11 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         <Card C={C} style={{ padding: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
             <Label C={C} style={{ marginBottom: 0 }}>Hydration</Label>
-            <div style={{ fontSize: 13, fontWeight: 700, color: waterCount >= waterGoal ? C.ok : C.text1, fontFamily: "var(--m)", display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: waterCount >= waterGoal ? C.secondary : C.text1, fontFamily: "var(--m)", display: "flex", alignItems: "center", gap: 6 }}>
               {waterCount}/{waterGoal}
               <span style={{ fontSize: 9, color: C.text4, fontWeight: 400 }}>cups</span>
               {waterCount >= waterGoal && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.ok} strokeWidth="3" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="3" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
               )}
             </div>
           </div>
@@ -286,9 +286,9 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
             <div style={{
               height: "100%", borderRadius: 4,
               width: `${Math.min((waterCount / waterGoal) * 100, 100)}%`,
-              background: C.gradient, backgroundSize: "300% 100%",
+              background: `linear-gradient(90deg, ${C.secondary}, ${C.secondary}cc)`,
               transition: "width 0.3s ease",
-              boxShadow: waterCount > 0 ? `0 0 8px ${C.accent020}` : "none",
+              boxShadow: waterCount > 0 ? `0 0 8px ${C.secondary020}` : "none",
             }} />
           </div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -301,7 +301,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               style={{
                 flex: 1, padding: "10px 16px", background: C.structGlass,
                 border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
-                color: C.accent, fontSize: 10, fontWeight: 700, fontFamily: "var(--m)",
+                color: C.secondary, fontSize: 10, fontWeight: 700, fontFamily: "var(--m)",
                 letterSpacing: ".1em", cursor: "pointer", transition: "all 0.2s",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
               }}
@@ -337,9 +337,9 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         <Card C={C} style={{ padding: "2px 16px" }}>
           {SUPPLEMENTS.map((supp, i) => (
             <div key={i} onClick={() => toggleSupp(i)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderBottom: i < SUPPLEMENTS.length - 1 ? `1px solid ${C.structBorder}` : "none", cursor: "pointer" }}>
-              <div style={{ width: 22, height: 22, borderRadius: 6, border: `1.5px solid ${suppChecked[i] ? C.accent : C.structBorderHover}`, background: suppChecked[i] ? C.accent010 : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.2s" }}>
+              <div style={{ width: 22, height: 22, borderRadius: 6, border: `1.5px solid ${suppChecked[i] ? C.secondary : C.structBorderHover}`, background: suppChecked[i] ? C.secondary010 : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.2s" }}>
                 {suppChecked[i] && (
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
                 )}
               </div>
               <div style={{ flex: 1, fontSize: 13, color: suppChecked[i] ? C.text3 : C.text2, textDecoration: suppChecked[i] ? "line-through" : "none", transition: "all 0.2s" }}>{supp}</div>
@@ -355,38 +355,38 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         <Label C={C}>Quick Actions</Label>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           {[
-            { l: "Check-In", d: "Sleep, energy, recovery", v: "ci", icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            { l: "Check-In", d: "Sleep, energy, recovery", v: "ci", tone: C.secondary, icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
               </svg>
             )},
-            { l: "Volume Log", d: "Session tonnage", v: "vl", icon: (
+            { l: "Volume Log", d: "Session tonnage", v: "vl", tone: C.accent, icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
                 <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             )},
-            { l: "Guide", d: "Training blueprint", v: "gd", icon: (
+            { l: "Guide", d: "Training blueprint", v: "gd", tone: C.accent, icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
               </svg>
             )},
-            { l: "Photos", d: "Visual progress", v: "pp", icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            { l: "Photos", d: "Visual progress", v: "pp", tone: C.secondary, icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
               </svg>
             )},
-          ].map(({ l, d, v, icon }) => (
+          ].map(({ l, d, v, icon, tone }) => (
             <Card key={v} C={C} onClick={() => onNav(v)} style={{
               padding: "16px 14px", cursor: "pointer", marginBottom: 0,
               display: "flex", flexDirection: "column", alignItems: "center",
               textAlign: "center", gap: 8, minHeight: 88,
-              borderTop: `2px solid ${C.accent015}`,
+              borderTop: `2px solid ${tone}20`,
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: C.accent005, border: `1px solid ${C.accent015}`,
+                background: `${tone}08`, border: `1px solid ${tone}18`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: `0 0 12px ${C.accent008}`,
+                boxShadow: `0 0 12px ${tone}10`,
               }}>
                 {icon}
               </div>
@@ -405,13 +405,13 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
           <Card C={C} style={{ padding: "16px 20px", marginTop: 16, borderTop: `2px solid ${C.accent020}` }}>
             <div style={{ display: "flex", justifyContent: "space-around" }}>
               {[
-                { v: stats.workoutCount, l: "WORKOUTS" },
-                { v: stats.streak, l: "STREAK" },
-                { v: stats.checkInCount, l: "CHECK-INS" },
-                { v: stats.totalVolumeAllTime > 0 ? `${Math.round(stats.totalVolumeAllTime / 1000)}k` : "—", l: "TOTAL VOL" },
-              ].map(({ v, l }) => (
+                { v: stats.workoutCount, l: "WORKOUTS", color: C.accent },
+                { v: stats.streak, l: "STREAK", color: C.secondary },
+                { v: stats.checkInCount, l: "CHECK-INS", color: C.accent },
+                { v: stats.totalVolumeAllTime > 0 ? `${Math.round(stats.totalVolumeAllTime / 1000)}k` : "—", l: "TOTAL VOL", color: C.secondary },
+              ].map(({ v, l, color }) => (
                 <div key={l} style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 16px ${C.accent030}` }}>{v}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color, fontFamily: "var(--m)", textShadow: `0 0 16px ${color}40` }}>{v}</div>
                   <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 2 }}>{l}</div>
                 </div>
               ))}

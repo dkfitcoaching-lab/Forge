@@ -121,7 +121,10 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
         </div>
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${C.structBorderHover}`, background: C.headerBg, backdropFilter: "blur(20px)" }}>
-            <button onClick={onExit} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44, display: "flex", alignItems: "center" }}>← BACK</button>
+            <button onClick={onExit} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", fontWeight: 600, cursor: "pointer", letterSpacing: ".06em", minHeight: 44, display: "flex", alignItems: "center", gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+              BACK
+            </button>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Day {day.d}</div>
               <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)" }}>{day.t}</div>

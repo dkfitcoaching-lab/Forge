@@ -14,7 +14,14 @@ export default function CheckIn({ C, onBack }) {
   if (submitted) {
     return (
       <div>
-        <button onClick={onBack} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 16, padding: 0, minHeight: 44 }}>← BACK</button>
+        <button onClick={onBack} style={{
+          display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
+          color: C.accent, fontSize: 11, fontFamily: "var(--m)", fontWeight: 600,
+          letterSpacing: ".06em", cursor: "pointer", padding: "0 0 16px", marginTop: -4,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+          BACK
+        </button>
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
           <div style={{ width: 56, height: 56, borderRadius: 16, background: C.accent010, border: `1.5px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
@@ -88,7 +95,7 @@ export default function CheckIn({ C, onBack }) {
                   <div style={{ fontSize: 11, fontWeight: 600, color: C.text2 }}>{ci.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
                   <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Sleep: {ci.sl} · Energy: {ci.en} · Stress: {ci.st}{ci.wt ? ` · ${ci.wt}lbs` : ""}</div>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{Math.round(((ci.sl + ci.en + (6 - ci.st) + ci.dg + ci.ad) / 25) * 100)}%</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)", textShadow: `0 0 10px ${C.secondary030}` }}>{Math.round(((ci.sl + ci.en + (6 - ci.st) + ci.dg + ci.ad) / 25) * 100)}%</div>
               </Card>
             ))}
           </div>}
