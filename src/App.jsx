@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
 import { NavIcons, Toast, ForgeLogo } from "./components/Primitives";
@@ -17,7 +17,7 @@ import LoginScreen from "./views/LoginScreen";
 import OnboardingScreen from "./views/OnboardingScreen";
 
 export default function App() {
-  const [accentId, setAccentId] = useState(() => storage.get("accent", "platinum"));
+  const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
   const [surfaceId, setSurfaceId] = useState(() => storage.get("surface", "void"));
   const C = getThemeColors(accentId, surfaceId);
   const css = makeStyles(C);
@@ -53,9 +53,16 @@ export default function App() {
   const changeAccent = (id) => { setAccentId(id); storage.set("accent", id); };
   const changeSurface = (id) => { setSurfaceId(id); storage.set("surface", id); };
 
+  // Scroll to top on any navigation change
+  const scrollRef = useRef(null);
+  const scrollToTop = useCallback(() => {
+    if (scrollRef.current) scrollRef.current.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  }, []);
+
   const startWorkout = (day) => { setWorkoutDay(day); setView("wp"); };
-  const exitWorkout = () => { setWorkoutDay(null); setView("main"); setTab("today"); };
-  const goMain = () => setView("main");
+  const exitWorkout = () => { setWorkoutDay(null); setView("main"); setTab("today"); scrollToTop(); };
+  const goMain = () => { setView("main"); scrollToTop(); };
 
   const icons = NavIcons();
 
@@ -117,7 +124,7 @@ export default function App() {
   if (screen === "ob") {
     return (
       <>
-        <OnboardingScreen C={C} onComplete={() => setScreen("app")} />
+        <OnboardingScreen C={C} onComplete={() => setScreen("app")} changeAccent={changeAccent} changeSurface={changeSurface} />
         <style>{css}</style>
       </>
     );
@@ -151,10 +158,10 @@ export default function App() {
     );
 
     switch (tab) {
-      case "today": return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
-      case "program": return <ProgramView C={C} onWork={startWorkout} onNav={setView} />;
+      case "today": return <TodayView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} showToast={showToast} />;
+      case "program": return <ProgramView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} />;
       case "coach": return <CoachPanel C={C} />;
-      case "data": return <DataView C={C} onNav={setView} />;
+      case "data": return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} />;
       default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
     }
   };
@@ -252,11 +259,10 @@ export default function App() {
 
         {/* ─── MAIN CONTENT ─── */}
         <div
+          ref={scrollRef}
           className="forge-content"
-          key={tab + view}
           style={{
             padding: "20px 16px 110px",
-            animation: "fi .3s ease",
             position: "relative",
             zIndex: 1,
           }}
@@ -298,7 +304,7 @@ export default function App() {
             return (
               <div
                 key={t.k}
-                onClick={() => { setTab(t.k); setView("main"); }}
+                onClick={() => { setTab(t.k); setView("main"); scrollToTop(); }}
                 style={{
                   display: "flex",
                   flexDirection: "column",

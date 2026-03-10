@@ -252,7 +252,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
             <div style={{ fontSize: 48, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 30px ${C.accent030}`, lineHeight: 1.1 }}>{setIndex + 1}<span style={{ fontSize: 18, color: C.text4 }}>/{numSets}</span></div>
           </div>
           {prevSetData && (
-            <div style={{ textAlign: "center", marginBottom: 14, padding: "6px 12px", background: C.structGlass, borderRadius: 8, border: `1px solid ${C.glassBorder}` }}>
+            <div style={{ textAlign: "center", marginBottom: 14, padding: "6px 12px", background: C.structGlass, borderRadius: 8, border: `1px solid ${C.structBorderHover}` }}>
               <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>LAST: {prevSetData.weight} lbs × {prevSetData.reps} reps</div>
             </div>
           )}
@@ -268,7 +268,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
           <Button C={C} onClick={completeSet}>COMPLETE SET</Button>
         </Card>
         {exercise.c?.length > 0 && (
-          <div style={{ marginTop: 16, padding: "12px 16px", background: C.structGlass, borderRadius: 10, border: `1px solid ${C.glassBorder}` }}>
+          <div style={{ marginTop: 16, padding: "12px 16px", background: C.structGlass, borderRadius: 10, border: `1px solid ${C.structBorderHover}` }}>
             <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 8 }}>COACHING CUES</div>
             {exercise.c.map((cue, i) => (
               <div key={i} style={{ fontSize: 12, color: C.text3, padding: "4px 0", fontFamily: "var(--m)", display: "flex", alignItems: "center", gap: 8 }}>

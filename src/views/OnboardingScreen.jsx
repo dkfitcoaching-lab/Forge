@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button, ForgeLogo } from "../components/Primitives";
+import { ACCENTS } from "../data/themes";
 import storage from "../utils/storage";
 
 // ══════════════════════════════════════════════════════════════
@@ -45,7 +46,14 @@ const CONVERSATION_FLOW = [
   {
     genAi: (data) => {
       const n = data.experience?.includes("Beginner") ? "Even starting out" : data.experience?.includes("Intermediate") ? "At your level" : "With your background";
-      return `${n}, Forge adapts in real-time. Form cues, progressive overload targets, fatigue monitoring — everything calibrated to where you are now.\n\nI've built your personalized profile. Here are the plans available:`;
+      return `${n}, Forge adapts in real-time. Form cues, progressive overload targets, fatigue monitoring — everything calibrated to where you are now.\n\nOne last thing — choose your signature accent. This defines the entire look and feel of your Forge experience.`;
+    },
+    showThemePicker: true,
+  },
+  {
+    genAi: (data) => {
+      const names = { forge: "Forge Teal", platinum: "Platinum", obsidian: "Obsidian Violet", ember: "Ember", arctic: "Arctic Blue", crimson: "Crimson", gold: "Gold", rose: "Rose" };
+      return `${names[data.theme] || "Great choice"} — locked in. Your profile is ready.\n\nHere are the plans available:`;
     },
     showTiers: true,
   },
@@ -199,12 +207,13 @@ function TierCard({ tier, C, onSelect }) {
   );
 }
 
-export default function OnboardingScreen({ C, onComplete }) {
+export default function OnboardingScreen({ C, onComplete, changeAccent, changeSurface }) {
   const [messages, setMessages] = useState([]);
   const [flowIdx, setFlowIdx] = useState(0);
   const [typing, setTyping] = useState(true);
   const [showOpts, setShowOpts] = useState(false);
   const [showTiers, setShowTiers] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
   const [userData, setUserData] = useState({});
   const scrollRef = useRef();
   const started = useRef(false);
@@ -234,18 +243,10 @@ export default function OnboardingScreen({ C, onComplete }) {
     }, 1000);
   }, []);
 
-  useEffect(scroll, [messages, typing, showTiers, showOpts]);
+  useEffect(scroll, [messages, typing, showTiers, showOpts, showThemePicker]);
 
-  const pick = (option) => {
-    const step = CONVERSATION_FLOW[flowIdx];
-    const newData = { ...userData, [step.key]: option };
-    setUserData(newData);
-    setShowOpts(false);
-    setMessages(prev => [...prev, { role: "user", text: option }]);
-
-    const ni = flowIdx + 1;
+  const advanceFlow = (newData, ni) => {
     if (ni >= CONVERSATION_FLOW.length) return;
-
     const next = CONVERSATION_FLOW[ni];
     setFlowIdx(ni);
     setTyping(true);
@@ -258,10 +259,31 @@ export default function OnboardingScreen({ C, onComplete }) {
       setTyping(false);
       if (next.showTiers) {
         setTimeout(() => setShowTiers(true), 700);
+      } else if (next.showThemePicker) {
+        setTimeout(() => setShowThemePicker(true), 500);
       } else if (next.options) {
         setTimeout(() => setShowOpts(true), 350);
       }
     }, 800 + Math.random() * 500);
+  };
+
+  const pick = (option) => {
+    const step = CONVERSATION_FLOW[flowIdx];
+    const newData = { ...userData, [step.key]: option };
+    setUserData(newData);
+    setShowOpts(false);
+    setMessages(prev => [...prev, { role: "user", text: option }]);
+    advanceFlow(newData, flowIdx + 1);
+  };
+
+  const pickTheme = (id) => {
+    const names = { forge: "Forge Teal", platinum: "Platinum", obsidian: "Obsidian Violet", ember: "Ember", arctic: "Arctic Blue", crimson: "Crimson", gold: "Gold", rose: "Rose" };
+    const newData = { ...userData, theme: id };
+    setUserData(newData);
+    setShowThemePicker(false);
+    changeAccent?.(id);
+    setMessages(prev => [...prev, { role: "user", text: names[id] || id }]);
+    advanceFlow(newData, flowIdx + 1);
   };
 
   const finish = () => {
@@ -338,6 +360,51 @@ export default function OnboardingScreen({ C, onComplete }) {
                 {opt}
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Theme Picker */}
+        {showThemePicker && !typing && (
+          <div style={{
+            padding: "8px 0 4px 38px",
+            animation: "fi 0.5s ease",
+          }}>
+            <div style={{
+              display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10,
+              maxWidth: 320,
+            }}>
+              {Object.values(ACCENTS).map((acc) => (
+                <button key={acc.id} onClick={() => pickTheme(acc.id)} style={{
+                  padding: "12px 6px",
+                  background: C.cardGradient,
+                  border: `1.5px solid ${C.structBorderHover}`,
+                  borderRadius: 12,
+                  cursor: "pointer",
+                  display: "flex", flexDirection: "column",
+                  alignItems: "center", gap: 8,
+                  transition: "all 0.2s",
+                  position: "relative", overflow: "hidden",
+                }}>
+                  {/* Top edge */}
+                  <div style={{
+                    position: "absolute", top: 0, left: "10%", right: "10%", height: 2,
+                    background: acc.gradient, backgroundSize: "300% 100%",
+                    borderRadius: 1,
+                  }} />
+                  {/* Color swatch */}
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 14,
+                    background: acc.gradient, backgroundSize: "300% 100%",
+                    boxShadow: `0 0 14px ${acc.accent}40, 0 2px 8px rgba(0,0,0,0.3)`,
+                    border: `2px solid ${acc.accent}60`,
+                  }} />
+                  <div style={{
+                    fontSize: 7, color: C.text3, fontFamily: "var(--m)",
+                    letterSpacing: ".08em", fontWeight: 600,
+                  }}>{acc.name.toUpperCase()}</div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
