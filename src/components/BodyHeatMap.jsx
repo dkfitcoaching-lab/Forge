@@ -67,8 +67,8 @@ export default function BodyHeatMap({ muscleVolume, C }) {
                 alignItems: "center",
                 gap: 10,
                 padding: "8px 12px",
-                background: C.glass,
-                border: `1px solid ${C.border1}`,
+                background: C.structGlass,
+                border: `1px solid ${C.structBorder}`,
                 borderRadius: 8,
               }}
             >

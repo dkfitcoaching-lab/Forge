@@ -1,6 +1,8 @@
 // ══════════════════════════════════════════════════════════════
 // FORGE THEME SYSTEM — 8 ACCENTS × 5 SURFACES = 40 COMBINATIONS
 // Princess-grade luxury color engineering
+// Structural colors (borders, glass) are FIXED cool-neutral
+// Accent colors are ONLY for highlights, glows, interactive states
 // ══════════════════════════════════════════════════════════════
 
 function hexToRgb(hex) {
@@ -89,8 +91,8 @@ const ACCENTS = {
 const SURFACES = {
   void: {
     id: 'void', name: 'Void',
-    bg: '#010102', bg2: '#050508', card: '#08080c', cardHover: '#0e0e14',
-    text1: '#EDF0F4', text2: '#C8CDD2', text3: '#788090', text4: '#4A5568', text5: '#2D3748',
+    bg: '#020202', bg2: '#050506', card: '#0a0a0c', cardHover: '#111114',
+    text1: '#E8ECF0', text2: '#C8CDD2', text3: '#788090', text4: '#4A5568', text5: '#2D3748',
     isLight: false,
   },
   carbon: {
@@ -123,6 +125,46 @@ export function getThemeColors(accentId, surfaceId) {
   const a = ACCENTS[accentId] || ACCENTS.platinum;
   const s = SURFACES[surfaceId] || SURFACES.void;
 
+  // ─── STRUCTURAL COLORS (Princess-style: FIXED cool neutral, not accent-tinted) ───
+  // These NEVER change with accent — they provide consistent cool sophistication
+  const struct = s.isLight ? {
+    structBorder: 'rgba(40,50,70,0.10)',
+    structBorderHover: 'rgba(40,50,70,0.18)',
+    structBorderStrong: 'rgba(40,50,70,0.28)',
+    structGlass: 'rgba(40,50,70,0.04)',
+    structGlassHover: 'rgba(40,50,70,0.07)',
+    structInset: 'rgba(255,255,255,0.5)',
+    structShadowTint: 'rgba(40,50,70,0.02)',
+  } : {
+    structBorder: 'rgba(180,195,210,0.08)',
+    structBorderHover: 'rgba(180,195,210,0.14)',
+    structBorderStrong: 'rgba(180,195,210,0.28)',
+    structGlass: 'rgba(170,185,200,0.04)',
+    structGlassHover: 'rgba(170,185,200,0.08)',
+    structInset: 'rgba(170,185,200,0.03)',
+    structShadowTint: 'rgba(170,185,200,0.02)',
+  };
+
+  // Card gradient: lift card visibly above background
+  const cR = hexToRgb(s.card);
+  const bR = hexToRgb(s.bg);
+  const cardGradient = s.isLight
+    ? `linear-gradient(160deg, ${s.card}, ${s.bg2})`
+    : `linear-gradient(160deg, rgba(${cR.r + 4},${cR.g + 4},${cR.b + 6},0.99), rgba(${bR.r + 4},${bR.g + 4},${bR.b + 6},0.99))`;
+
+  // Multi-layer shadow system (Princess-grade depth)
+  const cardShadow = s.isLight
+    ? '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6)'
+    : `0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 ${struct.structInset}`;
+
+  const cardShadowHover = s.isLight
+    ? '0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)'
+    : `0 2px 12px rgba(0,0,0,0.5), 0 12px 40px rgba(0,0,0,0.2), 0 0 20px ${rgba(a.accent, 0.06)}, inset 0 1px 0 ${struct.structInset}`;
+
+  // Neon breathing shadow (Princess multi-layer)
+  const neonShadow = `0 0 10px rgba(180,195,210,0.25), 0 0 28px rgba(170,185,200,0.12), 0 0 55px rgba(160,175,190,0.06), inset 0 0 15px rgba(170,185,200,0.02)`;
+  const neonShadowStrong = `0 0 18px rgba(180,195,210,0.35), 0 0 40px rgba(170,185,200,0.2), 0 0 70px rgba(160,175,190,0.08), inset 0 0 25px rgba(170,185,200,0.04)`;
+
   return {
     // Accent colors
     ...a,
@@ -130,20 +172,21 @@ export function getThemeColors(accentId, surfaceId) {
     ...s,
     accentId: a.id,
     surfaceId: s.id,
-    // Computed border system (proper rgba, not broken hex append)
+
+    // ─── STRUCTURAL (fixed cool neutral) ───
+    ...struct,
+
+    // ─── ACCENT-TINTED (for interactive/glow only) ───
     border1: rgba(a.accent, 0.08),
     border2: rgba(a.accent, 0.14),
     border3: rgba(a.accent, 0.25),
     borderHover: rgba(a.accent, 0.35),
-    // Glow system
     glow: rgba(a.accent, 0.20),
     glowStrong: rgba(a.accent, 0.35),
     glowSubtle: rgba(a.accent, 0.08),
-    // Glass system
     glass: rgba(a.accent, 0.03),
     glassHover: rgba(a.accent, 0.06),
     glassBorder: rgba(a.accent, 0.12),
-    // Accent opacity variants
     accent005: rgba(a.accent, 0.05),
     accent008: rgba(a.accent, 0.08),
     accent010: rgba(a.accent, 0.10),
@@ -152,27 +195,31 @@ export function getThemeColors(accentId, surfaceId) {
     accent030: rgba(a.accent, 0.30),
     accent040: rgba(a.accent, 0.40),
     accent060: rgba(a.accent, 0.60),
-    // Card system
-    cardGradient: s.isLight
-      ? `linear-gradient(160deg, ${s.card}, ${s.bg2})`
-      : `linear-gradient(160deg, rgba(${hexToRgb(s.card).r},${hexToRgb(s.card).g},${hexToRgb(s.card).b},0.99), rgba(${hexToRgb(s.bg).r},${hexToRgb(s.bg).g},${hexToRgb(s.bg).b},0.99))`,
-    cardShadow: s.isLight
-      ? '0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)'
-      : `0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 ${rgba(a.accent, 0.02)}`,
-    // Background atmosphere
-    atmosphereGrad: `radial-gradient(ellipse 80% 50% at 50% -20%, ${rgba(a.accent, 0.06)} 0%, transparent 70%)`,
-    atmosphereOrb: rgba(a.accent, 0.04),
-    // Divider gradient (Princess-style)
+
+    // ─── CARD SYSTEM (lifted, multi-layer depth) ───
+    cardGradient,
+    cardShadow,
+    cardShadowHover,
+    neonShadow,
+    neonShadowStrong,
+
+    // ─── ATMOSPHERE (stronger than before) ───
+    atmosphereGrad: `radial-gradient(ellipse 120% 60% at 50% -15%, ${rgba(a.accent, 0.10)} 0%, transparent 50%)`,
+    atmosphereOrb: rgba(a.accent, 0.06),
+
+    // ─── DIVIDER ───
     dividerGrad: `linear-gradient(90deg, transparent, ${a.accentDeep}, ${a.accent}, ${a.accentDeep}, transparent)`,
-    // Nav
+
+    // ─── NAV / HEADER ───
     navBg: s.isLight
       ? 'rgba(242,242,246,0.97)'
-      : `rgba(${hexToRgb(s.bg).r},${hexToRgb(s.bg).g},${hexToRgb(s.bg).b},0.97)`,
+      : `rgba(${bR.r},${bR.g},${bR.b},0.97)`,
     headerBg: s.isLight
       ? 'rgba(242,242,246,0.96)'
       : `rgba(${hexToRgb(s.bg2).r},${hexToRgb(s.bg2).g},${hexToRgb(s.bg2).b},0.96)`,
-    // Button text color based on surface
-    btnText: s.isLight ? '#1a1a2e' : s.bg,
+
+    // Button text
+    btnText: s.isLight ? '#1a1a2e' : '#020202',
   };
 }
 

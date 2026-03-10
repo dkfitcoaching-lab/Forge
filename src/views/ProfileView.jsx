@@ -32,7 +32,7 @@ export default function ProfileView({ C, themeId, setThemeId }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 24 }}>
         {Object.values(THEMES).map((theme) => (
           <button key={theme.id} onClick={() => { setThemeId(theme.id); storage.set("th", theme.id); }}
-            style={{ padding: "14px 8px", background: themeId === theme.id ? `${theme.accent}15` : C.card, border: `1px solid ${themeId === theme.id ? theme.accent : C.border2}`, borderRadius: 12, cursor: "pointer", transition: "all 0.2s" }}>
+            style={{ padding: "14px 8px", background: themeId === theme.id ? `${theme.accent}15` : C.card, border: `1px solid ${themeId === theme.id ? theme.accent : C.structBorderHover}`, borderRadius: 12, cursor: "pointer", transition: "all 0.2s" }}>
             <div style={{ width: 24, height: 24, borderRadius: 8, background: theme.gradient, margin: "0 auto 8px" }} />
             <div style={{ fontSize: 10, fontWeight: 600, color: themeId === theme.id ? theme.accent : C.text3, fontFamily: "var(--m)" }}>{theme.name}</div>
           </button>
@@ -65,7 +65,7 @@ export default function ProfileView({ C, themeId, setThemeId }) {
       <Label C={C}>Notifications</Label>
       <Card C={C} style={{ padding: "4px 16px", marginBottom: 24 }}>
         {[{ k: "a", l: "Workouts" }, { k: "b", l: "Weight Reminders" }, { k: "c", l: "Meal Tracking" }, { k: "d", l: "Supplements" }, { k: "e", l: "Check-Ins" }].map(({ k, l }) => (
-          <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: k !== "e" ? `1px solid ${C.border1}` : "none", cursor: "pointer" }}>
+          <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: k !== "e" ? `1px solid ${C.structBorder}` : "none", cursor: "pointer" }}>
             <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
             <div style={{ width: 36, height: 20, borderRadius: 10, background: notifications[k] ? C.accent : `${C.accent}15`, position: "relative", transition: "background 0.2s" }}>
               <div style={{ width: 16, height: 16, borderRadius: 8, background: C.text1, position: "absolute", top: 2, left: notifications[k] ? 18 : 2, transition: "left 0.2s" }} />
@@ -89,7 +89,7 @@ export default function ProfileView({ C, themeId, setThemeId }) {
           a.click();
           URL.revokeObjectURL(url);
         }}
-        style={{ width: "100%", padding: 14, background: `${C.accent}08`, border: `1px solid ${C.border2}`, borderRadius: 12, color: C.accent, fontSize: 12, fontWeight: 600, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 12 }}
+        style={{ width: "100%", padding: 14, background: `${C.accent}08`, border: `1px solid ${C.structBorderHover}`, borderRadius: 12, color: C.accent, fontSize: 12, fontWeight: 600, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 12 }}
       >
         EXPORT ALL DATA
       </button>

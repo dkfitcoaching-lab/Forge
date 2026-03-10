@@ -57,11 +57,11 @@ export default function DataView({ C, onNav }) {
               <RadialProgress value={fatigue.fatigue} max={100} C={C} size={64} label="FATIGUE" />
             </div>
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1, padding: 10, background: C.glass, borderRadius: 8, textAlign: "center", border: `1px solid ${C.border1}` }}>
+              <div style={{ flex: 1, padding: 10, background: C.structGlass, borderRadius: 8, textAlign: "center", border: `1px solid ${C.structBorder}` }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{fatigue.density}</div>
                 <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>SESS/WEEK</div>
               </div>
-              <div style={{ flex: 1, padding: 10, background: C.glass, borderRadius: 8, textAlign: "center", border: `1px solid ${C.border1}` }}>
+              <div style={{ flex: 1, padding: 10, background: C.structGlass, borderRadius: 8, textAlign: "center", border: `1px solid ${C.structBorder}` }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{fatigue.volumeTrend}%</div>
                 <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>VOL TREND</div>
               </div>
@@ -156,7 +156,7 @@ export default function DataView({ C, onNav }) {
         )},
       ].map(({ l, d, v, icon }) => (
         <Card key={v} C={C} onClick={() => onNav(v)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: 16 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: C.glass, border: `1px solid ${C.border2}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: C.structGlass, border: `1px solid ${C.structBorderHover}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>{l}</div>
             <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{d}</div>

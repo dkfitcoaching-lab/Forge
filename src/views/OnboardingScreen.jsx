@@ -166,7 +166,7 @@ export default function OnboardingScreen({ C, onComplete }) {
               flex: 1,
               padding: 14,
               background: "transparent",
-              border: `1.5px solid ${C.border2}`,
+              border: `1.5px solid ${C.structBorderHover}`,
               borderRadius: 8,
               color: C.text3,
               fontSize: 11,
