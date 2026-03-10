@@ -101,7 +101,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
   };
 
   const handlePause = () => { pauseTimeRef.current = elapsed; startTimeRef.current = null; setPhase("paused"); };
-  const handleResume = () => setPhase("active");
+  const handleResume = () => { startTimeRef.current = Date.now() - pauseTimeRef.current * 1000; setPhase("active"); };
   const handleExit = () => { if (phase === "active" || phase === "paused") setExitConfirm(true); else onExit(); };
 
   const completedSetsTotal = exercises.reduce((acc, ex, exIdx) => {
@@ -207,13 +207,16 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
       </div>
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: `1px solid ${C.structBorderHover}`, background: C.headerBg, backdropFilter: "blur(20px)", position: "relative", zIndex: 2 }}>
-        <button onClick={handleExit} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44, display: "flex", alignItems: "center" }}>← EXIT</button>
+        <button onClick={handleExit} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44, display: "flex", alignItems: "center", gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+              EXIT
+            </button>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.text2, fontFamily: "var(--d)" }}>Day {day.d}</div>
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)" }}>{day.t}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={phase === "paused" ? handleResume : handlePause} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.accent, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", padding: "6px 10px", minHeight: 36, letterSpacing: ".08em" }}>
+          <button onClick={phase === "paused" ? handleResume : handlePause} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.accent, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", padding: "6px 10px", minWidth: 44, minHeight: 44, letterSpacing: ".08em", display: "flex", alignItems: "center", justifyContent: "center" }}>
             {phase === "paused" ? "▶" : "⏸"}
           </button>
           <div style={{ fontSize: 12, color: C.accent, fontFamily: "var(--m)", fontWeight: 600, minWidth: 44, textAlign: "right" }}>{formatTime(elapsed)}</div>
@@ -295,9 +298,9 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
           </div>
           <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginBottom: 24 }}>Next: {exercises[Math.min(exerciseIndex + (setIndex >= numSets - 1 ? 1 : 0), exercises.length - 1)]?.n || "Done"}</div>
           <div style={{ display: "flex", gap: 12 }}>
-            <button onClick={() => setRestSeconds(s => Math.max(0, s - 15))} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 40 }}>-15s</button>
+            <button onClick={() => setRestSeconds(s => Math.max(0, s - 15))} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 44, minWidth: 44 }}>-15s</button>
             <button onClick={() => { setResting(false); setRestSeconds(0); }} style={{ background: C.structGlass, border: `1px solid ${C.structBorderStrong}`, borderRadius: 8, color: C.accent, fontSize: 10, fontFamily: "var(--m)", letterSpacing: ".1em", padding: "10px 28px", cursor: "pointer", minHeight: 44 }}>SKIP</button>
-            <button onClick={() => setRestSeconds(s => s + 15)} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 40 }}>+15s</button>
+            <button onClick={() => setRestSeconds(s => s + 15)} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 44, minWidth: 44 }}>+15s</button>
           </div>
         </div>
       )}

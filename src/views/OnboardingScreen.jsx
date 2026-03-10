@@ -125,7 +125,7 @@ function AiMsg({ text, C }) {
         borderRadius: "4px 16px 16px 16px",
         padding: "14px 18px",
         maxWidth: "85%",
-        boxShadow: `0 2px 12px rgba(0,0,0,0.2)`,
+        boxShadow: `0 2px 12px rgba(0,0,0,0.25), 0 4px 20px rgba(0,0,0,0.1)`,
       }}>
         <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, whiteSpace: "pre-line" }}>{text}</div>
       </div>
@@ -142,6 +142,7 @@ function UserMsg({ text, C }) {
         borderRadius: "16px 4px 16px 16px",
         padding: "12px 18px",
         maxWidth: "80%",
+        boxShadow: `0 2px 8px rgba(0,0,0,0.15)`,
       }}>
         <div style={{ fontSize: 13, color: C.text1, lineHeight: 1.6 }}>{text}</div>
       </div>
@@ -332,6 +333,7 @@ export default function OnboardingScreen({ C, onComplete }) {
                 cursor: "pointer",
                 transition: "all 0.2s",
                 letterSpacing: ".04em",
+                minHeight: 44,
               }}>
                 {opt}
               </button>

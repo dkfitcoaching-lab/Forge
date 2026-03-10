@@ -63,12 +63,12 @@ export default function LoginScreen({ C, onLogin }) {
           height: 1, background: C.dividerGrad, margin: "20px auto 20px",
           width: stage >= 3 ? 80 : 0, opacity: stage >= 3 ? 1 : 0,
           transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
-          boxShadow: `0 0 12px ${C.accent010}`,
+          boxShadow: `0 0 12px ${C.accent015}, 0 0 24px ${C.accent008}`,
         }} />
 
         {/* Subtitle */}
         <div style={{
-          fontSize: 9, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".35em",
+          fontSize: 11, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".35em",
           fontWeight: 700, textTransform: "uppercase",
           opacity: stage >= 4 ? 1 : 0,
           transform: stage >= 4 ? "translateY(0)" : "translateY(8px)",
