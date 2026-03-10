@@ -16,6 +16,7 @@ import SettingsView from "./views/SettingsView";
 import LoginScreen from "./views/LoginScreen";
 import OnboardingScreen from "./views/OnboardingScreen";
 import Walkthrough from "./components/Walkthrough";
+import PosingView from "./views/PosingView";
 
 export default function App() {
   const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
@@ -152,6 +153,7 @@ export default function App() {
     if (view === "vl") return <VolumeLog C={C} onBack={goMain} />;
     if (view === "ci") return <CheckIn C={C} onBack={goMain} />;
     if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
+    if (view === "posing") return <PosingView C={C} onBack={goMain} />;
     if (view === "settings") return (
       <SettingsView
         C={C}

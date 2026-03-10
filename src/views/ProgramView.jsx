@@ -95,8 +95,34 @@ export default function ProgramView({ C, onWork, onNav }) {
         })}
       </StaggerItem>
 
-      {/* Program Guide */}
+      {/* Posing Practice */}
       <StaggerItem index={3} visible={visible}>
+        <SectionDivider C={C} />
+        <Label C={C}>COMPETITION POSING</Label>
+        <Card C={C} onClick={() => onNav("posing")} accentGlow style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: C.structGlass, border: `1.5px solid ${C.accent030}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: `0 0 12px ${C.accent010}`,
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="5" r="3" />
+              <path d="M12 8v4" />
+              <path d="M9 12l-2 8h2l3-4 3 4h2l-2-8" />
+              <path d="M8 14h8" />
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>Posing Practice</div>
+            <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>NPC/IFBB mandatory poses by division</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+        </Card>
+      </StaggerItem>
+
+      {/* Program Guide */}
+      <StaggerItem index={4} visible={visible}>
         <SectionDivider C={C} />
         <Label C={C}>PROGRAM GUIDE</Label>
         <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
