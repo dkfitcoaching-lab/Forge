@@ -25,6 +25,15 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
   const numSets = exercise.ns || 2;
   const trackKey = `${exerciseIndex}_${setIndex}`;
 
+  // Persist active session state for crash recovery
+  useEffect(() => {
+    if (phase === "active" || phase === "paused") {
+      storage.set("active_session", { dayNum: day.d, exerciseIndex, setIndex, elapsed: elapsedAtPauseRef.current || elapsed, timestamp: Date.now() });
+    }
+  }, [phase, exerciseIndex, setIndex]);
+
+  const clearActiveSession = () => storage.remove("active_session");
+
   const history = getWorkoutHistory();
   const prevSession = history.filter(h => h.dayNum === day.d).slice(-1)[0];
   const getPrevData = (exIdx, sIdx) => {
@@ -99,6 +108,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
     const prs = detectNewPRs(sessionData);
     setNewPRs(prs);
     storage.set(`wh_${Date.now()}`, sessionData);
+    clearActiveSession();
     if (prs.length > 0) setShowCelebration(true);
     setPhase("done");
     try { navigator.vibrate?.([50, 50, 100]); } catch {}
@@ -106,7 +116,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
 
   const handlePause = () => { elapsedAtPauseRef.current = elapsed; startTimeRef.current = null; setPhase("paused"); };
   const handleResume = () => { startTimeRef.current = Date.now() - elapsedAtPauseRef.current * 1000; setPhase("active"); };
-  const handleExit = () => { if (phase === "active" || phase === "paused") setExitConfirm(true); else onExit(); };
+  const handleExit = () => { if (phase === "active" || phase === "paused") setExitConfirm(true); else { clearActiveSession(); onExit(); } };
 
   const completedSetsTotal = exercises.reduce((acc, ex, exIdx) => {
     if (exIdx < exerciseIndex) return acc + ex.ns;
@@ -157,7 +167,11 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{ex.n}</div>
                     <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{ex.s}{ex.tg ? ` · ${ex.tg}` : ""}</div>
-                    {prev?.sets?.[0] && <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2, opacity: 0.7 }}>Last: {prev.sets[0].weight}lbs × {prev.sets[0].reps}</div>}
+                    {prev?.sets?.length > 0 && (
+                      <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2, opacity: 0.7 }}>
+                        Last: {prev.sets.map((s, si) => `${s.weight}×${s.reps}`).join(" / ")}
+                      </div>
+                    )}
                   </div>
                 </Card>
               );

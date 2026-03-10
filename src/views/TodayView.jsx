@@ -9,7 +9,9 @@ import DAYS from "../data/workouts";
 import storage from "../utils/storage";
 
 export default function TodayView({ C, onWork, onNav, showToast }) {
-  const visible = useStaggeredReveal(12, 55);
+  const activeSessionCheck = storage.get("active_session", null);
+  const hasRecovery = activeSessionCheck && activeSessionCheck.dayNum && Date.now() - activeSessionCheck.timestamp < 86400000;
+  const visible = useStaggeredReveal(hasRecovery ? 13 : 12, 55);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
@@ -64,6 +66,13 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
     storage.set("cd", next);
   }, [currentDay]);
 
+  const [activeSession] = useState(() => {
+    const s = storage.get("active_session", null);
+    if (s && s.dayNum && Date.now() - s.timestamp < 86400000) return s;
+    if (s) storage.remove("active_session");
+    return null;
+  });
+
   const stats = computeStats();
   const readiness = computeReadinessScore();
   const overloadTargets = getProgressiveOverloadTargets(currentDay);
@@ -77,6 +86,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
   const suppTotal = SUPPLEMENTS.length;
   const suppDone = Object.values(suppChecked).filter(Boolean).length;
+  const so = activeSession ? 1 : 0; // stagger offset for recovery card
 
   return (
     <div>
@@ -180,8 +190,43 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         </div>
       </StaggerItem>
 
+      {/* ─── SESSION RECOVERY ─── */}
+      {activeSession && (
+        <StaggerItem index={3} visible={visible}>
+          <Card C={C} style={{ borderLeft: `3px solid ${C.warn}`, padding: "16px 20px", marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.warn} strokeWidth="2" strokeLinecap="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>Interrupted Workout</div>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
+                  Day {activeSession.dayNum} · Exercise {activeSession.exerciseIndex + 1}, Set {activeSession.setIndex + 1}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Button C={C} onClick={() => {
+                const resumeDay = DAYS[activeSession.dayNum - 1];
+                if (resumeDay) onWork(resumeDay);
+              }} style={{ flex: 1, fontSize: 10 }}>RESUME WORKOUT</Button>
+              <button onClick={() => {
+                storage.remove("active_session");
+                window.location.reload();
+              }} style={{
+                padding: "10px 16px", background: "transparent",
+                border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10,
+                color: C.text4, fontSize: 10, fontWeight: 600, fontFamily: "var(--m)",
+                cursor: "pointer", letterSpacing: ".06em",
+              }}>DISMISS</button>
+            </div>
+          </Card>
+        </StaggerItem>
+      )}
+
       {/* ─── WORKOUT CARD ─── */}
-      <StaggerItem index={3} visible={visible}>
+      <StaggerItem index={3 + so} visible={visible}>
         {isRest ? (
           <Card C={C} style={{ borderLeft: `3px solid ${C.text4}`, padding: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
@@ -219,7 +264,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       </StaggerItem>
 
       {/* ─── QUICK ACTIONS (above nutrition — immediately accessible) ─── */}
-      <StaggerItem index={4} visible={visible}>
+      <StaggerItem index={4 + so} visible={visible}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, margin: "14px 0" }}>
           {[
             { l: "Check-In", d: "Body tracking", v: "ci", tone: C.secondary, icon: (
@@ -269,7 +314,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       <SectionDivider C={C} />
 
       {/* ─── NUTRITION ─── */}
-      <StaggerItem index={5} visible={visible}>
+      <StaggerItem index={5 + so} visible={visible}>
         <Label C={C}>Nutrition</Label>
         <Card C={C} style={{ padding: 20 }}>
           {/* Calorie Ring + Macros */}
@@ -354,7 +399,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       </StaggerItem>
 
       {/* ─── HYDRATION ─── */}
-      <StaggerItem index={6} visible={visible}>
+      <StaggerItem index={6 + so} visible={visible}>
         <Card C={C} style={{ padding: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
             <Label C={C} style={{ marginBottom: 0 }}>Hydration</Label>
@@ -404,7 +449,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       </StaggerItem>
 
       {/* ─── SUPPLEMENTS ─── */}
-      <StaggerItem index={7} visible={visible}>
+      <StaggerItem index={7 + so} visible={visible}>
         <Label C={C}>Supplements</Label>
         <Card C={C} style={{ padding: "2px 16px" }}>
           {SUPPLEMENTS.map((supp, i) => (
@@ -423,7 +468,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       <SectionDivider C={C} />
 
       {/* ─── LIFETIME STATS or WELCOME ─── */}
-      <StaggerItem index={8} visible={visible}>
+      <StaggerItem index={8 + so} visible={visible}>
         {stats.workoutCount > 0 ? (
           <Card C={C} style={{ padding: "18px 20px", borderTop: `2px solid ${C.accent020}` }}>
             <div style={{ display: "flex", justifyContent: "space-around" }}>
