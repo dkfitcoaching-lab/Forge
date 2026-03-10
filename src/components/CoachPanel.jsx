@@ -90,7 +90,7 @@ export default function CoachPanel({ C }) {
               background: m.role === "assistant"
                 ? C.cardGradient
                 : C.accent008,
-              border: `1px solid ${m.role === "assistant" ? C.border2 : C.accent015}`,
+              border: `1px solid ${m.role === "assistant" ? C.structBorderHover : C.accent015}`,
               borderRadius: m.role === "assistant" ? "4px 16px 16px 16px" : "16px 4px 16px 16px",
               padding: "12px 16px",
               maxWidth: "82%",
@@ -112,7 +112,7 @@ export default function CoachPanel({ C }) {
             }}>F</div>
             <div style={{
               background: C.cardGradient,
-              border: `1px solid ${C.border2}`,
+              border: `1px solid ${C.structBorderHover}`,
               borderRadius: "4px 16px 16px 16px",
               padding: "14px 20px",
               display: "flex", gap: 5, alignItems: "center",
@@ -136,8 +136,8 @@ export default function CoachPanel({ C }) {
           {quickPrompts.map((prompt) => (
             <button key={prompt} onClick={() => sendQuick(prompt)} style={{
               padding: "8px 14px",
-              background: C.glass,
-              border: `1px solid ${C.border2}`,
+              background: C.structGlass,
+              border: `1px solid ${C.structBorderHover}`,
               borderRadius: 20,
               color: C.text3,
               fontSize: 10,
@@ -154,7 +154,7 @@ export default function CoachPanel({ C }) {
       )}
 
       {/* Input */}
-      <div style={{ padding: "12px 0 4px", borderTop: `1px solid ${C.border1}`, display: "flex", gap: 8, flexShrink: 0 }}>
+      <div style={{ padding: "12px 0 4px", borderTop: `1px solid ${C.structBorder}`, display: "flex", gap: 8, flexShrink: 0 }}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -162,8 +162,8 @@ export default function CoachPanel({ C }) {
           placeholder="Ask about your training data..."
           style={{
             flex: 1, padding: "12px 16px",
-            background: C.glass,
-            border: `1.5px solid ${C.border2}`,
+            background: C.structGlass,
+            border: `1.5px solid ${C.structBorderHover}`,
             borderRadius: 12,
             color: C.text1,
             fontSize: 13,

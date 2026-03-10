@@ -111,7 +111,7 @@ export default function ProgressPhotos({ C, onBack }) {
               flex: 1,
               padding: 14,
               background: compareMode ? `${C.accent}15` : "transparent",
-              border: `1px solid ${compareMode ? C.accent : C.border2}`,
+              border: `1px solid ${compareMode ? C.accent : C.structBorderHover}`,
               borderRadius: 12,
               color: compareMode ? C.accent : C.text3,
               fontSize: 12,
@@ -141,7 +141,7 @@ export default function ProgressPhotos({ C, onBack }) {
                     aspectRatio: "3/4",
                     objectFit: "cover",
                     borderRadius: 8,
-                    border: `1px solid ${C.border2}`,
+                    border: `1px solid ${C.structBorderHover}`,
                   }}
                 />
                 <div style={{ fontSize: 9, color: C.text3, fontFamily: "var(--m)", textAlign: "center", marginTop: 4 }}>
@@ -183,7 +183,7 @@ export default function ProgressPhotos({ C, onBack }) {
                   cursor: compareMode ? "pointer" : "default",
                   borderRadius: 8,
                   overflow: "hidden",
-                  border: isSelected ? `2px solid ${C.accent}` : `1px solid ${C.border1}`,
+                  border: isSelected ? `2px solid ${C.accent}` : `1px solid ${C.structBorder}`,
                   transition: "border 0.2s",
                 }}
               >

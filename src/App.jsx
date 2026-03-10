@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
-import { NavIcons, Toast } from "./components/Primitives";
+import { NavIcons, Toast, ForgeLogo } from "./components/Primitives";
 import storage from "./utils/storage";
 
 import WorkoutPlayer from "./components/WorkoutPlayer";
@@ -83,22 +83,9 @@ export default function App() {
             animation: "orbFloat2 5s ease-in-out infinite",
             pointerEvents: "none",
           }} />
-          {/* Logo */}
-          <div style={{
-            fontSize: 80, fontWeight: 900, fontFamily: "var(--d)",
-            background: C.gradient, backgroundSize: "300% 100%",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-            animation: "logoGlowRise 1.2s ease forwards, goldShimmer 4s ease-in-out infinite",
-            filter: `drop-shadow(0 0 40px ${C.accent030})`,
-          }}>
-            F
-          </div>
-          <div style={{
-            fontSize: 32, fontWeight: 800, fontFamily: "var(--d)",
-            color: C.text1, letterSpacing: ".12em", marginTop: 12,
-            animation: "textReveal 1s ease 0.4s both",
-          }}>
-            FORGE
+          {/* Periodic Table Logo */}
+          <div style={{ animation: "logoGlowRise 1.2s ease forwards" }}>
+            <ForgeLogo C={C} size="lg" />
           </div>
           <div style={{
             height: 1, background: C.dividerGrad,
@@ -212,25 +199,15 @@ export default function App() {
           style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: "14px 16px 12px",
-            borderBottom: `1px solid ${C.border2}`,
+            borderBottom: `1px solid ${C.structBorder}`,
             position: "sticky", top: 0,
             background: C.headerBg,
             backdropFilter: "blur(28px)", WebkitBackdropFilter: "blur(28px)",
             zIndex: 10,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {/* Periodic Table Logo */}
-            <div style={{
-              fontSize: 22, fontWeight: 900, fontFamily: "var(--d)",
-              background: C.gradient, backgroundSize: "300% 100%",
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-              animation: "goldShimmer 4s ease-in-out infinite",
-              filter: `drop-shadow(0 0 12px ${C.accent020})`,
-              lineHeight: 1,
-            }}>
-              F
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <ForgeLogo C={C} size="sm" />
             <div>
               <div style={{
                 fontSize: 14, fontWeight: 700, color: C.text1,
@@ -284,7 +261,7 @@ export default function App() {
             background: C.navBg,
             backdropFilter: "blur(28px)",
             WebkitBackdropFilter: "blur(28px)",
-            borderTop: `1px solid ${C.border2}`,
+            borderTop: `1px solid ${C.structBorder}`,
             display: "flex",
             justifyContent: "space-around",
             padding: "8px 0 max(8px, env(safe-area-inset-bottom))",

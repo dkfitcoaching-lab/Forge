@@ -95,7 +95,7 @@ export default function VolumeLog({ C, onBack }) {
                 height: 36,
                 borderRadius: 8,
                 background: `${C.accent}12`,
-                border: `1px solid ${C.border2}`,
+                border: `1px solid ${C.structBorderHover}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

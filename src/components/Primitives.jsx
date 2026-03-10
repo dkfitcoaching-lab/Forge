@@ -1,6 +1,7 @@
 // ══════════════════════════════════════════════════════════════
 // FORGE PRIMITIVES — Princess-Grade Components
-// Every component: luxury borders, breathing glows, proper touch
+// Structural cool-neutral borders/glass for depth
+// Accent colors ONLY for interactive highlights + glows
 // ══════════════════════════════════════════════════════════════
 
 export function StaggerItem({ children, index, visible }) {
@@ -24,13 +25,15 @@ export function Card({ children, C, style, onClick, glow, ...props }) {
       onClick={onClick}
       style={{
         background: C.cardGradient,
-        border: `1.5px solid ${C.border2}`,
+        border: `1.5px solid ${C.structBorder}`,
         borderRadius: 12,
         padding: 16,
         marginBottom: 10,
         cursor: onClick ? "pointer" : "default",
         transition: "border-color .25s, box-shadow .25s, transform .15s",
         boxShadow: C.cardShadow,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
         ...(glow ? { animation: "neonBreathe 4s ease-in-out infinite" } : {}),
         ...style,
       }}
@@ -56,16 +59,16 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
         background: isDanger
           ? `${C.danger}08`
           : isGhost
-            ? C.glass
+            ? C.structGlass
             : C.gradientBtn,
         backgroundSize: isPrimary ? "300% 100%" : undefined,
         border: isDanger
           ? `1.5px solid ${C.danger}30`
           : isGhost
-            ? `1.5px solid ${C.border2}`
+            ? `1.5px solid ${C.structBorderHover}`
             : "none",
         borderRadius: 8,
-        color: isDanger ? C.danger : isGhost ? C.accent : C.btnText,
+        color: isDanger ? C.danger : isGhost ? C.text2 : C.btnText,
         fontSize: 11,
         fontWeight: 700,
         fontFamily: "var(--m)",
@@ -73,7 +76,9 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
         cursor: disabled ? "default" : "pointer",
         transition: "all 0.2s",
         animation: isPrimary && !disabled ? "shimmer 3s ease-in-out infinite" : "none",
-        boxShadow: isPrimary ? `0 4px 24px ${C.accent030}` : "none",
+        boxShadow: isPrimary
+          ? "0 4px 24px rgba(170,185,200,.30)"
+          : "none",
         textTransform: "uppercase",
         opacity: disabled ? 0.4 : 1,
         pointerEvents: disabled ? "none" : "auto",
@@ -98,7 +103,7 @@ export function Label({ children, C, style }) {
         marginBottom: 12,
         textTransform: "uppercase",
         lineHeight: 1.4,
-        textShadow: `0 0 20px ${C.accent020}`,
+        textShadow: `0 0 20px ${C.accent030}`,
         ...style,
       }}
     >
@@ -111,9 +116,10 @@ export function SectionDivider({ C, style }) {
   return (
     <div
       style={{
-        height: 1,
+        height: 1.5,
         background: C.dividerGrad,
         margin: "28px 0",
+        boxShadow: `0 0 8px ${C.accent010}`,
         ...style,
       }}
     />
@@ -156,7 +162,7 @@ export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon
         {/* Track */}
         <div style={{
           position: "absolute", left: 0, right: 0, height: 4, borderRadius: 2,
-          background: C.accent010,
+          background: C.structBorderHover,
         }} />
         {/* Fill */}
         <div style={{
@@ -165,6 +171,7 @@ export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon
           background: C.gradient,
           backgroundSize: "300% 100%",
           transition: "width 0.1s ease",
+          boxShadow: `0 0 8px ${C.accent020}`,
         }} />
         {/* Thumb */}
         <div style={{
@@ -230,6 +237,47 @@ export function NavIcons() {
   };
 }
 
+// ─── PERIODIC TABLE LOGO ─────────────────────────────────────
+export function ForgeLogo({ C, size = "md" }) {
+  const s = size === "lg" ? { box: 72, fe: 28, num: 8, name: 6, pad: "6px 10px" }
+    : size === "sm" ? { box: 36, fe: 14, num: 5, name: 4, pad: "2px 5px" }
+    : { box: 48, fe: 18, num: 6, name: 5, pad: "3px 7px" };
+
+  return (
+    <div style={{
+      width: s.box, height: s.box,
+      border: `1px solid ${C.structBorderStrong}`,
+      borderRadius: 6,
+      background: C.structGlass,
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      position: "relative",
+      boxShadow: `0 0 16px ${C.accent010}, ${C.cardShadow}`,
+      padding: s.pad,
+    }}>
+      <div style={{
+        position: "absolute", top: 3, left: 5,
+        fontSize: s.num, color: C.text4,
+        fontFamily: "var(--m)", fontWeight: 400, lineHeight: 1,
+      }}>26</div>
+      <div style={{
+        fontSize: s.fe, fontWeight: 800, fontFamily: "var(--d)",
+        background: C.gradient, backgroundSize: "300% 100%",
+        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+        animation: "goldShimmer 4s ease-in-out infinite",
+        filter: `drop-shadow(0 0 12px ${C.accent020})`,
+        lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
+      }}>Fe</div>
+      <div style={{
+        fontSize: s.name, color: C.text4,
+        fontFamily: "var(--m)", fontWeight: 600,
+        letterSpacing: ".12em", lineHeight: 1,
+        marginTop: 1,
+      }}>FORGE</div>
+    </div>
+  );
+}
+
 // ─── TOAST ───────────────────────────────────────────────────
 export function Toast({ message, C }) {
   return (
@@ -237,11 +285,12 @@ export function Toast({ message, C }) {
       position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)",
       background: C.cardGradient,
       color: C.accentBright,
-      border: `1px solid ${C.border3}`,
+      border: `1px solid ${C.structBorderStrong}`,
       fontFamily: "var(--m)", fontSize: 11, fontWeight: 700,
       padding: "11px 28px", borderRadius: 10, zIndex: 1000,
       animation: "toastIn .3s ease",
       boxShadow: `0 8px 32px rgba(0,0,0,.5), 0 0 20px ${C.accent010}`,
+      backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
       letterSpacing: ".08em", pointerEvents: "none", whiteSpace: "nowrap",
     }}>
       {message}
@@ -261,10 +310,11 @@ export function Modal({ title, message, actions, C, onClose }) {
     }}>
       <div onClick={(e) => e.stopPropagation()} style={{
         background: C.cardGradient,
-        border: `1.5px solid ${C.border3}`,
+        border: `1.5px solid ${C.structBorderStrong}`,
         borderRadius: 16, padding: 28, maxWidth: 340, width: "100%",
         animation: "modalIn .25s ease",
-        boxShadow: `0 20px 60px rgba(0,0,0,.5), 0 0 30px ${C.accent008}`,
+        boxShadow: `0 20px 60px rgba(0,0,0,.5), ${C.neonShadow}`,
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
       }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 8 }}>{title}</div>
         <div style={{ fontSize: 13, color: C.text3, fontFamily: "var(--b)", lineHeight: 1.6, marginBottom: 24 }}>{message}</div>

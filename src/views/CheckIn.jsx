@@ -56,7 +56,7 @@ export default function CheckIn({ C, onBack }) {
       <Card C={C}>
         <Label C={C} style={{ marginBottom: 8 }}>BODY WEIGHT</Label>
         <input value={data.wt} onChange={e => update("wt", e.target.value)} placeholder="Enter weight (lbs)" type="number" inputMode="decimal"
-          style={{ width: "100%", padding: "14px", background: C.glass, border: `1.5px solid ${C.border2}`, borderRadius: 10, color: C.text1, fontSize: 18, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
+          style={{ width: "100%", padding: "14px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text1, fontSize: 18, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
         {weightHistory.length >= 2 && <div style={{ marginTop: 12 }}><LineChart data={weightHistory.slice(-10)} C={C} height={60} /></div>}
       </Card>
 
@@ -71,14 +71,14 @@ export default function CheckIn({ C, onBack }) {
       <Card C={C}>
         <Label C={C} style={{ marginBottom: 8 }}>NOTES</Label>
         <textarea value={data.nt} onChange={e => update("nt", e.target.value)} placeholder="How are you feeling today?" rows={3}
-          style={{ width: "100%", padding: "10px 14px", background: C.glass, border: `1.5px solid ${C.border2}`, borderRadius: 10, color: C.text1, fontSize: 13, fontFamily: "var(--b)", outline: "none", resize: "none" }} />
+          style={{ width: "100%", padding: "10px 14px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text1, fontSize: 13, fontFamily: "var(--b)", outline: "none", resize: "none" }} />
       </Card>
 
       <Button C={C} onClick={() => { storage.set("ci_" + Date.now(), data); setSubmitted(true); }}>SUBMIT CHECK-IN</Button>
 
       {checkIns.length > 0 && (
         <>
-          <button onClick={() => setShowHistory(!showHistory)} style={{ width: "100%", padding: 12, background: "none", border: `1px solid ${C.border2}`, borderRadius: 10, color: C.text3, fontSize: 10, fontFamily: "var(--m)", letterSpacing: ".1em", cursor: "pointer", marginTop: 12, minHeight: 44 }}>
+          <button onClick={() => setShowHistory(!showHistory)} style={{ width: "100%", padding: 12, background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text3, fontSize: 10, fontFamily: "var(--m)", letterSpacing: ".1em", cursor: "pointer", marginTop: 12, minHeight: 44 }}>
             {showHistory ? "HIDE" : "SHOW"} HISTORY ({checkIns.length})
           </button>
           {showHistory && <div style={{ marginTop: 8 }}>

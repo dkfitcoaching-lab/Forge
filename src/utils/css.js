@@ -1,6 +1,7 @@
 // ══════════════════════════════════════════════════════════════
 // FORGE CSS ENGINE — Princess-Grade Typography + Animations
 // Cinzel / Rajdhani / IBM Plex Mono — luxury font stack
+// Structural cool-neutral glows, NOT accent-tinted
 // ══════════════════════════════════════════════════════════════
 
 export function makeStyles(C) {
@@ -42,8 +43,8 @@ body {
 input, textarea, select {
   font-family: var(--b);
   color: ${C.text1};
-  background: ${C.glass};
-  border: 1.5px solid ${C.border2};
+  background: ${C.structGlass};
+  border: 1.5px solid ${C.structBorderHover};
   border-radius: 8px;
   padding: 12px 14px;
   font-size: 15px;
@@ -71,7 +72,7 @@ input[type="number"] { -moz-appearance: textfield; }
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: rgba(255,255,255,.02); }
-::-webkit-scrollbar-thumb { background: ${C.border3}; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: ${C.structBorderStrong}; border-radius: 2px; }
 ::selection { background: ${C.accent030}; color: ${C.text1}; }
 
 /* ─── ANIMATIONS ─── */
@@ -107,21 +108,22 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes breathe {
   0%, 100% {
-    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 30px ${C.accent015};
+    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 40px rgba(180,195,210,.08);
   }
   50% {
-    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 50px ${C.accent030};
+    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 60px rgba(180,195,210,.15);
   }
 }
 
+/* Princess-exact multi-layer structural neon glow */
 @keyframes neonBreathe {
   0%, 100% {
-    box-shadow: 0 0 10px ${C.accent020}, 0 0 28px ${C.accent010}, 0 0 55px ${C.accent005}, inset 0 0 15px ${C.accent005};
-    border-color: ${C.border3};
+    box-shadow: 0 0 10px rgba(180,195,210,.25), 0 0 28px rgba(170,185,200,.12), 0 0 55px rgba(160,175,190,.06), inset 0 0 15px rgba(170,185,200,.02);
+    border-color: ${C.structBorderStrong};
   }
   50% {
-    box-shadow: 0 0 18px ${C.accent030}, 0 0 40px ${C.accent020}, 0 0 70px ${C.accent008}, inset 0 0 25px ${C.accent008};
-    border-color: ${C.accent040};
+    box-shadow: 0 0 18px rgba(180,195,210,.35), 0 0 40px rgba(170,185,200,.2), 0 0 70px rgba(160,175,190,.08), inset 0 0 25px rgba(170,185,200,.04);
+    border-color: rgba(180,195,210,.35);
   }
 }
 
@@ -136,8 +138,8 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px ${C.accent015}, 0 0 40px ${C.accent008}; }
-  50% { box-shadow: 0 0 30px ${C.accent030}, 0 0 60px ${C.accent015}; }
+  0%, 100% { box-shadow: 0 0 20px rgba(180,195,210,.08), 0 0 40px rgba(170,185,200,.04); }
+  50% { box-shadow: 0 0 30px rgba(180,195,210,.15), 0 0 60px rgba(170,185,200,.08); }
 }
 
 @keyframes goldShimmer {
@@ -146,13 +148,13 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes orbFloat {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .06; }
-  50% { transform: translate(-50%, -50%) scale(1.15); opacity: .10; }
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .08; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: .14; }
 }
 
 @keyframes orbFloat2 {
-  0%, 100% { transform: translate(-50%, -50%) scale(1.1); opacity: .03; }
-  50% { transform: translate(-50%, -50%) scale(.9); opacity: .07; }
+  0%, 100% { transform: translate(-50%, -50%) scale(1.1); opacity: .04; }
+  50% { transform: translate(-50%, -50%) scale(.9); opacity: .10; }
 }
 
 @keyframes logoGlowRise {
@@ -188,10 +190,10 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes iconGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 4px ${C.accent030});
+    filter: drop-shadow(0 0 6px ${C.accent040});
   }
   50% {
-    filter: drop-shadow(0 0 8px ${C.accent040});
+    filter: drop-shadow(0 0 12px ${C.accent060});
   }
 }
 
@@ -228,7 +230,7 @@ input[type="number"] { -moz-appearance: textfield; }
     justify-content: flex-start !important;
     padding: 0 !important;
     border-top: none !important;
-    border-right: 1px solid ${C.border2} !important;
+    border-right: 1px solid ${C.structBorder} !important;
     transform: none !important;
   }
   .forge-content {

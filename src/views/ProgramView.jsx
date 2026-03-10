@@ -46,7 +46,7 @@ export default function ProgramView({ C, onWork, onNav }) {
               <div key={day.d} style={{
                 textAlign: "center", padding: "10px 4px",
                 background: isCurrent ? C.accent010 : C.cardGradient,
-                border: `1.5px solid ${isCurrent ? C.accent : C.border2}`,
+                border: `1.5px solid ${isCurrent ? C.accent : C.structBorderHover}`,
                 borderRadius: 8,
                 boxShadow: isCurrent ? `0 0 12px ${C.accent008}` : C.cardShadow,
                 transition: "all 0.2s",
@@ -72,8 +72,8 @@ export default function ProgramView({ C, onWork, onNav }) {
             <Card key={day.d} C={C} onClick={() => onWork(day)} style={{ display: "flex", gap: 14, alignItems: "center", cursor: "pointer" }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 8,
-                background: completed ? C.accent010 : C.glass,
-                border: `1px solid ${completed ? C.accent : C.border2}`,
+                background: completed ? C.accent010 : C.structGlass,
+                border: `1px solid ${completed ? C.accent : C.structBorderHover}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 700, color: completed ? C.ok : C.accent, fontFamily: "var(--m)", flexShrink: 0,
               }}>
@@ -98,7 +98,7 @@ export default function ProgramView({ C, onWork, onNav }) {
             <button key={i} onClick={() => { setGuideCategory(i); setOpenGuide(null); }}
               style={{
                 padding: "6px 14px", background: i === guideCategory ? C.accent015 : "transparent",
-                border: `1px solid ${i === guideCategory ? C.accent : C.border2}`,
+                border: `1px solid ${i === guideCategory ? C.accent : C.structBorderHover}`,
                 borderRadius: 20, color: i === guideCategory ? C.accent : C.text4,
                 fontSize: 9, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".1em",
                 cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s",
@@ -114,7 +114,7 @@ export default function ProgramView({ C, onWork, onNav }) {
               <div style={{ color: C.text4, fontSize: 14, transform: openGuide === i ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▾</div>
             </div>
             {openGuide === i && (
-              <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.8, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.border1}`, fontFamily: "var(--m)" }}>{item.desc}</div>
+              <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.8, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.structBorder}`, fontFamily: "var(--m)" }}>{item.desc}</div>
             )}
           </Card>
         ))}

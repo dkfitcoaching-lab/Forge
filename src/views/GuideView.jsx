@@ -44,7 +44,7 @@ export default function GuideView({ C, onBack }) {
             style={{
               padding: "6px 14px",
               background: i === categoryIndex ? `${C.accent}15` : "transparent",
-              border: `1px solid ${i === categoryIndex ? C.accent : C.border2}`,
+              border: `1px solid ${i === categoryIndex ? C.accent : C.structBorderHover}`,
               borderRadius: 20,
               color: i === categoryIndex ? C.accent : C.text4,
               fontSize: 9,
@@ -92,7 +92,7 @@ export default function GuideView({ C, onBack }) {
                 lineHeight: 1.8,
                 marginTop: 12,
                 paddingTop: 12,
-                borderTop: `1px solid ${C.border1}`,
+                borderTop: `1px solid ${C.structBorder}`,
                 fontFamily: "var(--m)",
               }}
             >

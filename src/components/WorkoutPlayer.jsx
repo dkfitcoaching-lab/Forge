@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Button, Card, Label, Modal } from "./Primitives";
+import { Button, Card, Label, Modal, ForgeLogo } from "./Primitives";
 import { CelebrationBurst, PRBadge } from "./Celebration";
 import { formatTime } from "../utils/helpers";
 import { detectNewPRs, getWorkoutHistory } from "../utils/analytics";
@@ -120,7 +120,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
           <div style={{ position: "absolute", top: "-10%", left: "50%", transform: "translateX(-50%)", width: "120%", height: "40%", background: C.atmosphereGrad }} />
         </div>
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${C.border2}`, background: C.headerBg, backdropFilter: "blur(20px)" }}>
+          <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${C.structBorderHover}`, background: C.headerBg, backdropFilter: "blur(20px)" }}>
             <button onClick={onExit} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44, display: "flex", alignItems: "center" }}>← BACK</button>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Day {day.d}</div>
@@ -146,7 +146,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
               const prev = prevSession?.exercises?.[i];
               return (
                 <Card key={i} C={C} style={{ display: "flex", gap: 14, alignItems: "center" }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: C.accent010, border: `1px solid ${C.border2}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: C.accent010, border: `1px solid ${C.structBorderHover}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", flexShrink: 0 }}>{i + 1}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{ex.n}</div>
                     <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{ex.s}{ex.tg ? ` · ${ex.tg}` : ""}</div>
@@ -156,7 +156,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
               );
             })}
           </div>
-          <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 640, padding: "16px 20px max(16px, env(safe-area-inset-bottom))", background: C.navBg, backdropFilter: "blur(20px)", borderTop: `1px solid ${C.border2}`, zIndex: 10 }}>
+          <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 640, padding: "16px 20px max(16px, env(safe-area-inset-bottom))", background: C.navBg, backdropFilter: "blur(20px)", borderTop: `1px solid ${C.structBorderHover}`, zIndex: 10 }}>
             <Button C={C} onClick={() => { startTimeRef.current = Date.now(); setPhase("active"); }}>START WORKOUT</Button>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
           <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translateX(-50%)", width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${C.accent008} 0%, transparent 60%)`, animation: "orbFloat 6s ease-in-out infinite" }} />
         </div>
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 48, fontWeight: 900, fontFamily: "var(--d)", background: C.gradient, backgroundSize: "300% 100%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "goldShimmer 3s ease-in-out infinite", marginBottom: 24, filter: `drop-shadow(0 0 30px ${C.accent030})` }}>F</div>
+          <div style={{ marginBottom: 24, display: "flex", justifyContent: "center" }}><ForgeLogo C={C} size="lg" /></div>
           <div style={{ fontSize: 28, fontWeight: 800, color: C.text1, fontFamily: "var(--d)", marginBottom: 8 }}>WORKOUT COMPLETE</div>
           <div style={{ fontSize: 13, color: C.text3, marginBottom: 32, fontFamily: "var(--m)" }}>Day {day.d} — {day.t}</div>
           <div style={{ display: "flex", gap: 24, marginBottom: 32, justifyContent: "center" }}>
@@ -203,14 +203,14 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
         <div style={{ position: "absolute", top: "-10%", left: "50%", transform: "translateX(-50%)", width: "100%", height: "40%", background: C.atmosphereGrad }} />
       </div>
       {/* Top bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: `1px solid ${C.border2}`, background: C.headerBg, backdropFilter: "blur(20px)", position: "relative", zIndex: 2 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 20px", borderBottom: `1px solid ${C.structBorderHover}`, background: C.headerBg, backdropFilter: "blur(20px)", position: "relative", zIndex: 2 }}>
         <button onClick={handleExit} style={{ background: "none", border: "none", color: C.accent, fontSize: 11, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44, display: "flex", alignItems: "center" }}>← EXIT</button>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.text2, fontFamily: "var(--d)" }}>Day {day.d}</div>
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)" }}>{day.t}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={phase === "paused" ? handleResume : handlePause} style={{ background: "none", border: `1px solid ${C.border2}`, borderRadius: 8, color: C.accent, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", padding: "6px 10px", minHeight: 36, letterSpacing: ".08em" }}>
+          <button onClick={phase === "paused" ? handleResume : handlePause} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.accent, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", padding: "6px 10px", minHeight: 36, letterSpacing: ".08em" }}>
             {phase === "paused" ? "▶" : "⏸"}
           </button>
           <div style={{ fontSize: 12, color: C.accent, fontFamily: "var(--m)", fontWeight: 600, minWidth: 44, textAlign: "right" }}>{formatTime(elapsed)}</div>
@@ -235,7 +235,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
       {/* Main */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "24px 20px", justifyContent: "center", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          {exercise.tg && <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: ".12em", padding: "4px 12px", background: C.accent010, border: `1px solid ${C.border2}`, borderRadius: 20, color: C.accent, fontFamily: "var(--m)" }}>{exercise.tg}</span>}
+          {exercise.tg && <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: ".12em", padding: "4px 12px", background: C.accent010, border: `1px solid ${C.structBorderHover}`, borderRadius: 20, color: C.accent, fontFamily: "var(--m)" }}>{exercise.tg}</span>}
           <div style={{ fontSize: 26, fontWeight: 800, color: C.text1, fontFamily: "var(--d)", marginTop: exercise.tg ? 12 : 0, lineHeight: 1.1 }}>{exercise.n}</div>
           <div style={{ fontSize: 12, color: C.text3, fontFamily: "var(--m)", marginTop: 6 }}>{exercise.s}</div>
           {exercise.p && <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 6 }}>{exercise.p}</div>}
@@ -246,7 +246,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
             <div style={{ fontSize: 48, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 30px ${C.accent030}`, lineHeight: 1.1 }}>{setIndex + 1}<span style={{ fontSize: 18, color: C.text4 }}>/{numSets}</span></div>
           </div>
           {prevSetData && (
-            <div style={{ textAlign: "center", marginBottom: 14, padding: "6px 12px", background: C.glass, borderRadius: 8, border: `1px solid ${C.glassBorder}` }}>
+            <div style={{ textAlign: "center", marginBottom: 14, padding: "6px 12px", background: C.structGlass, borderRadius: 8, border: `1px solid ${C.glassBorder}` }}>
               <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>LAST: {prevSetData.weight} lbs × {prevSetData.reps} reps</div>
             </div>
           )}
@@ -255,14 +255,14 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
               <div key={f} style={{ flex: 1 }}>
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 6 }}>{l}</div>
                 <input value={trackingData[`${trackKey}_${f}`] || ""} onChange={(e) => saveValue(f, e.target.value)} placeholder={p} type="number" inputMode="numeric"
-                  style={{ width: "100%", padding: "14px", background: C.glass, border: `1.5px solid ${C.border2}`, borderRadius: 10, color: C.text1, fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
+                  style={{ width: "100%", padding: "14px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text1, fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
               </div>
             ))}
           </div>
           <Button C={C} onClick={completeSet}>COMPLETE SET</Button>
         </Card>
         {exercise.c?.length > 0 && (
-          <div style={{ marginTop: 16, padding: "12px 16px", background: C.glass, borderRadius: 10, border: `1px solid ${C.glassBorder}` }}>
+          <div style={{ marginTop: 16, padding: "12px 16px", background: C.structGlass, borderRadius: 10, border: `1px solid ${C.glassBorder}` }}>
             <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 8 }}>COACHING CUES</div>
             {exercise.c.map((cue, i) => (
               <div key={i} style={{ fontSize: 12, color: C.text3, padding: "4px 0", fontFamily: "var(--m)", display: "flex", alignItems: "center", gap: 8 }}>
@@ -292,9 +292,9 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
           </div>
           <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginBottom: 24 }}>Next: {exercises[Math.min(exerciseIndex + (setIndex >= numSets - 1 ? 1 : 0), exercises.length - 1)]?.n || "Done"}</div>
           <div style={{ display: "flex", gap: 12 }}>
-            <button onClick={() => setRestSeconds(s => Math.max(0, s - 15))} style={{ background: "none", border: `1px solid ${C.border2}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 40 }}>-15s</button>
-            <button onClick={() => { setResting(false); setRestSeconds(0); }} style={{ background: C.glass, border: `1px solid ${C.border3}`, borderRadius: 8, color: C.accent, fontSize: 10, fontFamily: "var(--m)", letterSpacing: ".1em", padding: "10px 28px", cursor: "pointer", minHeight: 44 }}>SKIP</button>
-            <button onClick={() => setRestSeconds(s => s + 15)} style={{ background: "none", border: `1px solid ${C.border2}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 40 }}>+15s</button>
+            <button onClick={() => setRestSeconds(s => Math.max(0, s - 15))} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 40 }}>-15s</button>
+            <button onClick={() => { setResting(false); setRestSeconds(0); }} style={{ background: C.structGlass, border: `1px solid ${C.structBorderStrong}`, borderRadius: 8, color: C.accent, fontSize: 10, fontFamily: "var(--m)", letterSpacing: ".1em", padding: "10px 28px", cursor: "pointer", minHeight: 44 }}>SKIP</button>
+            <button onClick={() => setRestSeconds(s => s + 15)} style={{ background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 10, fontFamily: "var(--m)", padding: "8px 16px", cursor: "pointer", minHeight: 40 }}>+15s</button>
           </div>
         </div>
       )}

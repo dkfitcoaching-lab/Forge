@@ -35,7 +35,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           <div key={l} style={{
             padding: "16px 10px", textAlign: "center",
             background: C.cardGradient, borderRadius: 12,
-            border: `1.5px solid ${C.border2}`, boxShadow: C.cardShadow,
+            border: `1.5px solid ${C.structBorderHover}`, boxShadow: C.cardShadow,
           }}>
             <div style={{ fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", color: C.accent }}>{v}</div>
             <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
@@ -59,7 +59,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           <button key={theme.id} onClick={() => changeAccent(theme.id)}
             style={{
               padding: "14px 6px", background: accentId === theme.id ? `${theme.accent}12` : C.card,
-              border: `1.5px solid ${accentId === theme.id ? theme.accent : C.border2}`,
+              border: `1.5px solid ${accentId === theme.id ? theme.accent : C.structBorderHover}`,
               borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
               boxShadow: accentId === theme.id ? `0 0 12px ${theme.accent}15` : "none",
             }}>
@@ -76,7 +76,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           <button key={surface.id} onClick={() => changeSurface(surface.id)}
             style={{
               padding: "12px 4px", background: surfaceId === surface.id ? C.accent010 : surface.bg,
-              border: `1.5px solid ${surfaceId === surface.id ? C.accent : C.border2}`,
+              border: `1.5px solid ${surfaceId === surface.id ? C.accent : C.structBorderHover}`,
               borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
             }}>
             <div style={{
@@ -99,7 +99,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           { k: "units", l: "Units", v: "Imperial (lbs)" },
           { k: "lang", l: "Language", v: "English" },
         ].map(({ k, l, v }) => (
-          <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.border1}` }}>
+          <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
             <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
             <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>{v}</div>
           </div>
@@ -113,12 +113,12 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           { l: "Apple Health", status: "Not Connected" },
           { l: "Google Fit", status: "Not Connected" },
         ].map(({ l, status }) => (
-          <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.border1}` }}>
+          <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
               <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
             </div>
-            <button onClick={() => showToast?.("Coming soon")} style={{ background: C.glass, border: `1px solid ${C.border2}`, borderRadius: 6, color: C.text4, fontSize: 9, fontFamily: "var(--m)", padding: "4px 10px", cursor: "pointer", letterSpacing: ".08em" }}>
+            <button onClick={() => showToast?.("Coming soon")} style={{ background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 6, color: C.text4, fontSize: 9, fontFamily: "var(--m)", padding: "4px 10px", cursor: "pointer", letterSpacing: ".08em" }}>
               CONNECT
             </button>
           </div>
@@ -131,7 +131,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       <Label C={C}>NOTIFICATIONS</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
         {[{ k: "a", l: "Workouts" }, { k: "b", l: "Weight Reminders" }, { k: "c", l: "Meal Tracking" }, { k: "d", l: "Supplements" }, { k: "e", l: "Check-Ins" }].map(({ k, l }, i, arr) => (
-          <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.border1}` : "none", cursor: "pointer" }}>
+          <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none", cursor: "pointer" }}>
             <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
             <div style={{ width: 40, height: 22, borderRadius: 11, background: notifications[k] ? C.accent : C.accent010, position: "relative", transition: "background 0.2s", boxShadow: notifications[k] ? `0 0 8px ${C.accent020}` : "none" }}>
               <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: notifications[k] ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
@@ -155,7 +155,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         URL.revokeObjectURL(url);
         showToast?.("Data exported");
       }}
-        style={{ width: "100%", padding: 14, background: C.glass, border: `1.5px solid ${C.border2}`, borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 10, minHeight: 44 }}>
+        style={{ width: "100%", padding: 14, background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 10, minHeight: 44 }}>
         EXPORT ALL DATA
       </button>
 

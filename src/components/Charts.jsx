@@ -33,7 +33,7 @@ export function BarChart({ data, C, height = 140, label }) {
           const y = height - 14 - barH;
           return (
             <g key={i}>
-              <rect x={x} y={y} width={barWidth} height={barH} rx={3} fill="url(#forgeBarGrad)" />
+              <rect x={x} y={y} width={barWidth} height={barH} rx={4} fill="url(#forgeBarGrad)" style={{ filter: `drop-shadow(0 0 4px ${C.accent020})` }} />
               <text x={x + barWidth / 2} y={height - 3} textAnchor="middle" fontSize="5" fill={C.text4} fontFamily="var(--m)">
                 {d.label}
               </text>
@@ -98,11 +98,11 @@ export function LineChart({ data, C, height = 120, label, unit = "" }) {
         {/* Area fill */}
         <path d={areaD} fill="url(#forgeAreaGrad)" />
         {/* Line */}
-        <path d={pathD} fill="none" stroke={C.accent} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={pathD} fill="none" stroke={C.accent} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 3px ${C.accent030})` }} />
         {/* Data points */}
         {points.map((p, i) => (
           <g key={i}>
-            <circle cx={p.x} cy={p.y} r="2" fill={C.bg} stroke={C.accent} strokeWidth="0.8" />
+            <circle cx={p.x} cy={p.y} r="2.5" fill={C.bg} stroke={C.accent} strokeWidth="0.8" />
             {(i === 0 || i === points.length - 1) && (
               <text x={p.x} y={p.y - 4} textAnchor="middle" fontSize="4" fill={C.accent} fontFamily="var(--m)" fontWeight="600">
                 {p.value}{unit}
@@ -131,7 +131,7 @@ export function RadialProgress({ value, max, C, size = 80, label, sublabel }) {
           strokeDasharray={circ} strokeDashoffset={offset}
           strokeLinecap="round"
           transform="rotate(-90 40 40)"
-          style={{ transition: "stroke-dashoffset 0.8s ease", filter: `drop-shadow(0 0 4px ${C.accent030})` }}
+          style={{ transition: "stroke-dashoffset 0.8s ease", filter: `drop-shadow(0 0 6px ${C.accent030})` }}
         />
         <text x="40" y="37" textAnchor="middle" fontSize="16" fontWeight="700" fill={C.accent} fontFamily="var(--m)">
           {Math.round(pct * 100)}
@@ -184,7 +184,7 @@ export function MacroRing({ consumed, target, color, label, C, size = 56 }) {
           strokeDasharray={circ} strokeDashoffset={offset}
           strokeLinecap="round"
           transform="rotate(-90 26 26)"
-          style={{ transition: "stroke-dashoffset 0.6s ease" }}
+          style={{ transition: "stroke-dashoffset 0.6s ease", filter: `drop-shadow(0 0 6px ${C.accent030})` }}
         />
         <text x="26" y="28" textAnchor="middle" fontSize="10" fontWeight="700" fill={C.text1} fontFamily="var(--m)">
           {consumed}
