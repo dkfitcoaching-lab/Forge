@@ -189,8 +189,8 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       <SectionDivider C={C} />
       <div style={{ textAlign: "center", paddingBottom: 20 }}>
         <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "var(--d)", color: C.text2, marginBottom: 4 }}>FORGE</div>
-        <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".2em", marginBottom: 8 }}>PERFORMANCE SYSTEM</div>
-        <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".12em" }}>BUILT FOR PERFORMANCE</div>
+        <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 8 }}>PERFORMANCE SYSTEM</div>
+        <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
       </div>
     </div>
   );

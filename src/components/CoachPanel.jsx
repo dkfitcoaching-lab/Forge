@@ -109,7 +109,7 @@ export default function CoachPanel({ C, isOverlay, onClose }) {
         </div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Coach</div>
-          <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".14em" }}>DATA-DRIVEN INTELLIGENCE</div>
+          <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
           <div style={{ width: 6, height: 6, borderRadius: 3, background: C.secondary, boxShadow: `0 0 8px ${C.secondary030}`, animation: "pulse 3s ease-in-out infinite" }} />

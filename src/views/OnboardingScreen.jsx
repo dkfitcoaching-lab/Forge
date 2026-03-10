@@ -316,7 +316,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
         <ForgeLogo C={C} size="sm" />
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", letterSpacing: ".06em" }}>FORGE</div>
-          <div style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".16em" }}>AI ONBOARDING</div>
+          <div style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.ok, animation: "pulse 2s ease-in-out infinite" }} />

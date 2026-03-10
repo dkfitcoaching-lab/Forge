@@ -105,7 +105,7 @@ export default function App() {
             letterSpacing: ".3em", marginTop: 16,
             animation: "badgeFade 0.6s ease 1.4s both",
           }}>
-            BUILT FOR PERFORMANCE
+            fitnessforge.ai
           </div>
         </div>
         <style>{css}</style>
@@ -236,7 +236,7 @@ export default function App() {
                 fontSize: 8, color: C.text4, fontFamily: "var(--m)",
                 letterSpacing: ".22em", marginTop: 1,
               }}>
-                PERFORMANCE SYSTEM
+                fitnessforge.ai
               </div>
             </div>
           </div>
