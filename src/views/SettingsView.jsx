@@ -185,6 +185,33 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       {/* ─── DATA ─── */}
       <Label C={C}>DATA</Label>
+
+      {/* Backup reminder */}
+      {(() => {
+        const lastBackup = storage.get("last_backup", null);
+        const daysSince = lastBackup ? Math.floor((Date.now() - lastBackup) / 86400000) : null;
+        const needsBackup = !lastBackup || daysSince >= 7;
+        if (!needsBackup) return null;
+        return (
+          <Card C={C} style={{ padding: "12px 16px", marginBottom: 12, borderColor: C.warn + "30" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.warn} strokeWidth="2" strokeLinecap="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: C.text2 }}>
+                  {lastBackup ? `Last backup: ${daysSince} days ago` : "No backup on file"}
+                </div>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
+                  Export your data to protect your progress
+                </div>
+              </div>
+            </div>
+          </Card>
+        );
+      })()}
+
       <button onClick={() => {
         const exportData = {};
         Object.keys(localStorage).filter(k => k.startsWith("f_")).forEach(k => {
@@ -194,6 +221,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a"); a.href = url; a.download = `forge-export-${new Date().toISOString().split("T")[0]}.json`; a.click();
         URL.revokeObjectURL(url);
+        storage.set("last_backup", Date.now());
         showToast?.("Data exported");
       }}
         style={{ width: "100%", padding: 14, background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 10, minHeight: 44 }}>
