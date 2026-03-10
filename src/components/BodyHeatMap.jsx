@@ -1,9 +1,7 @@
 // ══════════════════════════════════════════════════════════════
 // FORGE BODY HEAT MAP
-// SVG muscle group visualization with recovery-based coloring
+// Muscle group visualization with volume-based coloring
 // ══════════════════════════════════════════════════════════════
-
-import { getWorkoutHistory } from "../utils/analytics";
 
 function getRecoveryColors(muscleVolume, C) {
   const max = Math.max(...Object.values(muscleVolume), 1);
@@ -16,7 +14,7 @@ function getRecoveryColors(muscleVolume, C) {
     } else if (intensity > 0.3) {
       colors[muscle] = { fill: C.accent, opacity: 0.5, label: "MOD" };
     } else if (intensity > 0) {
-      colors[muscle] = { fill: C.accent2, opacity: 0.3, label: "LOW" };
+      colors[muscle] = { fill: C.accentDark, opacity: 0.3, label: "LOW" };
     } else {
       colors[muscle] = { fill: C.text5, opacity: 0.15, label: "NONE" };
     }
@@ -29,16 +27,16 @@ export default function BodyHeatMap({ muscleVolume, C }) {
   const colors = getRecoveryColors(muscleVolume, C);
 
   const muscleGroups = [
-    { id: "chest", label: "Chest", x: 38, y: 28, w: 24, h: 12 },
-    { id: "back", label: "Back", x: 38, y: 28, w: 24, h: 16, back: true },
-    { id: "shoulders", label: "Shoulders", x: 30, y: 22, w: 40, h: 8 },
-    { id: "biceps", label: "Biceps", x: 22, y: 34, w: 8, h: 12 },
-    { id: "triceps", label: "Triceps", x: 70, y: 34, w: 8, h: 12 },
-    { id: "quads", label: "Quads", x: 36, y: 56, w: 12, h: 16 },
-    { id: "hamstrings", label: "Hams", x: 52, y: 56, w: 12, h: 16 },
-    { id: "glutes", label: "Glutes", x: 38, y: 50, w: 24, h: 8 },
-    { id: "calves", label: "Calves", x: 38, y: 74, w: 24, h: 10 },
-    { id: "traps", label: "Traps", x: 40, y: 18, w: 20, h: 6 },
+    { id: "chest", label: "Chest" },
+    { id: "back", label: "Back" },
+    { id: "shoulders", label: "Shoulders" },
+    { id: "biceps", label: "Biceps" },
+    { id: "triceps", label: "Triceps" },
+    { id: "quads", label: "Quads" },
+    { id: "hamstrings", label: "Hams" },
+    { id: "glutes", label: "Glutes" },
+    { id: "calves", label: "Calves" },
+    { id: "traps", label: "Traps" },
   ];
 
   return (
@@ -47,7 +45,7 @@ export default function BodyHeatMap({ muscleVolume, C }) {
         {[
           { label: "High Vol", color: C.warn },
           { label: "Moderate", color: C.accent },
-          { label: "Low", color: C.accent2 },
+          { label: "Low", color: C.accentDark },
           { label: "None", color: C.text5 },
         ].map(({ label, color }) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -58,7 +56,7 @@ export default function BodyHeatMap({ muscleVolume, C }) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 6 }}>
-        {muscleGroups.filter(m => !m.back).map((muscle) => {
+        {muscleGroups.map((muscle) => {
           const mc = colors[muscle.id] || { fill: C.text5, opacity: 0.15, label: "—" };
           const vol = muscleVolume[muscle.id] || 0;
           return (
@@ -69,8 +67,8 @@ export default function BodyHeatMap({ muscleVolume, C }) {
                 alignItems: "center",
                 gap: 10,
                 padding: "8px 12px",
-                background: `${mc.fill}08`,
-                border: `1px solid ${mc.fill}20`,
+                background: C.glass,
+                border: `1px solid ${C.border1}`,
                 borderRadius: 8,
               }}
             >
