@@ -39,12 +39,12 @@ function Particle({ x, y, color, delay, size }) {
   return <div style={style} />;
 }
 
-export function CelebrationBurst({ C, count = 40 }) {
+export function CelebrationBurst({ C, count = 30 }) {
   const particles = Array.from({ length: count }, (_, i) => ({
     id: i,
     x: "50%",
     y: "40%",
-    color: [C.accent, C.accent2, C.accentVivid, C.ok, C.text1][i % 5],
+    color: [C.accent, C.accentDark, C.accentVivid, C.ok, C.text1][i % 5],
     delay: i * 25,
     size: 4 + Math.random() * 6,
   }));
@@ -70,12 +70,12 @@ export function PRBadge({ pr, C }) {
   return (
     <div
       style={{
-        background: `linear-gradient(135deg, ${C.accent}20, ${C.accentVivid}10)`,
-        border: `1px solid ${C.accent}40`,
+        background: `linear-gradient(135deg, ${C.accent020}, ${C.accent008})`,
+        border: `1px solid ${C.accent040}`,
         borderRadius: 12,
         padding: "12px 16px",
         marginBottom: 8,
-        animation: "fi 0.5s ease",
+        animation: "fadeIn 0.5s ease",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -85,13 +85,15 @@ export function PRBadge({ pr, C }) {
             height: 28,
             borderRadius: 8,
             background: C.gradient,
+            backgroundSize: "300% 100%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 14,
           }}
         >
-          &#127942;
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.btnText} strokeWidth="2" strokeLinecap="round">
+            <path d="M12 15l-3 5h6l-3-5z" /><circle cx="12" cy="8" r="6" />
+          </svg>
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 7, fontWeight: 700, color: C.accent, letterSpacing: ".12em", fontFamily: "var(--m)" }}>
@@ -128,7 +130,7 @@ export function ReadinessGauge({ score, label, color, C }) {
               width: 4,
               height: i < filled ? 16 + (i / segments) * 8 : 8,
               borderRadius: 2,
-              background: i < filled ? C[color] || C.accent : `${C.accent}10`,
+              background: i < filled ? C[color] || C.accent : C.accent010,
               transition: `all 0.3s ease ${i * 20}ms`,
             }}
           />
@@ -155,7 +157,7 @@ export function StreakFlame({ streak, C }) {
       <svg width={flameSize} height={flameSize} viewBox="0 0 24 24" fill="none">
         <path
           d="M12 2C6.5 8 4 12 4 15a8 8 0 0016 0c0-3-2.5-7-8-13z"
-          fill={`${C.accent}${Math.round(30 + intensity * 40).toString(16)}`}
+          fill={C.accent030}
           stroke={C.accent}
           strokeWidth="1"
         />
