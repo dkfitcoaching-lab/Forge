@@ -121,27 +121,6 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         ))}
       </Card>
 
-      {/* ─── HEALTH INTEGRATIONS ─── */}
-      <Label C={C}>HEALTH INTEGRATIONS</Label>
-      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
-        {[
-          { l: "Apple Health", status: "Not Connected" },
-          { l: "Google Fit", status: "Not Connected" },
-        ].map(({ l, status }) => (
-          <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-              <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
-            </div>
-            <button onClick={() => showToast?.("Coming soon")} style={{ background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 6, color: C.text4, fontSize: 9, fontFamily: "var(--m)", padding: "4px 10px", cursor: "pointer", letterSpacing: ".08em" }}>
-              CONNECT
-            </button>
-          </div>
-        ))}
-      </Card>
-
-      <SectionDivider C={C} />
-
       {/* ─── NOTIFICATIONS ─── */}
       <Label C={C}>NOTIFICATIONS</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
