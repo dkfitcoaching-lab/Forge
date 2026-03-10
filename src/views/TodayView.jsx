@@ -27,6 +27,8 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const [mealsChecked, setMealsChecked] = useState(() => storage.get("mc_" + now.toDateString(), {}));
   const mealsCompleted = Object.values(mealsChecked).filter(Boolean).length;
   const [expandedMeal, setExpandedMeal] = useState(null);
+  const [foodLogs, setFoodLogs] = useState(() => storage.get("fl_" + now.toDateString(), {}));
+  const [editingFood, setEditingFood] = useState(null);
   const [mealPhotos, setMealPhotos] = useState(() => storage.get("mp_" + now.toDateString(), {}));
   const mealFileRefs = useRef({});
   const toggleMeal = (i) => {
@@ -391,6 +393,79 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                       <img src={mealPhotos[i].photo} alt="meal" style={{ width: "100%", borderRadius: 8, display: "block", maxHeight: 160, objectFit: "cover" }} />
                     </div>
                   )}
+
+                  {/* Food Log — what client actually ate */}
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.structBorder}` }}>
+                    {foodLogs[i] ? (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div>
+                          <div style={{ fontSize: 10, color: C.text3, fontFamily: "var(--m)" }}>
+                            {foodLogs[i].desc || "Followed plan"}
+                            {foodLogs[i].adherence === false && <span style={{ color: C.warn, marginLeft: 6, fontSize: 8, letterSpacing: ".06em" }}>OFF PLAN</span>}
+                          </div>
+                          {foodLogs[i].p && (
+                            <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
+                              {foodLogs[i].p}p · {foodLogs[i].c}c · {foodLogs[i].f}f · {foodLogs[i].cal}cal
+                            </div>
+                          )}
+                        </div>
+                        <button onClick={() => setEditingFood(i)} style={{
+                          background: "none", border: "none", color: C.text4, cursor: "pointer", padding: 4,
+                        }}>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setEditingFood(i)} style={{
+                        width: "100%", padding: "8px 10px", background: C.structGlass,
+                        border: `1px dashed ${C.structBorderHover}`, borderRadius: 6,
+                        color: C.text4, fontSize: 9, fontFamily: "var(--m)",
+                        cursor: "pointer", letterSpacing: ".06em",
+                      }}>LOG WHAT I ATE</button>
+                    )}
+                    {editingFood === i && (
+                      <div style={{ marginTop: 8, padding: 10, background: C.structGlass, borderRadius: 8, border: `1px solid ${C.structBorderHover}` }}>
+                        <input
+                          placeholder="What did you eat?"
+                          defaultValue={foodLogs[i]?.desc || ""}
+                          id={`food-desc-${i}`}
+                          style={{ width: "100%", padding: "8px 10px", background: "transparent", border: `1px solid ${C.structBorderHover}`, borderRadius: 6, color: C.text1, fontSize: 12, fontFamily: "var(--b)", outline: "none", marginBottom: 8 }}
+                        />
+                        <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                          {["p", "c", "f", "cal"].map(k => (
+                            <input key={k} placeholder={k === "cal" ? "cal" : k.toUpperCase()} defaultValue={foodLogs[i]?.[k] || ""}
+                              id={`food-${k}-${i}`} type="number" inputMode="decimal"
+                              style={{ flex: 1, padding: "6px 4px", background: "transparent", border: `1px solid ${C.structBorderHover}`, borderRadius: 4, color: C.text1, fontSize: 11, fontFamily: "var(--m)", textAlign: "center", outline: "none" }}
+                            />
+                          ))}
+                        </div>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button onClick={() => {
+                            const desc = document.getElementById(`food-desc-${i}`)?.value || "";
+                            const p = document.getElementById(`food-p-${i}`)?.value || "";
+                            const c = document.getElementById(`food-c-${i}`)?.value || "";
+                            const f = document.getElementById(`food-f-${i}`)?.value || "";
+                            const cal = document.getElementById(`food-cal-${i}`)?.value || "";
+                            const entry = { desc: desc || "Followed plan", adherence: true, p, c, f, cal, time: Date.now() };
+                            const next = { ...foodLogs, [i]: entry };
+                            setFoodLogs(next);
+                            storage.set("fl_" + now.toDateString(), next);
+                            setEditingFood(null);
+                            if (!mealsChecked[i]) toggleMeal(i);
+                          }} style={{
+                            flex: 1, padding: "8px 10px", background: C.gradientBtn, backgroundSize: "300% 100%",
+                            border: "none", borderRadius: 6, color: C.btnText, fontSize: 9, fontWeight: 700,
+                            fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".06em",
+                          }}>SAVE</button>
+                          <button onClick={() => setEditingFood(null)} style={{
+                            padding: "8px 12px", background: "transparent",
+                            border: `1px solid ${C.structBorderHover}`, borderRadius: 6,
+                            color: C.text4, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer",
+                          }}>CANCEL</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
