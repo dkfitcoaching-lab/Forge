@@ -6,7 +6,6 @@ import storage from "./utils/storage";
 
 import WorkoutPlayer from "./components/WorkoutPlayer";
 import CoachPanel from "./components/CoachPanel";
-import ProgressPhotos from "./components/ProgressPhotos";
 import TodayView from "./views/TodayView";
 import DataView from "./views/DataView";
 import GuideView from "./views/GuideView";
@@ -140,7 +139,7 @@ export default function App() {
     if (view === "gd") return <GuideView C={C} onBack={goMain} />;
     if (view === "vl") return <VolumeLog C={C} onBack={goMain} />;
     if (view === "ci") return <CheckIn C={C} onBack={goMain} />;
-    if (view === "pp") return <ProgressPhotos C={C} onBack={goMain} />;
+    if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
     if (view === "settings") return (
       <SettingsView
         C={C}

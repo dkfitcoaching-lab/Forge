@@ -19,15 +19,15 @@ export function StaggerItem({ children, index, visible }) {
   );
 }
 
-export function Card({ children, C, style, onClick, glow, accentGlow, ...props }) {
+export function Card({ children, C, style, onClick, glow, accentGlow, edgeAccent, ...props }) {
   return (
     <div
       className={onClick ? "forge-card-interactive" : undefined}
       onClick={onClick}
       style={{
         background: C.cardGradient,
-        border: `1.5px solid ${C.structBorder}`,
-        borderRadius: 12,
+        border: `1px solid ${C.structBorder}`,
+        borderRadius: 14,
         padding: 16,
         marginBottom: 10,
         cursor: onClick ? "pointer" : "default",
@@ -35,12 +35,28 @@ export function Card({ children, C, style, onClick, glow, accentGlow, ...props }
         boxShadow: C.cardShadow,
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
+        position: "relative",
+        overflow: "hidden",
         ...(accentGlow ? { animation: "accentBreathe 5s ease-in-out infinite" } : {}),
         ...(glow && !accentGlow ? { animation: "neonBreathe 4s ease-in-out infinite" } : {}),
         ...style,
       }}
       {...props}
     >
+      {/* Top edge accent line — luxury glass edge lighting effect */}
+      {edgeAccent && (
+        <div style={{
+          position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
+          background: C.dividerGrad,
+          opacity: 0.6,
+        }} />
+      )}
+      {/* Inner top highlight — simulates light hitting glass */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 1,
+        background: `linear-gradient(90deg, transparent, ${C.structBorderHover}, transparent)`,
+        opacity: 0.5,
+      }} />
       {children}
     </div>
   );
@@ -97,18 +113,29 @@ export function Label({ children, C, style }) {
   return (
     <div
       style={{
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: 700,
         color: C.accent,
-        letterSpacing: ".18em",
+        letterSpacing: ".2em",
         fontFamily: "var(--m)",
         marginBottom: 12,
         textTransform: "uppercase",
         lineHeight: 1.4,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
         textShadow: `0 0 24px ${C.accent040}, 0 0 48px ${C.accent015}`,
         ...style,
       }}
     >
+      <div style={{
+        width: 12, height: 1.5,
+        background: C.gradient, backgroundSize: "300% 100%",
+        animation: "shimmerSlow 8s ease-in-out infinite",
+        borderRadius: 1,
+        flexShrink: 0,
+        boxShadow: `0 0 6px ${C.accent030}`,
+      }} />
       {children}
     </div>
   );
@@ -116,15 +143,22 @@ export function Label({ children, C, style }) {
 
 export function SectionDivider({ C, style }) {
   return (
-    <div
-      style={{
-        height: 1.5,
+    <div style={{ margin: "28px 0", position: "relative", ...style }}>
+      <div style={{
+        height: 1,
         background: C.dividerGrad,
-        margin: "28px 0",
         boxShadow: `0 0 12px ${C.accent015}, 0 0 24px ${C.accent005}`,
-        ...style,
-      }}
-    />
+      }} />
+      {/* Center diamond accent */}
+      <div style={{
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%) rotate(45deg)",
+        width: 5, height: 5,
+        background: C.accent,
+        boxShadow: `0 0 8px ${C.accent040}`,
+        opacity: 0.5,
+      }} />
+    </div>
   );
 }
 

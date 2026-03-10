@@ -159,7 +159,7 @@ export default function DataView({ C, onNav }) {
 
       <SectionDivider C={C} />
 
-      {/* ─── TOOLS (navigation — at bottom where it belongs) ─── */}
+      {/* ─── TOOLS ─── */}
       <Label C={C}>Tools</Label>
       {[
         { l: "Program Guide", d: "Full breakdown of the Forge system", v: "gd", icon: (
@@ -172,14 +172,9 @@ export default function DataView({ C, onNav }) {
             <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
           </svg>
         )},
-        { l: "Daily Check-In", d: "Log sleep, stress, energy, and weight", v: "ci", icon: (
+        { l: "Daily Check-In", d: "Body tracking, photos, and recovery metrics", v: "ci", icon: (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-          </svg>
-        )},
-        { l: "Progress Photos", d: "Visual progress tracking", v: "pp", icon: (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
           </svg>
         )},
       ].map(({ l, d, v, icon }) => (
