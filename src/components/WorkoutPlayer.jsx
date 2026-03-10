@@ -218,7 +218,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast }) {
       </div>
       {/* Progress */}
       <div style={{ height: 2, background: C.accent008, position: "relative", zIndex: 2 }}>
-        <div style={{ height: "100%", background: C.gradient, backgroundSize: "300% 100%", width: `${progressPct}%`, transition: "width 0.5s ease", animation: "shimmer 3s linear infinite" }} />
+        <div style={{ height: "100%", background: C.gradient, backgroundSize: "300% 100%", width: `${progressPct}%`, transition: "width 0.5s ease", animation: "shimmerSlow 8s ease-in-out infinite" }} />
       </div>
       {/* Paused overlay */}
       {phase === "paused" && (

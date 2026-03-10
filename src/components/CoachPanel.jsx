@@ -56,7 +56,7 @@ export default function CoachPanel({ C }) {
           background: C.gradient, backgroundSize: "300% 100%",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 16, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
-          animation: "goldShimmer 4s ease-in-out infinite",
+          animation: "goldShimmer 10s ease-in-out infinite",
           boxShadow: `0 4px 16px ${C.accent030}`,
         }}>
           F
@@ -66,7 +66,7 @@ export default function CoachPanel({ C }) {
           <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".14em" }}>DATA-DRIVEN INTELLIGENCE</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 6, height: 6, borderRadius: 3, background: C.ok, animation: "breathe 3s ease-in-out infinite" }} />
+          <div style={{ width: 6, height: 6, borderRadius: 3, background: C.ok, animation: "pulse 3s ease-in-out infinite" }} />
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>ONLINE</div>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function CoachPanel({ C }) {
             width: 48,
             height: 48,
             cursor: typing ? "default" : "pointer",
-            animation: !typing && input.trim() ? "shimmer 4s linear infinite" : "none",
+            animation: !typing && input.trim() ? "shimmerSlow 8s ease-in-out infinite" : "none",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

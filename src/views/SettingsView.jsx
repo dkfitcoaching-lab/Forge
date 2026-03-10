@@ -4,13 +4,24 @@ import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
 
-export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast }) {
+export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast, onBack }) {
   const [notifications, setNotifications] = useState(() => storage.get("nf", { a: true, b: true, c: true, d: true, e: true }));
   const stats = computeStats();
   const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
 
   return (
     <div>
+      {/* Back nav */}
+      {onBack && (
+        <button onClick={onBack} style={{
+          display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
+          color: C.accent, fontSize: 11, fontFamily: "var(--m)", fontWeight: 600,
+          letterSpacing: ".06em", cursor: "pointer", padding: "0 0 16px", marginTop: -4,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+          BACK
+        </button>
+      )}
       {/* Profile Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
         <div style={{
@@ -18,7 +29,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           background: C.gradient, backgroundSize: "300% 100%",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 22, fontWeight: 900, fontFamily: "var(--d)",
-          color: C.btnText, animation: "shimmer 4s ease-in-out infinite",
+          color: C.btnText, animation: "shimmerSlow 10s ease-in-out infinite",
           boxShadow: `0 4px 20px ${C.accent030}`,
         }}>F</div>
         <div>
@@ -63,7 +74,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
               borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
               boxShadow: accentId === theme.id ? `0 0 12px ${theme.accent}15` : "none",
             }}>
-            <div style={{ width: 24, height: 24, borderRadius: 8, background: theme.gradient, backgroundSize: "300% 100%", margin: "0 auto 6px", animation: accentId === theme.id ? "shimmer 3s ease-in-out infinite" : "none" }} />
+            <div style={{ width: 24, height: 24, borderRadius: 8, background: theme.gradient, backgroundSize: "300% 100%", margin: "0 auto 6px", animation: accentId === theme.id ? "shimmerSlow 8s ease-in-out infinite" : "none" }} />
             <div style={{ fontSize: 9, fontWeight: 600, color: accentId === theme.id ? theme.accent : C.text4, fontFamily: "var(--m)" }}>{theme.name}</div>
           </button>
         ))}
@@ -174,7 +185,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       <SectionDivider C={C} />
       <div style={{ textAlign: "center", paddingBottom: 20 }}>
         <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "var(--d)", color: C.text2, marginBottom: 4 }}>FORGE</div>
-        <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".2em", marginBottom: 8 }}>PERFORMANCE SYSTEM · V5</div>
+        <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".2em", marginBottom: 8 }}>PERFORMANCE SYSTEM</div>
         <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".12em" }}>BUILT FOR PERFORMANCE</div>
       </div>
     </div>

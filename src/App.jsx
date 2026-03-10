@@ -45,7 +45,7 @@ export default function App() {
       const timer = setTimeout(() => {
         setSplashDone(true);
         sessionStorage.setItem("forge_splash", "1");
-      }, 2200);
+      }, 2400);
       return () => clearTimeout(timer);
     }
     if (!splashDone) setSplashDone(true);
@@ -71,30 +71,30 @@ export default function App() {
           {/* Atmospheric orbs */}
           <div style={{
             position: "absolute", top: "30%", left: "50%",
-            width: 500, height: 500, borderRadius: "50%",
+            width: 600, height: 600, borderRadius: "50%",
             background: `radial-gradient(circle, ${C.accent008} 0%, transparent 70%)`,
-            animation: "orbFloat 4s ease-in-out infinite",
+            animation: "orbFloat 6s ease-in-out infinite",
             pointerEvents: "none",
           }} />
           <div style={{
             position: "absolute", top: "60%", left: "40%",
             width: 400, height: 400, borderRadius: "50%",
             background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 70%)`,
-            animation: "orbFloat2 5s ease-in-out infinite",
+            animation: "orbFloat2 8s ease-in-out infinite",
             pointerEvents: "none",
           }} />
-          {/* Periodic Table Logo */}
-          <div style={{ animation: "logoGlowRise 1.2s ease forwards" }}>
+          {/* Logo */}
+          <div style={{ animation: "logoGlowRise 1.4s cubic-bezier(0.16,1,0.3,1) forwards" }}>
             <ForgeLogo C={C} size="lg" />
           </div>
           <div style={{
             height: 1, background: C.dividerGrad,
-            animation: "lineGrow 0.8s ease 0.8s both", marginTop: 16,
+            animation: "lineGrow 0.8s ease 1s both", marginTop: 20,
           }} />
           <div style={{
-            fontSize: 9, color: C.text4, fontFamily: "var(--m)",
-            letterSpacing: ".3em", marginTop: 12,
-            animation: "badgeFade 0.6s ease 1.2s both",
+            fontSize: 8, color: C.text4, fontFamily: "var(--m)",
+            letterSpacing: ".3em", marginTop: 16,
+            animation: "badgeFade 0.6s ease 1.4s both",
           }}>
             BUILT FOR PERFORMANCE
           </div>
@@ -136,54 +136,53 @@ export default function App() {
 
   // ─── TAB CONTENT ────────────────────────────────────────────
   const content = () => {
+    // Sub-views (overlays that go back to main)
     if (view === "gd") return <GuideView C={C} onBack={goMain} />;
     if (view === "vl") return <VolumeLog C={C} onBack={goMain} />;
     if (view === "ci") return <CheckIn C={C} onBack={goMain} />;
     if (view === "pp") return <ProgressPhotos C={C} onBack={goMain} />;
+    if (view === "settings") return (
+      <SettingsView
+        C={C}
+        accentId={accentId} surfaceId={surfaceId}
+        changeAccent={changeAccent} changeSurface={changeSurface}
+        showToast={showToast}
+        onBack={goMain}
+      />
+    );
 
     switch (tab) {
       case "today": return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
       case "program": return <ProgramView C={C} onWork={startWorkout} onNav={setView} />;
       case "coach": return <CoachPanel C={C} />;
       case "data": return <DataView C={C} onNav={setView} />;
-      case "settings": return (
-        <SettingsView
-          C={C}
-          accentId={accentId} surfaceId={surfaceId}
-          changeAccent={changeAccent} changeSurface={changeSurface}
-          showToast={showToast}
-        />
-      );
       default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
     }
   };
 
+  // 4 tabs only
   const tabs = [
     { k: "today", l: "Today" },
     { k: "program", l: "Program" },
     { k: "coach", l: "Coach" },
     { k: "data", l: "Data" },
-    { k: "settings", l: "Settings" },
   ];
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", color: C.text1 }}>
       {/* ─── ATMOSPHERIC BACKGROUND ─── */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        {/* Primary atmosphere gradient */}
         <div style={{
           position: "absolute", top: "-20%", left: "50%", transform: "translateX(-50%)",
           width: "120%", height: "60%",
           background: C.atmosphereGrad,
         }} />
-        {/* Breathing orb */}
         <div style={{
           position: "absolute", top: "15%", left: "50%",
           width: 600, height: 600, borderRadius: "50%",
           background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
           animation: "orbFloat 8s ease-in-out infinite",
         }} />
-        {/* Secondary orb */}
         <div style={{
           position: "absolute", top: "60%", left: "30%",
           width: 400, height: 400, borderRadius: "50%",
@@ -206,12 +205,12 @@ export default function App() {
             zIndex: 10,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <ForgeLogo C={C} size="sm" />
             <div>
               <div style={{
                 fontSize: 14, fontWeight: 700, color: C.text1,
-                fontFamily: "var(--d)", letterSpacing: ".06em",
+                fontFamily: "var(--d)", letterSpacing: ".08em",
               }}>
                 FORGE
               </div>
@@ -223,12 +222,26 @@ export default function App() {
               </div>
             </div>
           </div>
-          <div style={{
-            fontSize: 8, color: C.text5, fontFamily: "var(--m)",
-            letterSpacing: ".12em",
-          }}>
-            V5
-          </div>
+          {/* Settings gear icon */}
+          <button
+            onClick={() => setView(view === "settings" ? "main" : "settings")}
+            style={{
+              background: view === "settings" ? C.accent008 : "transparent",
+              border: view === "settings" ? `1px solid ${C.accent020}` : `1px solid transparent`,
+              borderRadius: 10,
+              color: view === "settings" ? C.accent : C.text4,
+              cursor: "pointer",
+              padding: 8,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "all 0.2s",
+              width: 40, height: 40,
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
         </div>
 
         {/* ─── MAIN CONTENT ─── */}
@@ -248,7 +261,7 @@ export default function App() {
         {/* ─── TOAST ─── */}
         {toast && <Toast message={toast} C={C} />}
 
-        {/* ─── BOTTOM NAVIGATION — 5 TABS ─── */}
+        {/* ─── BOTTOM NAVIGATION — 4 TABS ─── */}
         <div
           className="forge-nav"
           style={{
@@ -279,7 +292,7 @@ export default function App() {
                   flexDirection: "column",
                   alignItems: "center",
                   gap: 3,
-                  padding: "6px 8px",
+                  padding: "6px 12px",
                   cursor: "pointer",
                   color: active ? C.accent : C.text4,
                   fontSize: 9,
@@ -289,7 +302,7 @@ export default function App() {
                   position: "relative",
                   userSelect: "none",
                   transition: "color 0.2s",
-                  minWidth: 44,
+                  minWidth: 52,
                   minHeight: 44,
                   justifyContent: "center",
                 }}
@@ -297,13 +310,13 @@ export default function App() {
                 {active && (
                   <div style={{
                     position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
-                    width: 24, height: 2, borderRadius: 1,
+                    width: 28, height: 2, borderRadius: 1,
                     background: C.accent,
                     boxShadow: `0 0 12px ${C.glow}`,
                   }} />
                 )}
                 <div style={{
-                  animation: active ? "iconGlow 3s ease-in-out infinite" : "none",
+                  animation: active ? "iconGlow 4s ease-in-out infinite" : "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
                   {icons[t.k]}

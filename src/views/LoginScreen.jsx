@@ -6,11 +6,11 @@ export default function LoginScreen({ C, onLogin }) {
   const [stage, setStage] = useState(0);
   useEffect(() => {
     const t = [
-      setTimeout(() => setStage(1), 100),
-      setTimeout(() => setStage(2), 400),
-      setTimeout(() => setStage(3), 900),
-      setTimeout(() => setStage(4), 1300),
-      setTimeout(() => setStage(5), 1700),
+      setTimeout(() => setStage(1), 200),
+      setTimeout(() => setStage(2), 600),
+      setTimeout(() => setStage(3), 1200),
+      setTimeout(() => setStage(4), 1800),
+      setTimeout(() => setStage(5), 2400),
     ];
     return () => t.forEach(clearTimeout);
   }, []);
@@ -23,65 +23,66 @@ export default function LoginScreen({ C, onLogin }) {
     }}>
       {/* Atmospheric orbs */}
       <div style={{
-        position: "absolute", top: "15%", left: "50%", width: 600, height: 600, borderRadius: "50%",
+        position: "absolute", top: "10%", left: "50%", width: 700, height: 700, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
-        animation: "orbFloat 6s ease-in-out infinite", pointerEvents: "none",
-        opacity: stage >= 1 ? 1 : 0, transition: "opacity 1s",
+        animation: "orbFloat 8s ease-in-out infinite", pointerEvents: "none",
+        opacity: stage >= 1 ? 0.8 : 0, transition: "opacity 1.5s ease",
       }} />
       <div style={{
-        position: "absolute", top: "55%", left: "30%", width: 400, height: 400, borderRadius: "50%",
+        position: "absolute", top: "55%", left: "25%", width: 500, height: 500, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
-        animation: "orbFloat2 8s ease-in-out infinite", pointerEvents: "none",
-        opacity: stage >= 1 ? 1 : 0, transition: "opacity 1.5s",
+        animation: "orbFloat2 10s ease-in-out infinite", pointerEvents: "none",
+        opacity: stage >= 1 ? 0.6 : 0, transition: "opacity 2s ease",
       }} />
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 320, width: "100%" }}>
-        {/* Periodic Table Logo */}
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 340, width: "100%" }}>
+        {/* Periodic Table Logo — generous spacing */}
         <div style={{
           opacity: stage >= 2 ? 1 : 0,
-          transform: stage >= 2 ? "translateY(0) scale(1)" : "translateY(20px) scale(0.9)",
-          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
-          display: "flex", justifyContent: "center", marginBottom: 24,
+          transform: stage >= 2 ? "translateY(0) scale(1)" : "translateY(24px) scale(0.85)",
+          transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+          display: "flex", justifyContent: "center", marginBottom: 40,
         }}>
           <ForgeLogo C={C} size="lg" />
         </div>
 
         {/* Title */}
         <div style={{
-          fontSize: 36, fontWeight: 800, fontFamily: "var(--d)", color: C.text1,
-          letterSpacing: ".12em",
+          fontSize: 38, fontWeight: 800, fontFamily: "var(--d)", color: C.text1,
+          letterSpacing: ".14em",
           opacity: stage >= 3 ? 1 : 0,
-          transform: stage >= 3 ? "translateY(0)" : "translateY(10px)",
-          transition: "all 0.6s ease", marginBottom: 4,
+          transform: stage >= 3 ? "translateY(0)" : "translateY(12px)",
+          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)", marginBottom: 6,
         }}>
           FORGE
         </div>
 
         {/* Divider */}
         <div style={{
-          height: 1.5, background: C.dividerGrad, margin: "16px auto",
-          width: stage >= 3 ? 60 : 0, opacity: stage >= 3 ? 1 : 0,
-          transition: "all 0.6s ease",
-          boxShadow: `0 0 8px ${C.accent010}`,
+          height: 1, background: C.dividerGrad, margin: "20px auto 20px",
+          width: stage >= 3 ? 80 : 0, opacity: stage >= 3 ? 1 : 0,
+          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
+          boxShadow: `0 0 12px ${C.accent010}`,
         }} />
 
         {/* Subtitle */}
         <div style={{
-          fontSize: 9, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".3em",
+          fontSize: 9, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".35em",
           fontWeight: 700, textTransform: "uppercase",
           opacity: stage >= 4 ? 1 : 0,
           transform: stage >= 4 ? "translateY(0)" : "translateY(8px)",
-          transition: "all 0.5s ease", marginBottom: 48,
+          transition: "all 0.6s cubic-bezier(0.16,1,0.3,1)", marginBottom: 52,
         }}>
           PERFORMANCE SYSTEM
         </div>
 
         {/* Description */}
         <div style={{
-          fontSize: 14, color: C.text3, lineHeight: 1.8, fontFamily: "var(--b)",
+          fontSize: 14, color: C.text3, lineHeight: 1.9, fontFamily: "var(--b)",
           opacity: stage >= 4 ? 1 : 0,
           transform: stage >= 4 ? "translateY(0)" : "translateY(8px)",
-          transition: "all 0.5s ease 0.1s", marginBottom: 40,
+          transition: "all 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s", marginBottom: 48,
+          maxWidth: 280, margin: "0 auto 48px",
         }}>
           AI-powered coaching, precision tracking, and intelligent programming — engineered for elite performance.
         </div>
@@ -89,8 +90,8 @@ export default function LoginScreen({ C, onLogin }) {
         {/* CTA Button */}
         <div style={{
           opacity: stage >= 5 ? 1 : 0,
-          transform: stage >= 5 ? "translateY(0)" : "translateY(12px)",
-          transition: "all 0.5s ease",
+          transform: stage >= 5 ? "translateY(0) scale(1)" : "translateY(16px) scale(0.97)",
+          transition: "all 0.6s cubic-bezier(0.16,1,0.3,1)",
         }}>
           <Button C={C} onClick={() => { storage.set("lg", true); onLogin(); }}>
             ENTER FORGE
@@ -99,9 +100,9 @@ export default function LoginScreen({ C, onLogin }) {
 
         {/* Footer */}
         <div style={{
-          fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".16em",
-          marginTop: 56,
-          opacity: stage >= 5 ? 1 : 0, transition: "opacity 0.5s ease 0.2s",
+          fontSize: 7, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".2em",
+          marginTop: 64,
+          opacity: stage >= 5 ? 1 : 0, transition: "opacity 0.8s ease 0.3s",
         }}>
           BUILT FOR PERFORMANCE
         </div>

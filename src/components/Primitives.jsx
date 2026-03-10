@@ -75,7 +75,7 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
         letterSpacing: ".12em",
         cursor: disabled ? "default" : "pointer",
         transition: "all 0.2s",
-        animation: isPrimary && !disabled ? "shimmer 3s ease-in-out infinite" : "none",
+        animation: isPrimary && !disabled ? "shimmerSlow 8s ease-in-out infinite" : "none",
         boxShadow: isPrimary
           ? "0 4px 24px rgba(170,185,200,.30)"
           : "none",
@@ -264,7 +264,7 @@ export function ForgeLogo({ C, size = "md" }) {
         fontSize: s.fe, fontWeight: 800, fontFamily: "var(--d)",
         background: C.gradient, backgroundSize: "300% 100%",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-        animation: "goldShimmer 4s ease-in-out infinite",
+        animation: "goldShimmer 10s ease-in-out infinite",
         filter: `drop-shadow(0 0 12px ${C.accent020})`,
         lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
       }}>Fe</div>

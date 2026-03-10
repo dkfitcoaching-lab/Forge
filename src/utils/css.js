@@ -106,6 +106,12 @@ input[type="number"] { -moz-appearance: textfield; }
   100% { background-position: -200% center; }
 }
 
+@keyframes shimmerSlow {
+  0% { background-position: 200% center; }
+  50% { background-position: 0% center; }
+  100% { background-position: -200% center; }
+}
+
 @keyframes breathe {
   0%, 100% {
     box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 40px rgba(180,195,210,.08);
@@ -144,6 +150,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes goldShimmer {
   0% { background-position: 200% center; }
+  50% { background-position: 0% center; }
   100% { background-position: -200% center; }
 }
 
