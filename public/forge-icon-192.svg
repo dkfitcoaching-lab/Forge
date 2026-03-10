@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="32" fill="#010102"/>
+  <rect x="36" y="36" width="120" height="120" rx="20" fill="none" stroke="rgba(180,195,210,0.25)" stroke-width="2.5"/>
+  <rect x="36" y="36" width="120" height="120" rx="20" fill="url(#g)" opacity="0.08"/>
+  <text x="96" y="58" text-anchor="middle" fill="rgba(180,195,210,0.5)" font-family="monospace" font-size="16" font-weight="500">26</text>
+  <text x="96" y="108" text-anchor="middle" fill="url(#g)" font-family="serif" font-size="56" font-weight="800">Fe</text>
+  <text x="96" y="134" text-anchor="middle" fill="rgba(180,195,210,0.5)" font-family="monospace" font-size="14" font-weight="600" letter-spacing="3">FORGE</text>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5EEAD4"/>
+      <stop offset="50%" stop-color="#A7F3D0"/>
+      <stop offset="100%" stop-color="#5EEAD4"/>
+    </linearGradient>
+  </defs>
+</svg>

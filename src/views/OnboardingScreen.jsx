@@ -4,309 +4,315 @@ import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
 
 // ══════════════════════════════════════════════════════════════
-// FORGE AI ONBOARDING — Conversion-Optimized Sales Funnel
-// Conversational AI coach that discovers pain points, builds
-// value, and presents tiered plans. Multi-select + text input.
-// No free tier. Every step designed to convert.
+// FORGE AI ONBOARDING — World-Class Conversion Funnel
+// Every word chosen for maximum impact. Every step earns trust.
+// Pain point discovery → Value demonstration → Tier presentation
+// Multi-select + text input. No free tier. No wasted breath.
 // ══════════════════════════════════════════════════════════════
 
-// ─── CONVERSATION FLOW ──────────────────────────────────────
-// Each step: { ai | genAi, options?, multi?, key?, followUp?,
-//   autoAdvance?, delay?, showThemePicker?, showTiers?, showInput? }
 const FLOW = [
-  // 0 — Welcome
+  // 0 — Opening hook: establish authority + set expectations
   {
-    ai: "Welcome to Forge — your AI-powered performance coach.\n\nI'm going to ask you a few questions so I can build a program that's completely tailored to you. This takes about 2 minutes.",
+    ai: "Welcome to Forge.\n\nI'm your personal performance coach. Over the next two minutes, I'll learn exactly what you need — and show you how Forge delivers it.\n\nLet's get started.",
     autoAdvance: true,
-    delay: 2200,
+    delay: 2800,
   },
-  // 1 — Primary goal
+  // 1 — Primary goal: simple, clear, fast first action
   {
-    ai: "First — what's your primary focus right now?",
+    ai: "What's driving you right now?",
     options: [
       { label: "Build Muscle", icon: "💪" },
       { label: "Lose Fat", icon: "🔥" },
       { label: "Get Stronger", icon: "🏋️" },
-      { label: "Athletic Performance", icon: "⚡" },
+      { label: "Improve Performance", icon: "⚡" },
     ],
     key: "goal",
   },
-  // 2 — AI acknowledges + asks pain points (MULTI-SELECT)
+  // 2 — Validate goal + open the pain (MULTI-SELECT)
   {
     genAi: (d) => {
       const r = {
-        "Build Muscle": "Hypertrophy is what Forge was built for. The 14-day periodized split maximizes muscle stimulus and recovery — backed by progressive overload tracking that tells you exactly when to push harder.",
-        "Lose Fat": "Smart fat loss without losing muscle — that's the real challenge. Forge tracks your nutrition, training volume, and recovery to keep you in an optimal deficit while protecting your hard-earned strength.",
-        "Get Stronger": "Strength is the foundation of everything. Forge programs compound movements with built-in PR detection and progressive overload targets that scale with your capacity.",
-        "Athletic Performance": "Peak performance demands precision across every variable — power output, recovery quality, nutrition timing, training density. Forge tracks all of it.",
+        "Build Muscle": "Muscle growth is a science — not a guessing game. Forge runs a 14-day periodized split designed around progressive overload, volume accumulation, and recovery timing. The system tells you exactly when to push harder and when to pull back.",
+        "Lose Fat": "Real fat loss means keeping every pound of muscle you've earned while stripping what you don't need. Forge manages your nutrition, training load, and recovery in one system — so you stay in a deficit without sacrificing strength.",
+        "Get Stronger": "Strength isn't built on motivation. It's built on structured progression. Forge tracks every lift, detects PRs automatically, and tells you precisely when you're ready to add weight. No guesswork.",
+        "Improve Performance": "Performance is the sum of a hundred variables done right. Training density, recovery quality, nutrition timing, fatigue management — Forge tracks all of it and turns the data into decisions.",
       };
-      return r[d.goal] || "Forge is built to push your limits.";
+      return r[d.goal] || "Forge is engineered for serious results.";
     },
-    followUp: "What are your biggest struggles right now? Select all that apply.",
+    followUp: "Now tell me — what's actually holding you back? Select everything that applies.",
     options: [
-      { label: "Inconsistent training" },
-      { label: "No structured program" },
-      { label: "Nutrition confusion" },
-      { label: "Plateaued progress" },
-      { label: "No accountability" },
-      { label: "Information overload" },
-      { label: "Recovery / injuries" },
-      { label: "Time management" },
+      { label: "Can't stay consistent" },
+      { label: "No real program" },
+      { label: "Nutrition is a mess" },
+      { label: "Progress has stalled" },
+      { label: "No one holding me accountable" },
+      { label: "Too much conflicting info" },
+      { label: "Recovery or injury concerns" },
+      { label: "Can't find the time" },
     ],
     multi: true,
     key: "struggles",
   },
-  // 3 — AI validates struggles + asks experience
+  // 3 — Mirror their pain back with authority + ask experience
   {
     genAi: (d) => {
       const s = d.struggles || [];
       const parts = [];
 
-      if (s.includes("Inconsistent training") || s.includes("No accountability"))
-        parts.push("Consistency is where most people fail — not because they lack motivation, but because they lack a system. Forge gives you a clear daily plan with built-in accountability tracking that makes showing up automatic.");
-      if (s.includes("No structured program"))
-        parts.push("Training without a program is like driving without a map. You might move, but you won't arrive. Forge's 14-day periodized split handles exercise selection, volume, and progression — you just execute.");
-      if (s.includes("Nutrition confusion"))
-        parts.push("Nutrition misinformation is rampant. Everyone has an opinion, most are wrong. Forge cuts through the noise with precise macro tracking, meal timing, and a snap calculator that makes logging effortless.");
-      if (s.includes("Plateaued progress"))
-        parts.push("Plateaus happen when stimulus stays constant while adaptation advances. Forge's progressive overload engine detects exactly when you're ready to increase weight, volume, or intensity — and tells you.");
-      if (s.includes("Information overload"))
-        parts.push("The fitness industry profits from your confusion. More products, more plans, more contradictions. Forge consolidates everything into one system built on what the research actually shows works.");
-      if (s.includes("Recovery / injuries"))
-        parts.push("Training hard is only half the equation — recovering smart is the other half. Forge monitors your fatigue score, sleep quality, and stress levels to adjust your training intensity in real-time.");
-      if (s.includes("Time management"))
-        parts.push("You don't need more time — you need a system that respects your time. Every Forge session is structured down to the set and rep, with rest timers and guided cues so there's zero wasted minutes.");
+      if (s.includes("Can't stay consistent") || s.includes("No one holding me accountable"))
+        parts.push("Here's the truth about consistency: it's not a character flaw. It's a systems problem. When you open Forge, you see exactly what to do today — your workout, your meals, your check-in. There's no decision fatigue. You just execute. That's how consistency becomes automatic.");
+      if (s.includes("No real program"))
+        parts.push("Walking into a gym without a structured program is the most expensive mistake in fitness. You're investing time with no compounding return. Forge gives you a complete 14-day periodized split — exercise selection, rep schemes, volume progression — engineered by the same principles used by elite coaches.");
+      if (s.includes("Nutrition is a mess"))
+        parts.push("Nutrition shouldn't require a degree to figure out. The fitness industry has made it deliberately confusing because confused people buy more products. Forge simplifies it: your macros, your meals, your hydration — tracked in seconds, not hours. One system. No noise.");
+      if (s.includes("Progress has stalled"))
+        parts.push("A plateau isn't a wall — it's a signal. It means your current stimulus isn't enough. Forge's progressive overload engine analyzes your training data and identifies exactly which exercises are ready for an increase. It takes the guesswork out of breaking through.");
+      if (s.includes("Too much conflicting info"))
+        parts.push("For every fitness \"expert\" saying one thing, there's another saying the opposite. That's by design — confusion sells supplements, ebooks, and coaching packages. Forge is built on what the research actually shows. One source of truth. No agenda except your results.");
+      if (s.includes("Recovery or injury concerns"))
+        parts.push("Training intensity without recovery intelligence is a countdown to injury. Forge monitors your fatigue score, sleep quality, and stress levels daily. When your body needs a lighter session, the system tells you — before your joints have to.");
+      if (s.includes("Can't find the time"))
+        parts.push("The problem isn't time — it's efficiency. Most people waste 30-40% of their gym session figuring out what to do next. Forge eliminates that entirely. Every set is programmed, every rest period is timed. You train with purpose and leave.");
 
       if (parts.length === 0)
-        parts.push("Those are the exact problems Forge was designed to solve. Most people know what they should be doing — they just don't have the system to make it happen consistently.");
+        parts.push("These are solvable problems — every single one of them. And they all trace back to the same root cause: no system. A system doesn't rely on motivation. It doesn't need willpower. It runs on structure. That's what Forge is.");
 
-      // Pick top 2-3 responses to keep it concise
-      const response = parts.slice(0, Math.min(parts.length, 2)).join("\n\n");
-      return response;
+      return parts.slice(0, 2).join("\n\n");
     },
     followUp: "How long have you been training?",
     options: [
-      { label: "Just starting out" },
+      { label: "Brand new to this" },
       { label: "Under 1 year" },
-      { label: "1-3 years" },
-      { label: "3-5 years" },
+      { label: "1–3 years" },
+      { label: "3–5 years" },
       { label: "5+ years" },
     ],
     key: "experience",
   },
-  // 4 — AI adapts to experience + asks what they've tried (MULTI-SELECT)
+  // 4 — Speak to their level + ask what they've tried (MULTI-SELECT)
   {
     genAi: (d) => {
       const e = d.experience || "";
-      if (e === "Just starting out" || e === "Under 1 year")
-        return "Starting with a proper system from day one is the biggest advantage you can have. Most people waste their first 1-2 years following random workouts and fad diets. You won't.";
-      if (e === "1-3 years")
-        return "This is the make-or-break stage. Initial gains are slowing down, and what got you here won't get you further. This is exactly when intelligent programming and precision tracking separate those who plateau from those who transform.";
-      if (e === "3-5 years")
-        return "At your level, the margin between good and great comes down to data. You already know how to train — Forge gives you the analytics to train optimally. PR detection, fatigue modeling, volume periodization — the details that drive advanced progress.";
-      return "With 5+ years of training, you know the fundamentals cold. What you need is a system that tracks the variables you can't track in your head — progressive overload curves, muscle volume distribution, readiness scoring, and fatigue accumulation patterns.";
+      if (e === "Brand new to this" || e === "Under 1 year")
+        return "Starting with the right system is the single biggest advantage you can give yourself. Most people spend their first two years bouncing between random workouts and fad diets — spinning their wheels while building nothing. With Forge, every session from day one compounds toward a real result.";
+      if (e === "1–3 years")
+        return "You're past the beginner phase where everything works. From here, progress becomes a precision game. The margin between spinning your wheels and real transformation comes down to programming quality, load management, and tracking what matters. This is exactly where Forge was designed to take over.";
+      if (e === "3–5 years")
+        return "You've put in the work. You know the movements. What you need now isn't more effort — it's more intelligence. Forge gives you the analytical layer that separates good training from optimal training: overload detection, fatigue modeling, volume distribution analysis. The details that drive advanced progress.";
+      return "At your level, you don't need someone telling you how to do a squat. You need a system tracking the variables that matter at scale — progressive overload curves across every exercise, muscle volume distribution, accumulated fatigue patterns, readiness trends. Forge handles the data so you can focus on execution.";
     },
     followUp: "What have you tried before? Select all that apply.",
     options: [
-      { label: "Gym on my own" },
-      { label: "Personal trainer" },
-      { label: "Online programs" },
-      { label: "Fitness apps" },
-      { label: "Group classes" },
-      { label: "YouTube / social media" },
-      { label: "Nothing yet" },
+      { label: "Training on my own" },
+      { label: "Hired a personal trainer" },
+      { label: "Bought an online program" },
+      { label: "Used a fitness app" },
+      { label: "Followed YouTube / social media" },
+      { label: "Group fitness classes" },
+      { label: "This is my first step" },
     ],
     multi: true,
     key: "triedBefore",
   },
-  // 5 — AI addresses why those failed + asks what matters most (MULTI-SELECT)
+  // 5 — Reframe past failures as systemic, not personal + ask priorities (MULTI-SELECT)
   {
     genAi: (d) => {
       const t = d.triedBefore || [];
       const parts = [];
 
-      if (t.includes("Personal trainer"))
-        parts.push("Personal trainers can be great — but $60-150 per session adds up fast, and you're dependent on their schedule and availability. Forge gives you the same intelligent programming and real-time coaching feedback at a fraction of the cost, available 24/7.");
-      if (t.includes("Online programs"))
-        parts.push("Most online programs are one-size-fits-all PDFs dressed up as personalization. They don't adapt, don't track, and don't evolve with you. Forge is a living system that responds to your data in real-time.");
-      if (t.includes("Fitness apps"))
-        parts.push("Most fitness apps are glorified rep counters with a subscription attached. They track what you did, but they don't tell you what to do next. Forge's intelligence layer is the difference — it analyzes your patterns and drives decisions.");
-      if (t.includes("YouTube / social media"))
-        parts.push("Social media fitness is entertainment disguised as education. What works for an influencer on gear won't work for you. Forge is built on evidence-based programming, not content that exists to get clicks.");
-      if (t.includes("Group classes"))
-        parts.push("Group classes are great for general fitness, but they can't be optimized for your specific goals, recovery capacity, or progression needs. Forge programs around you — not a room of 30 people.");
+      if (t.includes("Hired a personal trainer"))
+        parts.push("Personal trainers can be valuable — but at $60–150 per session, you're paying premium for something that disappears the moment the session ends. There's no system running between appointments. No data accumulating. No intelligence improving over time. Forge delivers intelligent coaching 24/7 at a fraction of the cost — and it never forgets a single rep you've logged.");
+      if (t.includes("Bought an online program"))
+        parts.push("Most online programs are static PDFs marketed as personalization. They were written for everyone, which means they were designed for no one. They can't see your data. They can't adapt to your progress. They can't tell you when to push harder or when to back off. Forge is a living system that evolves with you.");
+      if (t.includes("Used a fitness app"))
+        parts.push("Most fitness apps are glorified counters. They record what you did — but they don't know what you should do next. That's the critical difference. Forge doesn't just track. It analyzes. It detects patterns, identifies overload opportunities, monitors fatigue, and drives intelligent decisions.");
+      if (t.includes("Followed YouTube / social media"))
+        parts.push("Social media fitness content exists to get views, not to get you results. What works for someone with elite genetics on performance-enhancing drugs is not a program — it's entertainment. Forge is built on evidence-based exercise science. No trends. No hype. Just what works.");
+      if (t.includes("Group fitness classes"))
+        parts.push("Group classes are great for general activity, but they fundamentally cannot be optimized for you. Thirty people, one program, zero individualization. Forge programs around your goals, your recovery, your progression. That specificity is what drives real transformation.");
 
-      if (parts.length === 0)
-        parts.push("Whatever you've tried before — the reason it didn't stick is usually the same: it wasn't built around YOUR data, YOUR recovery, YOUR progression curve. Forge changes that.");
+      if (parts.length === 0 && t.includes("This is my first step"))
+        parts.push("Smart first move. Most people waste months or years trying everything before finding a system that actually works. You're skipping straight to the solution. Forge gives you the same programming intelligence and tracking tools that elite coaches use — from your very first session.");
+      else if (parts.length === 0)
+        parts.push("The pattern behind every failed approach is the same: no system was working for you between sessions. No data was accumulating. No intelligence was improving. Forge changes that equation entirely.");
 
       return parts.slice(0, 2).join("\n\n");
     },
-    followUp: "What matters most to you in a coaching platform? Select your top priorities.",
+    followUp: "What matters most to you? Select your priorities.",
     options: [
-      { label: "Structured programming" },
-      { label: "Nutrition guidance" },
-      { label: "Progress tracking" },
-      { label: "Accountability" },
-      { label: "Expert coaching access" },
-      { label: "Data & analytics" },
-      { label: "Convenience / ease of use" },
+      { label: "A real training program" },
+      { label: "Nutrition that makes sense" },
+      { label: "Tracking my progress" },
+      { label: "Accountability system" },
+      { label: "Access to coaching intelligence" },
+      { label: "Analytics and data" },
+      { label: "Simple and fast to use" },
     ],
     multi: true,
     key: "priorities",
   },
-  // 6 — AI builds personalized value prop + asks schedule
+  // 6 — Deliver their personalized value stack + ask schedule
   {
     genAi: (d) => {
       const p = d.priorities || [];
       const val = [];
 
-      if (p.includes("Structured programming"))
-        val.push("✓ 14-day periodized training split with exercise selection, volume targets, and form cues — adapts to your progression");
-      if (p.includes("Nutrition guidance"))
-        val.push("✓ Full meal plans with macro tracking, snap calculator for logging, and hydration monitoring");
-      if (p.includes("Progress tracking"))
-        val.push("✓ PR detection, volume trends, weight curves, body measurements, and progress photo timeline with side-by-side comparison");
-      if (p.includes("Accountability"))
-        val.push("✓ Daily check-ins, streak tracking, readiness scoring, and AI coaching that notices when you're slipping");
-      if (p.includes("Expert coaching access"))
-        val.push("✓ AI coach trained on exercise science and real coaching data — available 24/7, never takes a day off");
-      if (p.includes("Data & analytics"))
-        val.push("✓ Fatigue modeling, progressive overload targets, muscle volume heatmap, and trend analysis across every metric");
-      if (p.includes("Convenience / ease of use"))
-        val.push("✓ One-tap set logging, guided workout player with rest timers, and everything in one place — no switching between 5 apps");
+      if (p.includes("A real training program"))
+        val.push("→ 14-day periodized split with targeted exercise selection, volume progression, and form cues built into every session");
+      if (p.includes("Nutrition that makes sense"))
+        val.push("→ Complete meal framework with macro targets, snap logging, hydration tracking, and supplement management");
+      if (p.includes("Tracking my progress"))
+        val.push("→ Automatic PR detection, volume trends, weight curves, body measurements, and progress photo timeline with side-by-side comparison");
+      if (p.includes("Accountability system"))
+        val.push("→ Daily check-ins, training streaks, readiness scoring, and a coach that notices when patterns shift");
+      if (p.includes("Access to coaching intelligence"))
+        val.push("→ AI coach available 24/7 that reads your actual data — sleep, training, nutrition, fatigue — and coaches from what it sees");
+      if (p.includes("Analytics and data"))
+        val.push("→ Fatigue modeling, progressive overload targets, muscle volume heatmap, and trend analysis across every metric you track");
+      if (p.includes("Simple and fast to use"))
+        val.push("→ One-tap set logging, guided workout player with built-in rest timers, and everything in one place — training, nutrition, analytics, coaching");
 
-      const intro = "Here's what Forge delivers for you:";
-      const list = val.length > 0 ? val.join("\n") : "✓ Everything you need — structured training, nutrition, analytics, and coaching — in one system";
-      return `${intro}\n\n${list}`;
+      const list = val.length > 0 ? val.join("\n") : "→ Everything you need — structured training, precision nutrition, real-time analytics, and intelligent coaching — in one system that gets smarter the more you use it";
+      return `Based on what you've told me, here's exactly what Forge gives you:\n\n${list}`;
     },
-    followUp: "How many days per week can you commit to training?",
+    followUp: "How many days per week can you realistically train?",
     options: [
-      { label: "2-3 days" },
-      { label: "4-5 days" },
-      { label: "6-7 days" },
+      { label: "2–3 days" },
+      { label: "4–5 days" },
+      { label: "6–7 days" },
     ],
     key: "frequency",
   },
-  // 7 — AI responds to frequency + asks about age range
+  // 7 — Frequency response + gender (for programming context)
   {
     genAi: (d) => {
       const f = d.frequency || "";
-      if (f === "6-7 days") return "That dedication is exactly what separates people who get results from people who talk about it. Forge's 14-day cycle builds in strategic recovery days because growth happens during rest — the system ensures you're always pushing at the right intensity.";
-      if (f === "4-5 days") return "The sweet spot. Forge's 14-day split maps perfectly to 4-5 training days with built-in recovery windows. Every session is purposeful — zero junk volume, zero wasted sets.";
-      return "Quality over quantity. Forge adapts its programming to maximize stimulus within your schedule. Fewer days doesn't mean less progress — it means every session has to count, and the program ensures it does.";
+      if (f === "6–7 days") return "That level of commitment is rare — and it's exactly what produces uncommon results. Forge's 14-day cycle programs strategic recovery days because growth happens during rest. The system ensures maximum stimulus on training days and maximum recovery on off days. Nothing is left to chance.";
+      if (f === "4–5 days") return "Four to five days is the optimal window for most serious trainees. The Forge 14-day split was designed around this exact frequency — enough stimulus to drive adaptation, enough recovery to sustain it. Every session has a clear purpose. Zero filler.";
+      return "Fewer days means every session carries more weight — and the program accounts for that. Forge maximizes stimulus efficiency so you get more out of less. Strategic exercise selection, precise volume targets, and intelligent sequencing ensure nothing is wasted.";
     },
     followUp: "What's your age range?",
     options: [
       { label: "Under 20" },
-      { label: "20-29" },
-      { label: "30-39" },
-      { label: "40-49" },
+      { label: "20–29" },
+      { label: "30–39" },
+      { label: "40–49" },
       { label: "50+" },
     ],
     key: "ageRange",
   },
-  // 8 — AI adapts to age + asks for name (TEXT INPUT)
+  // 8 — Age-specific value + name input (FIRST TEXT FIELD)
   {
     genAi: (d) => {
       const a = d.ageRange || "";
-      if (a === "Under 20") return "Building the foundation early gives you decades of advantage. Forge focuses on proper movement patterns, progressive loading, and habit formation — the things that create lifelong results, not just short-term pumps.";
-      if (a === "20-29") return "This is your prime building window. Recovery capacity is high, adaptation is fast, and the habits you build now compound over the next 30+ years. Forge makes sure you're not wasting a single one of these years.";
-      if (a === "30-39") return "The thirties are where intelligent training separates from brute force. Recovery demands more attention, volume needs to be strategic, and nutrition can't be an afterthought. Forge's fatigue monitoring and readiness scoring become critical tools here.";
-      if (a === "40-49") return "Training in your 40s is about precision — maximizing stimulus while respecting recovery. Forge's readiness scoring and fatigue model ensure you're training at the right intensity every session, reducing injury risk while still driving progress.";
-      return "Experience is your advantage. Forge adapts training intensity based on your daily readiness, monitors fatigue accumulation, and ensures every session adds value. Smart programming means continued progress at any age.";
+      if (a === "Under 20") return "You're building the foundation that everything else gets built on. The habits, the movement quality, the training discipline — what you establish now compounds for decades. Forge ensures that foundation is world-class from day one.";
+      if (a === "20–29") return "This is the highest-leverage decade of your training life. Recovery capacity is at its peak, adaptation speed is high, and the habits you lock in now define your trajectory for the next thirty years. Forge makes sure you don't waste a single one of them.";
+      if (a === "30–39") return "The thirties are where intelligent training separates from brute force. Your body rewards precision and punishes recklessness. Forge's fatigue monitoring and readiness scoring give you the intelligence to train at the edge of your capacity — without crossing into injury.";
+      if (a === "40–49") return "At this stage, the athletes who continue making progress are the ones training smart, not just hard. Forge's readiness scoring adjusts your training intensity daily based on sleep, stress, and accumulated fatigue. Every session is calibrated to your current capacity.";
+      return "Training longevity is built on data, not ego. Forge adapts session intensity to your daily readiness, tracks fatigue patterns over time, and ensures every workout delivers value. Smart programming means continued progress — at any age, at any stage.";
     },
-    followUp: "Almost done. What should I call you?",
+    followUp: "One more thing — what should I call you?",
     showInput: true,
     inputKey: "name",
     inputPlaceholder: "Your first name",
   },
-  // 9 — AI greets by name + theme picker
+  // 9 — Name personalization + accent picker
   {
     genAi: (d) => {
       const name = d.name || "Athlete";
-      return `${name} — let's make this yours.\n\nChoose your signature accent color. This defines the entire visual identity of your Forge experience.`;
+      return `${name} — let's make Forge yours.\n\nPick your signature color. This becomes the accent across your entire experience — every glow, every highlight, every interaction.`;
     },
     showThemePicker: true,
   },
-  // 10 — AI confirms theme + surface picker
+  // 10 — Accent confirmed + surface picker
   {
     genAi: (d) => {
       const names = { forge: "Forge Teal", platinum: "Platinum", obsidian: "Obsidian Violet", ember: "Ember", arctic: "Arctic Blue", crimson: "Crimson", gold: "Gold", rose: "Rose" };
-      return `${names[d.theme] || "Perfect"} — sharp choice.\n\nNow choose your background surface. This is the base tone of everything you'll see.`;
+      return `${names[d.theme] || "Done"} — locked in.\n\nNow choose your surface. This is the base atmosphere behind everything.`;
     },
     showSurfacePicker: true,
   },
-  // 11 — Personalized summary + tiers
+  // 11 — Personalized recap + tier selection
   {
     genAi: (d) => {
       const name = d.name || "Athlete";
       const goal = d.goal || "your goals";
-      return `${name}, here's what I've built for you:\n\n→ Goal: ${goal}\n→ Schedule: ${d.frequency || "flexible"}\n→ Experience: ${d.experience || "any level"}\n→ Training: AI-periodized, adapts to your data\n→ Nutrition: Full macro tracking + meal guidance\n→ Analytics: Fatigue model, PR detection, volume trends\n→ Coach: 24/7 AI coaching — never takes a day off\n\nEvery feature is designed to solve the exact problems you described. Choose the plan that fits your commitment level:`;
+      const freq = d.frequency || "your schedule";
+      const exp = d.experience || "your level";
+      return `${name}, your Forge profile is ready.\n\n` +
+        `Goal — ${goal}\n` +
+        `Training — ${freq} per week\n` +
+        `Experience — ${exp}\n` +
+        `Program — AI-periodized, adapts to your data every session\n` +
+        `Nutrition — Full macro tracking with guided meal framework\n` +
+        `Analytics — Fatigue model, PR detection, volume trends, readiness scoring\n` +
+        `Coach — On-demand intelligence that reads your real data, 24/7\n\n` +
+        `Everything is built around what you told me. Choose the plan that matches your commitment:`;
     },
     showTiers: true,
   },
 ];
 
-// ─── TIER DEFINITIONS (no free tier) ─────────────────────────
+// ─── TIER DEFINITIONS ────────────────────────────────────────
 const TIERS = [
   {
     name: "FORGE",
-    tagline: "Self-Guided Performance",
+    tagline: "Self-Guided Training System",
     price: "$14.99",
     period: "/mo",
     yearlyPrice: "$9.99",
-    yearlyPeriod: "/mo billed yearly",
+    yearlyPeriod: "/mo billed annually",
     features: [
-      "14-day periodized training split",
+      "14-day periodized training program",
       "Guided workout player with rest timers",
-      "Full nutrition tracking + meal plans",
-      "Hydration & supplement tracking",
-      "Daily check-ins + readiness score",
-      "Progress photos + measurements",
-      "Volume logging + PR detection",
+      "Full nutrition tracking + macro targets",
+      "Hydration and supplement tracking",
+      "Daily check-ins with readiness scoring",
+      "Progress photos and body measurements",
+      "Volume logging with PR detection",
     ],
     accent: false,
-    cta: "START 14-DAY TRIAL",
+    cta: "START FREE TRIAL",
   },
   {
     name: "FORGE PRO",
-    tagline: "AI-Powered Coaching",
+    tagline: "AI-Powered Performance Coaching",
     price: "$29.99",
     period: "/mo",
     yearlyPrice: "$19.99",
-    yearlyPeriod: "/mo billed yearly",
+    yearlyPeriod: "/mo billed annually",
     features: [
       "Everything in Forge, plus:",
-      "24/7 AI Coach (unlimited)",
+      "24/7 AI Coach — unlimited access",
       "Advanced analytics dashboard",
-      "Fatigue model + readiness AI",
-      "Progressive overload engine",
-      "Muscle volume heatmap",
-      "Custom exercise substitutions",
+      "Fatigue model + readiness intelligence",
+      "Progressive overload detection engine",
+      "Muscle volume distribution heatmap",
+      "Exercise substitution library",
       "Weekly performance reports",
     ],
     accent: true,
-    cta: "START 14-DAY TRIAL",
+    cta: "START FREE TRIAL",
     badge: "MOST POPULAR",
   },
   {
     name: "FORGE ELITE",
-    tagline: "World-Class Coaching",
+    tagline: "World-Class Human + AI Coaching",
     price: "$49.99",
     period: "/mo",
     yearlyPrice: "$34.99",
-    yearlyPeriod: "/mo billed yearly",
+    yearlyPeriod: "/mo billed annually",
     features: [
       "Everything in Pro, plus:",
-      "1-on-1 human coach access",
-      "Custom program design",
-      "Video form analysis",
-      "Priority response (< 1 hour)",
-      "Quarterly program reviews",
-      "Early access to new features",
+      "Direct access to a human coach",
+      "Fully custom program design",
+      "Video form review and feedback",
+      "Priority response under 1 hour",
+      "Quarterly program architecture reviews",
+      "Early access to new platform features",
     ],
     accent: false,
-    cta: "START 14-DAY TRIAL",
+    cta: "START FREE TRIAL",
     badge: "PREMIUM",
   },
 ];
@@ -316,24 +322,27 @@ function TypingDots({ C }) {
   return (
     <div style={{ display: "flex", gap: 8, animation: "fadeIn 0.2s ease" }}>
       <div style={{
-        width: 30, height: 30, borderRadius: 10,
+        width: 32, height: 32, borderRadius: 10,
         background: C.gradient, backgroundSize: "300% 100%",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 11, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
+        fontSize: 12, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
         flexShrink: 0,
+        boxShadow: `0 0 12px ${C.accent015}, 0 2px 8px rgba(0,0,0,0.2)`,
       }}>F</div>
       <div style={{
         background: C.cardGradient,
         border: `1px solid ${C.structBorderHover}`,
         borderRadius: "4px 16px 16px 16px",
         padding: "14px 20px",
-        display: "flex", gap: 5, alignItems: "center",
+        display: "flex", gap: 6, alignItems: "center",
+        boxShadow: `0 2px 8px rgba(0,0,0,0.15)`,
       }}>
         {[0, 1, 2].map((i) => (
           <div key={i} style={{
             width: 5, height: 5, borderRadius: "50%",
             background: C.accent,
             animation: `pulse 1.4s ease-in-out infinite ${i * 0.2}s`,
+            boxShadow: `0 0 6px ${C.accent030}`,
           }} />
         ))}
       </div>
@@ -346,21 +355,30 @@ function AiMsg({ text, C }) {
   return (
     <div style={{ display: "flex", gap: 8, animation: "fi 0.4s ease" }}>
       <div style={{
-        width: 30, height: 30, borderRadius: 10,
+        width: 32, height: 32, borderRadius: 10,
         background: C.gradient, backgroundSize: "300% 100%",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 11, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
+        fontSize: 12, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
         flexShrink: 0, marginTop: 2,
+        boxShadow: `0 0 12px ${C.accent015}, 0 2px 8px rgba(0,0,0,0.2)`,
       }}>F</div>
       <div style={{
         background: C.cardGradient,
         border: `1px solid ${C.structBorderHover}`,
         borderRadius: "4px 16px 16px 16px",
-        padding: "14px 18px",
+        padding: "16px 18px",
         maxWidth: "85%",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.25), 0 4px 20px rgba(0,0,0,0.1)",
+        boxShadow: `0 4px 16px rgba(0,0,0,0.2), 0 0 1px ${C.structBorderStrong}`,
+        backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+        position: "relative",
       }}>
-        <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, whiteSpace: "pre-line" }}>{text}</div>
+        {/* Top edge highlight */}
+        <div style={{
+          position: "absolute", top: 0, left: "8%", right: "8%", height: 1,
+          background: `linear-gradient(90deg, transparent, ${C.structBorderHover}, transparent)`,
+          opacity: 0.6,
+        }} />
+        <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.8, whiteSpace: "pre-line", fontFamily: "var(--b)" }}>{text}</div>
       </div>
     </div>
   );
@@ -372,11 +390,11 @@ function UserMsg({ text, C }) {
     <div style={{ display: "flex", justifyContent: "flex-end", animation: "fi 0.3s ease" }}>
       <div style={{
         background: C.accent008,
-        border: `1px solid ${C.accent015}`,
+        border: `1px solid ${C.accent020}`,
         borderRadius: "16px 4px 16px 16px",
         padding: "12px 18px",
         maxWidth: "80%",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        boxShadow: `0 2px 12px rgba(0,0,0,0.15), 0 0 20px ${C.accent005}`,
       }}>
         <div style={{ fontSize: 13, color: C.text1, lineHeight: 1.6 }}>{text}</div>
       </div>
@@ -384,7 +402,7 @@ function UserMsg({ text, C }) {
   );
 }
 
-// ─── MULTI-SELECT OPTION BUTTON ──────────────────────────────
+// ─── OPTION CHIP ─────────────────────────────────────────────
 function OptionChip({ opt, selected, onToggle, C }) {
   const label = typeof opt === "string" ? opt : opt.label;
   const icon = typeof opt === "object" ? opt.icon : null;
@@ -392,26 +410,27 @@ function OptionChip({ opt, selected, onToggle, C }) {
 
   return (
     <button onClick={onToggle} style={{
-      padding: icon ? "10px 16px" : "10px 18px",
-      background: active ? C.accent015 : C.accent005,
-      border: `1.5px solid ${active ? C.accent040 : C.accent020}`,
+      padding: icon ? "11px 16px" : "11px 18px",
+      background: active ? C.accent015 : C.structGlass,
+      border: `1.5px solid ${active ? C.accent040 : C.structBorderHover}`,
       borderRadius: 24,
-      color: active ? C.accent : C.text1,
+      color: active ? C.accent : C.text2,
       fontSize: 12,
       fontFamily: "var(--m)",
-      fontWeight: active ? 700 : 600,
+      fontWeight: active ? 700 : 500,
       cursor: "pointer",
-      transition: "all 0.2s",
+      transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
       letterSpacing: ".04em",
       minHeight: 44,
-      display: "flex", alignItems: "center", gap: 6,
-      boxShadow: active ? `0 0 12px ${C.accent015}` : "none",
-      transform: active ? "scale(1.02)" : "scale(1)",
+      display: "flex", alignItems: "center", gap: 7,
+      boxShadow: active ? `0 0 14px ${C.accent015}, 0 2px 8px rgba(0,0,0,0.15)` : `0 1px 4px rgba(0,0,0,0.1)`,
+      transform: active ? "scale(1.03)" : "scale(1)",
+      backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
     }}>
-      {icon && <span style={{ fontSize: 14 }}>{icon}</span>}
+      {icon && <span style={{ fontSize: 15 }}>{icon}</span>}
       {label}
       {active && (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="3" strokeLinecap="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="3" strokeLinecap="round">
           <path d="M20 6L9 17l-5-5" />
         </svg>
       )}
@@ -429,46 +448,53 @@ function TierCard({ tier, C, onSelect, yearly }) {
       background: tier.accent ? C.accent005 : C.cardGradient,
       border: `1.5px solid ${tier.accent ? C.accent : C.structBorderHover}`,
       borderRadius: 16,
-      padding: 20,
+      padding: 22,
       position: "relative",
       boxShadow: tier.accent
-        ? `0 4px 24px ${C.accent015}, 0 0 48px ${C.accent008}`
-        : "0 2px 12px rgba(0,0,0,0.2)",
+        ? `0 4px 24px ${C.accent015}, 0 0 48px ${C.accent008}, 0 0 1px ${C.accent040}`
+        : `0 4px 16px rgba(0,0,0,0.2), 0 0 1px ${C.structBorderStrong}`,
       animation: tier.accent ? "accentBreathe 5s ease-in-out infinite" : "none",
+      backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+      overflow: "hidden",
     }}>
+      {/* Top edge highlight */}
+      <div style={{
+        position: "absolute", top: 0, left: "8%", right: "8%", height: 1,
+        background: tier.accent ? C.dividerGrad : `linear-gradient(90deg, transparent, ${C.structBorderHover}, transparent)`,
+        opacity: tier.accent ? 0.8 : 0.5,
+      }} />
       {tier.badge && (
         <div style={{
           position: "absolute", top: -10, right: 16,
           background: tier.badge === "MOST POPULAR" ? C.gradientBtn : C.structGlass,
           backgroundSize: "300% 100%",
-          padding: "4px 12px", borderRadius: 12,
+          padding: "4px 14px", borderRadius: 12,
           fontSize: 7, fontWeight: 700, fontFamily: "var(--m)",
           letterSpacing: ".14em",
           color: tier.badge === "MOST POPULAR" ? C.btnText : C.text3,
           border: tier.badge === "MOST POPULAR" ? "none" : `1px solid ${C.structBorderHover}`,
+          boxShadow: tier.badge === "MOST POPULAR" ? `0 2px 12px ${C.accent020}` : "none",
         }}>
           {tier.badge}
         </div>
       )}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".2em", color: tier.accent ? C.accent : C.text4, marginBottom: 2 }}>
-            {tier.name}
-          </div>
-          <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em", marginBottom: 10 }}>
-            {tier.tagline}
-          </div>
+      <div>
+        <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".2em", color: tier.accent ? C.accent : C.text4, marginBottom: 2, textShadow: tier.accent ? `0 0 16px ${C.accent030}` : "none" }}>
+          {tier.name}
+        </div>
+        <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em", marginBottom: 12 }}>
+          {tier.tagline}
         </div>
       </div>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 2, marginBottom: 16 }}>
-        <span style={{ fontSize: 28, fontWeight: 800, fontFamily: "var(--d)", color: C.text1 }}>{price}</span>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: 18 }}>
+        <span style={{ fontSize: 30, fontWeight: 800, fontFamily: "var(--d)", color: C.text1 }}>{price}</span>
         <span style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>{period}</span>
       </div>
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: 18 }}>
         {tier.features.map((f, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0" }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={tier.accent ? C.accent : C.text4} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
-            <span style={{ fontSize: 11, color: C.text3, fontFamily: "var(--m)" }}>{f}</span>
+            <span style={{ fontSize: 11, color: C.text3, fontFamily: "var(--m)", lineHeight: 1.4 }}>{f}</span>
           </div>
         ))}
       </div>
@@ -479,7 +505,7 @@ function TierCard({ tier, C, onSelect, yearly }) {
   );
 }
 
-// ─── MAIN ONBOARDING COMPONENT ───────────────────────────────
+// ─── MAIN ONBOARDING ─────────────────────────────────────────
 export default function OnboardingScreen({ C, onComplete, changeAccent, changeSurface }) {
   const [messages, setMessages] = useState([]);
   const [flowIdx, setFlowIdx] = useState(0);
@@ -494,7 +520,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
   const [inputValue, setInputValue] = useState("");
   const [userData, setUserData] = useState({});
   const [yearlyBilling, setYearlyBilling] = useState(true);
-  const [selectedTier, setSelectedTier] = useState(null);
   const scrollRef = useRef();
   const inputRef = useRef();
   const started = useRef(false);
@@ -503,7 +528,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     if (scrollRef.current) setTimeout(() => { scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, 60);
   };
 
-  // Start conversation
   useEffect(() => {
     if (started.current) return;
     started.current = true;
@@ -511,7 +535,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     setTimeout(() => {
       setMessages([{ role: "ai", text: s0.ai }]);
       setTyping(false);
-      // Auto-advance
       setTimeout(() => {
         setFlowIdx(1);
         setTyping(true);
@@ -526,7 +549,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
   useEffect(scroll, [messages, typing, showTiers, showOpts, showThemePicker, showSurfacePicker, showInput, showMultiConfirm]);
 
-  // Focus text input when shown
   useEffect(() => {
     if (showInput && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 200);
@@ -572,7 +594,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     }, 700 + Math.random() * 400);
   };
 
-  // Single-select pick
   const pick = (option) => {
     const step = FLOW[flowIdx];
     const label = typeof option === "string" ? option : option.label;
@@ -583,7 +604,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     advanceFlow(newData, flowIdx + 1);
   };
 
-  // Multi-select toggle
   const toggleMulti = (option) => {
     const label = typeof option === "string" ? option : option.label;
     setMultiSelections(prev =>
@@ -591,7 +611,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     );
   };
 
-  // Multi-select confirm
   const confirmMulti = () => {
     const step = FLOW[flowIdx];
     const selected = multiSelections.length > 0 ? multiSelections : ["None selected"];
@@ -602,7 +621,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     advanceFlow(newData, flowIdx + 1);
   };
 
-  // Text input submit
   const submitInput = () => {
     const step = FLOW[flowIdx];
     const val = inputValue.trim();
@@ -614,7 +632,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     advanceFlow(newData, flowIdx + 1);
   };
 
-  // Theme picker
   const pickTheme = (id) => {
     const names = { forge: "Forge Teal", platinum: "Platinum", obsidian: "Obsidian Violet", ember: "Ember", arctic: "Arctic Blue", crimson: "Crimson", gold: "Gold", rose: "Rose" };
     const newData = { ...userData, theme: id };
@@ -625,7 +642,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     advanceFlow(newData, flowIdx + 1);
   };
 
-  // Surface picker
   const pickSurface = (id) => {
     const newData = { ...userData, surface: id };
     setUserData(newData);
@@ -636,9 +652,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     advanceFlow(newData, flowIdx + 1);
   };
 
-  // Tier selection
   const selectTier = (tier) => {
-    setSelectedTier(tier.name);
     const newData = {
       ...userData,
       tier: tier.name,
@@ -652,7 +666,6 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     onComplete();
   };
 
-  // Progress indicator
   const totalSteps = FLOW.length;
   const progress = Math.min(flowIdx / (totalSteps - 1), 1);
 
@@ -661,12 +674,18 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
       minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", color: C.text1,
       display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
     }}>
-      {/* Atmosphere */}
+      {/* Atmosphere orbs */}
       <div className="forge-orb" style={{
-        position: "fixed", top: "10%", left: "50%",
-        width: 600, height: 600, borderRadius: "50%",
-        background: `radial-gradient(circle, ${C.accent008} 0%, transparent 70%)`,
-        animation: "orbFloat 8s ease-in-out infinite", pointerEvents: "none",
+        position: "fixed", top: "8%", left: "50%",
+        width: 700, height: 700, borderRadius: "50%",
+        background: `radial-gradient(circle, ${C.accent008} 0%, ${C.accent005} 30%, transparent 60%)`,
+        animation: "orbFloat 10s ease-in-out infinite", pointerEvents: "none",
+      }} />
+      <div className="forge-orb" style={{
+        position: "fixed", bottom: "10%", left: "25%",
+        width: 400, height: 400, borderRadius: "50%",
+        background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
+        animation: "orbFloat2 14s ease-in-out infinite", pointerEvents: "none",
       }} />
 
       {/* Header */}
@@ -680,11 +699,11 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
         <ForgeLogo C={C} size="sm" />
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", letterSpacing: ".06em" }}>FORGE</div>
-          <div style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
+          <div style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em", textShadow: `0 0 12px ${C.accent030}` }}>fitnessforge.ai</div>
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
-          <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.ok, animation: "pulse 2s ease-in-out infinite" }} />
-          <span style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>ACTIVE</span>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.ok, boxShadow: `0 0 8px ${C.ok}40`, animation: "pulse 2s ease-in-out infinite" }} />
+          <span style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>ONLINE</span>
         </div>
       </div>
 
@@ -694,12 +713,12 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           height: "100%",
           width: `${progress * 100}%`,
           background: C.gradient, backgroundSize: "300% 100%",
-          transition: "width 0.5s ease",
-          boxShadow: `0 0 8px ${C.accent020}`,
+          transition: "width 0.6s cubic-bezier(0.16,1,0.3,1)",
+          boxShadow: `0 0 10px ${C.accent020}, 0 0 20px ${C.accent008}`,
         }} />
       </div>
 
-      {/* Chat Area */}
+      {/* Chat area */}
       <div ref={scrollRef} style={{
         flex: 1, overflowY: "auto", padding: "20px 16px 40px",
         display: "flex", flexDirection: "column", gap: 14,
@@ -710,45 +729,34 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
         {typing && <TypingDots C={C} />}
 
-        {/* Single-select option buttons */}
+        {/* Single-select */}
         {showOpts && !typing && !FLOW[flowIdx]?.multi && FLOW[flowIdx]?.options && (
           <div style={{
             display: "flex", flexWrap: "wrap", gap: 8,
-            padding: "4px 0 4px 38px",
+            padding: "4px 0 4px 40px",
             animation: "fi 0.4s ease",
           }}>
             {FLOW[flowIdx].options.map((opt) => {
               const label = typeof opt === "string" ? opt : opt.label;
-              return (
-                <OptionChip key={label} opt={opt} selected={false} onToggle={() => pick(opt)} C={C} />
-              );
+              return <OptionChip key={label} opt={opt} selected={false} onToggle={() => pick(opt)} C={C} />;
             })}
           </div>
         )}
 
-        {/* Multi-select option buttons */}
+        {/* Multi-select */}
         {showOpts && !typing && FLOW[flowIdx]?.multi && FLOW[flowIdx]?.options && (
-          <div style={{
-            padding: "4px 0 4px 38px",
-            animation: "fi 0.4s ease",
-          }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+          <div style={{ padding: "4px 0 4px 40px", animation: "fi 0.4s ease" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
               {FLOW[flowIdx].options.map((opt) => {
                 const label = typeof opt === "string" ? opt : opt.label;
                 return (
-                  <OptionChip
-                    key={label}
-                    opt={opt}
-                    selected={multiSelections.includes(label)}
-                    onToggle={() => toggleMulti(opt)}
-                    C={C}
-                  />
+                  <OptionChip key={label} opt={opt} selected={multiSelections.includes(label)} onToggle={() => toggleMulti(opt)} C={C} />
                 );
               })}
             </div>
             {showMultiConfirm && (
               <button onClick={confirmMulti} disabled={multiSelections.length === 0} style={{
-                padding: "10px 24px",
+                padding: "11px 28px",
                 background: multiSelections.length > 0 ? C.gradientBtn : C.structGlass,
                 backgroundSize: "300% 100%",
                 border: `1.5px solid ${multiSelections.length > 0 ? C.accent030 : C.structBorderHover}`,
@@ -757,11 +765,12 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
                 fontSize: 10,
                 fontFamily: "var(--m)",
                 fontWeight: 700,
-                letterSpacing: ".12em",
+                letterSpacing: ".14em",
                 cursor: multiSelections.length > 0 ? "pointer" : "default",
-                transition: "all 0.2s",
-                opacity: multiSelections.length > 0 ? 1 : 0.5,
-                minHeight: 40,
+                transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+                opacity: multiSelections.length > 0 ? 1 : 0.4,
+                minHeight: 42,
+                boxShadow: multiSelections.length > 0 ? `0 0 16px ${C.accent015}` : "none",
               }}>
                 CONTINUE{multiSelections.length > 0 ? ` (${multiSelections.length})` : ""}
               </button>
@@ -772,9 +781,9 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
         {/* Text input */}
         {showInput && !typing && (
           <div style={{
-            padding: "4px 0 4px 38px",
+            padding: "4px 0 4px 40px",
             animation: "fi 0.4s ease",
-            display: "flex", gap: 8, maxWidth: 320,
+            display: "flex", gap: 8, maxWidth: 340,
           }}>
             <input
               ref={inputRef}
@@ -783,14 +792,17 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
               onKeyDown={(e) => { if (e.key === "Enter") submitInput(); }}
               placeholder={FLOW[flowIdx]?.inputPlaceholder || "Type here..."}
               style={{
-                flex: 1, padding: "12px 16px",
+                flex: 1, padding: "12px 18px",
                 background: C.structGlass,
                 border: `1.5px solid ${C.structBorderHover}`,
                 borderRadius: 24,
                 color: C.text1,
-                fontSize: 13,
-                fontFamily: "var(--m)",
+                fontSize: 14,
+                fontFamily: "var(--b)",
+                fontWeight: 500,
                 outline: "none",
+                backdropFilter: "blur(8px)",
+                transition: "border-color 0.2s",
               }}
             />
             <button onClick={submitInput} disabled={!inputValue.trim()} style={{
@@ -800,9 +812,10 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
               border: `1.5px solid ${inputValue.trim() ? C.accent030 : C.structBorderHover}`,
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: inputValue.trim() ? "pointer" : "default",
-              transition: "all 0.2s",
-              opacity: inputValue.trim() ? 1 : 0.5,
+              transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+              opacity: inputValue.trim() ? 1 : 0.4,
               flexShrink: 0,
+              boxShadow: inputValue.trim() ? `0 0 12px ${C.accent015}` : "none",
             }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={inputValue.trim() ? C.btnText : C.text4} strokeWidth="2" strokeLinecap="round">
                 <path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" />
@@ -811,38 +824,34 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           </div>
         )}
 
-        {/* Theme Picker */}
+        {/* Theme picker */}
         {showThemePicker && !typing && (
-          <div style={{
-            padding: "8px 0 4px 38px",
-            animation: "fi 0.5s ease",
-          }}>
-            <div style={{
-              display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10,
-              maxWidth: 320,
-            }}>
+          <div style={{ padding: "8px 0 4px 40px", animation: "fi 0.5s ease" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, maxWidth: 320 }}>
               {Object.values(ACCENTS).map((acc) => (
                 <button key={acc.id} onClick={() => pickTheme(acc.id)} style={{
-                  padding: "12px 6px",
+                  padding: "14px 6px",
                   background: C.cardGradient,
                   border: `1.5px solid ${C.structBorderHover}`,
                   borderRadius: 12,
                   cursor: "pointer",
                   display: "flex", flexDirection: "column",
                   alignItems: "center", gap: 8,
-                  transition: "all 0.2s",
+                  transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
                   position: "relative", overflow: "hidden",
+                  backdropFilter: "blur(8px)",
                 }}>
                   <div style={{
                     position: "absolute", top: 0, left: "10%", right: "10%", height: 2,
                     background: acc.gradient, backgroundSize: "300% 100%",
                     borderRadius: 1,
+                    boxShadow: `0 0 8px ${acc.accent}30`,
                   }} />
                   <div style={{
-                    width: 28, height: 28, borderRadius: 14,
+                    width: 30, height: 30, borderRadius: 15,
                     background: acc.gradient, backgroundSize: "300% 100%",
-                    boxShadow: `0 0 14px ${acc.accent}40, 0 2px 8px rgba(0,0,0,0.3)`,
-                    border: `2px solid ${acc.accent}60`,
+                    boxShadow: `0 0 16px ${acc.accent}40, 0 2px 8px rgba(0,0,0,0.3)`,
+                    border: `2px solid ${acc.accent}50`,
                   }} />
                   <div style={{
                     fontSize: 7, color: C.text3, fontFamily: "var(--m)",
@@ -854,16 +863,10 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           </div>
         )}
 
-        {/* Surface Picker */}
+        {/* Surface picker */}
         {showSurfacePicker && !typing && (
-          <div style={{
-            padding: "8px 0 4px 38px",
-            animation: "fi 0.5s ease",
-          }}>
-            <div style={{
-              display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8,
-              maxWidth: 360,
-            }}>
+          <div style={{ padding: "8px 0 4px 40px", animation: "fi 0.5s ease" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, maxWidth: 380 }}>
               {Object.values(SURFACES).map((surf) => (
                 <button key={surf.id} onClick={() => pickSurface(surf.id)} style={{
                   padding: "14px 6px",
@@ -873,14 +876,15 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
                   cursor: "pointer",
                   display: "flex", flexDirection: "column",
                   alignItems: "center", gap: 6,
-                  transition: "all 0.2s",
+                  transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
                   position: "relative",
+                  overflow: "hidden",
                 }}>
                   <div style={{
-                    width: 24, height: 24, borderRadius: 6,
+                    width: 26, height: 26, borderRadius: 7,
                     background: surf.card,
-                    border: `1px solid rgba(180,195,210,0.15)`,
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                    border: "1px solid rgba(180,195,210,0.15)",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
                   }} />
                   <div style={{
                     fontSize: 7, color: surf.isLight ? "#1a1a2e" : "#C8CDD2", fontFamily: "var(--m)",
@@ -896,32 +900,35 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           </div>
         )}
 
-        {/* Tier Cards */}
+        {/* Tier cards */}
         {showTiers && (
           <div style={{ padding: "12px 0", animation: "fi 0.6s ease" }}>
             {/* Billing toggle */}
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "center",
-              gap: 10, marginBottom: 20,
+              gap: 10, marginBottom: 22,
             }}>
               <span style={{
                 fontSize: 10, fontFamily: "var(--m)", fontWeight: 600,
                 letterSpacing: ".08em",
                 color: !yearlyBilling ? C.text1 : C.text4,
+                transition: "color 0.2s",
               }}>MONTHLY</span>
               <button onClick={() => setYearlyBilling(!yearlyBilling)} style={{
-                width: 44, height: 24, borderRadius: 12,
+                width: 46, height: 26, borderRadius: 13,
                 background: yearlyBilling ? C.accent : C.structBorderStrong,
-                border: "none", cursor: "pointer",
-                position: "relative", transition: "background 0.2s",
+                border: `1px solid ${yearlyBilling ? C.accent040 : C.structBorderHover}`,
+                cursor: "pointer",
+                position: "relative", transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
                 padding: 0,
+                boxShadow: yearlyBilling ? `0 0 12px ${C.accent020}` : "none",
               }}>
                 <div style={{
-                  width: 18, height: 18, borderRadius: 9,
+                  width: 20, height: 20, borderRadius: 10,
                   background: C.text1,
-                  position: "absolute", top: 3,
+                  position: "absolute", top: 2,
                   left: yearlyBilling ? 23 : 3,
-                  transition: "left 0.2s",
+                  transition: "left 0.25s cubic-bezier(0.16,1,0.3,1)",
                   boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
                 }} />
               </button>
@@ -929,29 +936,31 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
                 fontSize: 10, fontFamily: "var(--m)", fontWeight: 600,
                 letterSpacing: ".08em",
                 color: yearlyBilling ? C.text1 : C.text4,
+                transition: "color 0.2s",
               }}>YEARLY</span>
               {yearlyBilling && (
                 <span style={{
                   fontSize: 8, fontFamily: "var(--m)", fontWeight: 700,
                   color: C.ok, letterSpacing: ".06em",
-                  padding: "2px 8px", borderRadius: 10,
-                  background: `${C.ok}15`,
-                  border: `1px solid ${C.ok}30`,
+                  padding: "3px 10px", borderRadius: 10,
+                  background: `${C.ok}12`,
+                  border: `1px solid ${C.ok}25`,
+                  animation: "fi 0.3s ease",
                 }}>SAVE 33%</span>
               )}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {TIERS.map((tier) => (
                 <TierCard key={tier.name} tier={tier} C={C} onSelect={() => selectTier(tier)} yearly={yearlyBilling} />
               ))}
             </div>
             <div style={{
               fontSize: 7, color: C.text5, fontFamily: "var(--m)",
-              letterSpacing: ".1em", textAlign: "center", marginTop: 16, lineHeight: 1.8,
+              letterSpacing: ".1em", textAlign: "center", marginTop: 20, lineHeight: 2,
             }}>
-              ALL PLANS INCLUDE 14-DAY FREE TRIAL · CANCEL ANYTIME
-              <br />NO CHARGE UNTIL TRIAL ENDS · MONEY-BACK GUARANTEE
+              14-DAY FREE TRIAL ON ALL PLANS · CANCEL ANYTIME
+              <br />NO CHARGE UNTIL YOUR TRIAL ENDS
             </div>
           </div>
         )}
