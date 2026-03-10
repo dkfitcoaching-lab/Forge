@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, Label, Button, SectionDivider, Modal } from "../components/Primitives";
 import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
+
+const TIME_ZONES = Intl.supportedValuesOf?.("timeZone") || [];
+
+function detectTimezone() {
+  const stored = storage.get("tz", null);
+  if (stored) return stored;
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return "America/New_York"; }
+}
 
 const LANGUAGES = [
   { code: "en", label: "English", native: "English" },
@@ -30,10 +38,21 @@ function detectLanguage() {
 export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast, onBack }) {
   const [notifications, setNotifications] = useState(() => storage.get("nf", { a: true, b: true, c: true, d: true, e: true }));
   const [showResetModal, setShowResetModal] = useState(false);
-  const [profile, setProfile] = useState(() => storage.get("profile", { phone: "", email: "" }));
+  const [profile, setProfile] = useState(() => storage.get("profile", {
+    phone: "", email: "", name: "", photo: null, dob: "",
+    gymName: "", gymType: "commercial", trainingTime: "",
+    emergencyName: "", emergencyPhone: "",
+  }));
   const [editingField, setEditingField] = useState(null);
   const [language, setLanguage] = useState(detectLanguage);
   const [showLangPicker, setShowLangPicker] = useState(false);
+  const [units, setUnits] = useState(() => storage.get("units", "imperial"));
+  const [timezone, setTimezone] = useState(detectTimezone);
+  const [showTzPicker, setShowTzPicker] = useState(false);
+  const [tzSearch, setTzSearch] = useState("");
+  const [showTraining, setShowTraining] = useState(false);
+  const [showEmergency, setShowEmergency] = useState(false);
+  const photoInputRef = useRef();
   const stats = computeStats();
   const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
 
@@ -45,12 +64,42 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
     showToast?.("Updated");
   };
 
+  const handleProfilePhoto = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      saveProfile("photo", ev.target.result);
+      showToast?.("Photo updated");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   const changeLang = (code) => {
     setLanguage(code);
     storage.set("lang", code);
     setShowLangPicker(false);
     showToast?.(`Language set to ${LANGUAGES.find(l => l.code === code)?.label}`);
   };
+
+  const changeUnits = (u) => {
+    setUnits(u);
+    storage.set("units", u);
+    showToast?.(`Units set to ${u === "imperial" ? "Imperial (lbs)" : "Metric (kg)"}`);
+  };
+
+  const changeTz = (tz) => {
+    setTimezone(tz);
+    storage.set("tz", tz);
+    setShowTzPicker(false);
+    setTzSearch("");
+    showToast?.("Timezone updated");
+  };
+
+  const filteredTz = tzSearch
+    ? TIME_ZONES.filter(tz => tz.toLowerCase().includes(tzSearch.toLowerCase())).slice(0, 8)
+    : [];
 
   return (
     <div>
@@ -67,20 +116,68 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       )}
 
       {/* Profile Header */}
+      <input ref={photoInputRef} type="file" accept="image/*" onChange={handleProfilePhoto} style={{ display: "none" }} />
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
-        <div style={{
+        <div onClick={() => photoInputRef.current?.click()} style={{
           width: 56, height: 56, borderRadius: 16,
-          background: C.gradient, backgroundSize: "300% 100%",
+          background: profile.photo ? "none" : C.gradient,
+          backgroundSize: "300% 100%",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 22, fontWeight: 900, fontFamily: "var(--d)",
-          color: C.btnText, animation: "shimmerSlow 10s ease-in-out infinite",
+          color: C.btnText, animation: profile.photo ? "none" : "shimmerSlow 10s ease-in-out infinite",
           boxShadow: `0 4px 20px ${C.accent030}`,
-        }}>F</div>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Athlete</div>
-          <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>
-            {stats.cyclesCompleted > 0 ? `CYCLE ${stats.cyclesCompleted + 1}` : "PREMIUM MEMBER"}
+          cursor: "pointer", position: "relative", overflow: "hidden",
+        }}>
+          {profile.photo ? (
+            <img src={profile.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
+          ) : (
+            profile.name ? profile.name.charAt(0).toUpperCase() : "F"
+          )}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: 18,
+            background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
+            display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 2,
+          }}>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+            </svg>
           </div>
+        </div>
+        <div style={{ flex: 1 }}>
+          {editingField === "name" ? (
+            <div style={{ display: "flex", gap: 6 }}>
+              <input
+                autoFocus
+                defaultValue={profile.name}
+                id="profile-name"
+                placeholder="Your name"
+                onKeyDown={e => { if (e.key === "Enter") saveProfile("name", e.target.value); if (e.key === "Escape") setEditingField(null); }}
+                style={{
+                  flex: 1, padding: "8px 10px", background: C.structGlass,
+                  border: `1.5px solid ${C.accent030}`, borderRadius: 8,
+                  color: C.text1, fontSize: 16, fontWeight: 700, fontFamily: "var(--d)",
+                  outline: "none",
+                }}
+              />
+              <button onClick={() => saveProfile("name", document.getElementById("profile-name")?.value || "")} style={{
+                padding: "6px 12px", background: C.gradientBtn, backgroundSize: "300% 100%",
+                border: "none", borderRadius: 8, color: C.btnText, fontSize: 9, fontWeight: 700,
+                fontFamily: "var(--m)", cursor: "pointer",
+              }}>SAVE</button>
+            </div>
+          ) : (
+            <div onClick={() => setEditingField("name")} style={{ cursor: "pointer" }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>
+                {profile.name || "Forge Athlete"}
+              </div>
+              <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", display: "flex", alignItems: "center", gap: 6 }}>
+                {stats.cyclesCompleted > 0 ? `CYCLE ${stats.cyclesCompleted + 1}` : "PREMIUM MEMBER"}
+                {!profile.name && (
+                  <span style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)" }}>tap to edit</span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -125,7 +222,12 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
               <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
             </svg>
           )},
-        ].map(({ k, l, ph, type, icon }, i, arr) => (
+          { k: "dob", l: "Date of Birth", ph: "", type: "date", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+          ), formatVal: (v) => v ? new Date(v + "T00:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : null },
+        ].map(({ k, l, ph, type, icon, formatVal }, i, arr) => (
           <div key={k} style={{ padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none" }}>
             {editingField === k ? (
               <div>
@@ -165,7 +267,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
                   <div style={{ fontSize: 11, color: profile[k] ? C.text3 : C.text5, fontFamily: "var(--m)", marginTop: 1 }}>
-                    {profile[k] || `Add ${l.toLowerCase()}`}
+                    {(formatVal ? formatVal(profile[k]) : profile[k]) || `Add ${l.toLowerCase()}`}
                   </div>
                 </div>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
@@ -256,13 +358,26 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       {/* ─── PREFERENCES ─── */}
       <Label C={C}>PREFERENCES</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
-        {/* Units */}
+        {/* Units Toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
           <div>
             <div style={{ fontSize: 13, color: C.text2 }}>Units</div>
             <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Weight &amp; measurements</div>
           </div>
-          <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>Imperial (lbs)</div>
+          <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: `1px solid ${C.structBorderHover}` }}>
+            {[
+              { k: "imperial", l: "LBS" },
+              { k: "metric", l: "KG" },
+            ].map(({ k, l }) => (
+              <button key={k} onClick={() => changeUnits(k)} style={{
+                padding: "6px 14px", fontSize: 9, fontWeight: 600, fontFamily: "var(--m)",
+                letterSpacing: ".06em", cursor: "pointer", border: "none",
+                background: units === k ? C.accent : "transparent",
+                color: units === k ? C.btnText : C.text4,
+                transition: "all 0.2s",
+              }}>{l}</button>
+            ))}
+          </div>
         </div>
 
         {/* Language */}
@@ -301,7 +416,201 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
             </div>
           )}
         </div>
+
+        {/* Timezone */}
+        <div style={{ padding: "14px 0" }}>
+          <div onClick={() => { setShowTzPicker(!showTzPicker); setTzSearch(""); }} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
+            <div>
+              <div style={{ fontSize: 13, color: C.text2 }}>Timezone</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Notifications &amp; scheduling</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 10, color: C.text3, fontFamily: "var(--m)" }}>
+                {timezone.replace(/_/g, " ").split("/").pop()}
+              </span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showTzPicker ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+          {showTzPicker && (
+            <div style={{ marginTop: 10 }}>
+              <input
+                autoFocus
+                value={tzSearch}
+                onChange={e => setTzSearch(e.target.value)}
+                placeholder="Search timezone..."
+                style={{
+                  width: "100%", padding: "10px 12px", background: C.structGlass,
+                  border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
+                  color: C.text1, fontSize: 12, fontFamily: "var(--m)", outline: "none",
+                  marginBottom: 6,
+                }}
+              />
+              {filteredTz.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {filteredTz.map(tz => (
+                    <button key={tz} onClick={() => changeTz(tz)} style={{
+                      padding: "8px 12px", textAlign: "left",
+                      background: timezone === tz ? C.accent008 : "transparent",
+                      border: `1px solid ${timezone === tz ? C.accent030 : C.structBorder}`,
+                      borderRadius: 6, cursor: "pointer", transition: "all 0.15s",
+                    }}>
+                      <div style={{ fontSize: 11, color: timezone === tz ? C.accent : C.text2, fontFamily: "var(--m)" }}>{tz.replace(/_/g, " ")}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {tzSearch && filteredTz.length === 0 && (
+                <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", padding: "8px 4px" }}>No timezones match &quot;{tzSearch}&quot;</div>
+              )}
+            </div>
+          )}
+        </div>
       </Card>
+
+      {/* ─── TRAINING ─── */}
+      <Label C={C}>TRAINING</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
+        {/* Training Location */}
+        <div style={{ padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+          <div onClick={() => setShowTraining(!showTraining)} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+            </svg>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: C.text2 }}>Training Location</div>
+              <div style={{ fontSize: 11, color: profile.gymName ? C.text3 : C.text5, fontFamily: "var(--m)", marginTop: 1 }}>
+                {profile.gymName || "Add your gym"}
+              </div>
+            </div>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showTraining ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          {showTraining && (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.structBorder}`, display: "flex", flexDirection: "column", gap: 10 }}>
+              <div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>GYM NAME</div>
+                <input
+                  value={profile.gymName}
+                  onChange={e => saveProfile("gymName", e.target.value)}
+                  placeholder="e.g. Gold's Gym, Home Gym"
+                  style={{
+                    width: "100%", padding: "10px 12px", background: C.structGlass,
+                    border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
+                    color: C.text1, fontSize: 13, fontFamily: "var(--m)", outline: "none",
+                  }}
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>GYM TYPE</div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {[
+                    { k: "commercial", l: "Commercial", desc: "Full facility" },
+                    { k: "home", l: "Home Gym", desc: "Personal setup" },
+                    { k: "hybrid", l: "Both", desc: "Mixed access" },
+                  ].map(({ k, l, desc }) => (
+                    <button key={k} onClick={() => saveProfile("gymType", k)} style={{
+                      flex: 1, padding: "10px 6px", textAlign: "center",
+                      background: profile.gymType === k ? C.accent008 : "transparent",
+                      border: `1px solid ${profile.gymType === k ? C.accent030 : C.structBorderHover}`,
+                      borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
+                    }}>
+                      <div style={{ fontSize: 11, color: profile.gymType === k ? C.accent : C.text2, fontWeight: profile.gymType === k ? 600 : 400 }}>{l}</div>
+                      <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Training Time Preference */}
+        <div style={{ padding: "14px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: C.text2 }}>Training Time</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>When you typically train</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+            {[
+              { k: "morning", l: "Morning", t: "5-10am" },
+              { k: "midday", l: "Midday", t: "10am-2pm" },
+              { k: "afternoon", l: "Afternoon", t: "2-6pm" },
+              { k: "evening", l: "Evening", t: "6-10pm" },
+            ].map(({ k, l, t }) => (
+              <button key={k} onClick={() => saveProfile("trainingTime", profile.trainingTime === k ? "" : k)} style={{
+                flex: 1, padding: "8px 4px", textAlign: "center",
+                background: profile.trainingTime === k ? C.accent008 : "transparent",
+                border: `1px solid ${profile.trainingTime === k ? C.accent030 : C.structBorderHover}`,
+                borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
+              }}>
+                <div style={{ fontSize: 10, color: profile.trainingTime === k ? C.accent : C.text2, fontWeight: profile.trainingTime === k ? 600 : 400 }}>{l}</div>
+                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{t}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      {/* ─── EMERGENCY CONTACT ─── */}
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
+        <div style={{ padding: "14px 0" }}>
+          <div onClick={() => setShowEmergency(!showEmergency)} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15.05 5A5 5 0 0119 8.95M15.05 1A9 9 0 0123 8.94M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.8.36 1.58.7 2.31a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.73.34 1.51.57 2.31.7A2 2 0 0122 16.92z" />
+            </svg>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: C.text2 }}>Emergency Contact</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>
+                {profile.emergencyName ? `${profile.emergencyName}` : "Recommended for safety"}
+              </div>
+            </div>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showEmergency ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          {showEmergency && (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.structBorder}`, display: "flex", flexDirection: "column", gap: 10 }}>
+              <div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>CONTACT NAME</div>
+                <input
+                  value={profile.emergencyName}
+                  onChange={e => saveProfile("emergencyName", e.target.value)}
+                  placeholder="Full name"
+                  style={{
+                    width: "100%", padding: "10px 12px", background: C.structGlass,
+                    border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
+                    color: C.text1, fontSize: 13, fontFamily: "var(--m)", outline: "none",
+                  }}
+                />
+              </div>
+              <div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>CONTACT PHONE</div>
+                <input
+                  value={profile.emergencyPhone}
+                  onChange={e => saveProfile("emergencyPhone", e.target.value)}
+                  placeholder="+1 (555) 000-0000"
+                  type="tel"
+                  style={{
+                    width: "100%", padding: "10px 12px", background: C.structGlass,
+                    border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
+                    color: C.text1, fontSize: 13, fontFamily: "var(--m)", outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <SectionDivider C={C} />
 
       {/* ─── NOTIFICATIONS ─── */}
       <Label C={C}>NOTIFICATIONS</Label>
