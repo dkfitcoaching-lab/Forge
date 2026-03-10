@@ -26,7 +26,7 @@ export default function ProgramView({ C, onWork, onNav }) {
             <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>Recovery is where growth happens.</div>
           </Card>
         ) : (
-          <Card C={C} glow style={{ padding: 20 }}>
+          <Card C={C} accentGlow style={{ padding: 20 }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>{dayData.t}</div>
             <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>{dayData.x?.length || 0} exercises · ~{dayData.m} min</div>
             <Button C={C} onClick={() => onWork(dayData)} style={{ marginTop: 16 }}>START WORKOUT</Button>

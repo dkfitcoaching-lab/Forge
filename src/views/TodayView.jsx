@@ -60,22 +60,35 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const totalCal = MEALS.reduce((sum, m) => sum + m.cal, 0);
   const consumedCal = Math.round((mealsCompleted / MEALS.length) * totalCal);
 
+  // Completion percentages for the daily overview
+  const suppTotal = SUPPLEMENTS.length;
+  const suppDone = Object.values(suppChecked).filter(Boolean).length;
+
   return (
     <div>
-      {/* Hero Section */}
+      {/* ─── HERO ─── */}
       <StaggerItem index={0} visible={visible}>
-        <div style={{ margin: "-18px -16px 0", padding: "40px 24px 36px", background: `linear-gradient(180deg, ${C.accent005} 0%, transparent 100%)`, position: "relative", overflow: "hidden" }}>
+        <div style={{
+          margin: "-18px -16px 0", padding: "36px 24px 32px",
+          background: `linear-gradient(180deg, ${C.accent005} 0%, transparent 100%)`,
+          position: "relative", overflow: "hidden",
+        }}>
           <div style={{ position: "absolute", top: -140, right: -120, width: 320, height: 320, borderRadius: "50%", background: `radial-gradient(circle, ${C.accent008} 0%, transparent 70%)` }} />
           <div style={{ position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".16em", marginBottom: 12 }}>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".18em", marginBottom: 14 }}>
                   {dateStr}
                 </div>
-                <div style={{ fontSize: 32, fontWeight: 800, color: C.text1, lineHeight: 1.1, fontFamily: "var(--d)" }}>
+                <div style={{ fontSize: 30, fontWeight: 800, color: C.text1, lineHeight: 1.1, fontFamily: "var(--d)" }}>
                   {greeting},
                 </div>
-                <div style={{ fontSize: 32, fontWeight: 800, lineHeight: 1.15, fontFamily: "var(--d)", marginTop: 4, background: C.gradient, backgroundSize: "300% 100%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                <div style={{
+                  fontSize: 30, fontWeight: 800, lineHeight: 1.15, fontFamily: "var(--d)", marginTop: 4,
+                  background: C.gradient, backgroundSize: "300% 100%",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                  animation: "goldShimmer 12s ease-in-out infinite",
+                }}>
                   Athlete.
                 </div>
               </div>
@@ -85,55 +98,94 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         </div>
       </StaggerItem>
 
-      {/* Readiness Score */}
-      {readiness && (
-        <StaggerItem index={1} visible={visible}>
-          <Card C={C} style={{ padding: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div>
-                <Label C={C} style={{ marginBottom: 4 }}>Readiness</Label>
-                <div style={{ fontSize: 11, color: C.text3, fontFamily: "var(--m)" }}>
-                  Based on your latest check-in data
-                </div>
-              </div>
-              <ReadinessGauge score={readiness.score} label={readiness.label} color={readiness.color} C={C} />
+      {/* ─── DAILY SNAPSHOT (compact status row) ─── */}
+      <StaggerItem index={1} visible={visible}>
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr",
+          gap: 6, margin: "16px 0",
+        }}>
+          {[
+            { v: `${mealsCompleted}/${MEALS.length}`, l: "MEALS", pct: mealsCompleted / MEALS.length, color: C.accent },
+            { v: `${waterCount}/${waterGoal}`, l: "WATER", pct: waterCount / waterGoal, color: C.accentDark },
+            { v: `${suppDone}/${suppTotal}`, l: "SUPPS", pct: suppDone / suppTotal, color: C.accentDeep },
+            { v: readiness ? readiness.score : "—", l: "READY", pct: readiness ? readiness.score / 100 : 0, color: readiness?.color || C.text4 },
+          ].map(({ v, l, pct, color }) => (
+            <div key={l} style={{
+              padding: "12px 6px", textAlign: "center",
+              background: C.cardGradient, borderRadius: 10,
+              border: `1px solid ${C.structBorder}`,
+              boxShadow: C.cardShadow,
+              position: "relative", overflow: "hidden",
+            }}>
+              {/* Accent progress underline */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0,
+                width: `${Math.min(pct * 100, 100)}%`, height: 2,
+                background: color, borderRadius: 1,
+                transition: "width 0.4s ease",
+                boxShadow: pct > 0 ? `0 0 8px ${C.accent020}` : "none",
+              }} />
+              <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, fontFamily: "var(--m)" }}>{v}</div>
+              <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 3 }}>{l}</div>
             </div>
-          </Card>
-        </StaggerItem>
-      )}
+          ))}
+        </div>
+      </StaggerItem>
 
-      {/* Day Selector */}
+      {/* ─── DAY SELECTOR ─── */}
       <StaggerItem index={2} visible={visible}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "16px 0 12px" }}>
-          <button onClick={() => changeDay("prev")} style={{ background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, width: 44, height: 44, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "8px 0 12px" }}>
+          <button onClick={() => changeDay("prev")} style={{
+            background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
+            color: C.text3, width: 44, height: 44, cursor: "pointer", fontSize: 16,
+            display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s",
+          }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
           </button>
           <div style={{ textAlign: "center", minWidth: 200 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Day {currentDay}</div>
             <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)" }}>{dayData.t}</div>
           </div>
-          <button onClick={() => changeDay("next")} style={{ background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, width: 44, height: 44, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}>
+          <button onClick={() => changeDay("next")} style={{
+            background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
+            color: C.text3, width: 44, height: 44, cursor: "pointer", fontSize: 16,
+            display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s",
+          }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
           </button>
         </div>
       </StaggerItem>
 
-      {/* Workout Card */}
+      {/* ─── WORKOUT CARD ─── */}
       <StaggerItem index={3} visible={visible}>
         {isRest ? (
           <Card C={C} style={{ borderLeft: `3px solid ${C.text4}`, padding: 20 }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: C.text2, fontFamily: "var(--d)" }}>Rest Day</div>
-            <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>Recovery is where growth happens. Light walking or stretching only.</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round">
+                <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
+              </svg>
+              <div style={{ fontSize: 22, fontWeight: 700, color: C.text2, fontFamily: "var(--d)" }}>Rest Day</div>
+            </div>
+            <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 2, lineHeight: 1.6 }}>
+              Recovery is where growth happens. Light walking or stretching only.
+            </div>
           </Card>
         ) : (
-          <Card C={C} style={{ borderLeft: `3px solid ${C.accent}`, padding: 20 }} glow>
-            <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".16em" }}>TODAY&apos;S WORKOUT</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>{dayData.t}</div>
-            <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>{dayData.x?.length || 0} exercises · {dayData.m} min</div>
+          <Card C={C} style={{ borderLeft: `3px solid ${C.accent}`, padding: 20 }} accentGlow>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".16em", marginBottom: 4 }}>TODAY&apos;S WORKOUT</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>{dayData.t}</div>
+                <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>{dayData.x?.length || 0} exercises · {dayData.m} min</div>
+              </div>
+              {readiness && (
+                <ReadinessGauge score={readiness.score} label={readiness.label} color={readiness.color} C={C} />
+              )}
+            </div>
             {overloadReady.length > 0 && (
-              <div style={{ marginTop: 8, padding: "6px 10px", background: C.accent005, border: `1px solid ${C.accent015}`, borderRadius: 8 }}>
+              <div style={{ marginTop: 10, padding: "6px 10px", background: C.accent005, border: `1px solid ${C.accent015}`, borderRadius: 8 }}>
                 <div style={{ fontSize: 8, fontWeight: 700, color: C.accentVivid, fontFamily: "var(--m)", letterSpacing: ".1em" }}>
-                  PROGRESSIVE OVERLOAD: {overloadReady.map((t) => t.name).join(", ")}
+                  OVERLOAD READY: {overloadReady.map((t) => t.name).join(", ")}
                 </div>
               </div>
             )}
@@ -144,7 +196,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
       <SectionDivider C={C} />
 
-      {/* Nutrition */}
+      {/* ─── NUTRITION ─── */}
       <StaggerItem index={4} visible={visible}>
         <Label C={C}>Nutrition</Label>
         <Card C={C} style={{ padding: 20 }}>
@@ -211,7 +263,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         </Card>
       </StaggerItem>
 
-      {/* Water Intake — Progress Bar */}
+      {/* ─── HYDRATION ─── */}
       <StaggerItem index={5} visible={visible}>
         <Card C={C} style={{ padding: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
@@ -279,7 +331,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         </Card>
       </StaggerItem>
 
-      {/* Supplements */}
+      {/* ─── SUPPLEMENTS ─── */}
       <StaggerItem index={6} visible={visible}>
         <Label C={C}>Supplements</Label>
         <Card C={C} style={{ padding: "2px 16px" }}>
@@ -298,50 +350,59 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
       <SectionDivider C={C} />
 
-      {/* Quick Actions */}
+      {/* ─── QUICK ACTIONS ─── */}
       <StaggerItem index={7} visible={visible}>
         <Label C={C}>Quick Actions</Label>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           {[
-            { l: "Daily Check-In", d: "Log sleep, energy & recovery", v: "ci", icon: (
+            { l: "Check-In", d: "Sleep, energy, recovery", v: "ci", icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
               </svg>
             )},
-            { l: "Volume Log", d: "Track session volume & tonnage", v: "vl", icon: (
+            { l: "Volume Log", d: "Session tonnage", v: "vl", icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
                 <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             )},
-            { l: "Program Guide", d: "View your training blueprint", v: "gd", icon: (
+            { l: "Guide", d: "Training blueprint", v: "gd", icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
               </svg>
             )},
-            { l: "Progress Photos", d: "Visual progress tracking", v: "pp", icon: (
+            { l: "Photos", d: "Visual progress", v: "pp", icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
               </svg>
             )},
           ].map(({ l, d, v, icon }) => (
-            <Card key={v} C={C} onClick={() => onNav(v)} style={{ padding: "14px 16px", cursor: "pointer", marginBottom: 0, display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 8, background: C.accent005, border: `1px solid ${C.accent015}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Card key={v} C={C} onClick={() => onNav(v)} style={{
+              padding: "16px 14px", cursor: "pointer", marginBottom: 0,
+              display: "flex", flexDirection: "column", alignItems: "center",
+              textAlign: "center", gap: 8, minHeight: 88,
+              borderTop: `2px solid ${C.accent015}`,
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: C.accent005, border: `1px solid ${C.accent015}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: `0 0 12px ${C.accent008}`,
+              }}>
                 {icon}
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{l}</div>
-                <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{d}</div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>{l}</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{d}</div>
               </div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
             </Card>
           ))}
         </div>
       </StaggerItem>
 
-      {/* Stats Bar */}
+      {/* ─── LIFETIME STATS ─── */}
       {stats.workoutCount > 0 && (
         <StaggerItem index={8} visible={visible}>
-          <Card C={C} style={{ padding: "16px 20px", marginTop: 16 }}>
+          <Card C={C} style={{ padding: "16px 20px", marginTop: 16, borderTop: `2px solid ${C.accent020}` }}>
             <div style={{ display: "flex", justifyContent: "space-around" }}>
               {[
                 { v: stats.workoutCount, l: "WORKOUTS" },
@@ -350,7 +411,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 { v: stats.totalVolumeAllTime > 0 ? `${Math.round(stats.totalVolumeAllTime / 1000)}k` : "—", l: "TOTAL VOL" },
               ].map(({ v, l }) => (
                 <div key={l} style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{v}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 16px ${C.accent030}` }}>{v}</div>
                   <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 2 }}>{l}</div>
                 </div>
               ))}

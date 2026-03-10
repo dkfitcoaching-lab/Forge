@@ -19,9 +19,10 @@ export function StaggerItem({ children, index, visible }) {
   );
 }
 
-export function Card({ children, C, style, onClick, glow, ...props }) {
+export function Card({ children, C, style, onClick, glow, accentGlow, ...props }) {
   return (
     <div
+      className={onClick ? "forge-card-interactive" : undefined}
       onClick={onClick}
       style={{
         background: C.cardGradient,
@@ -34,7 +35,8 @@ export function Card({ children, C, style, onClick, glow, ...props }) {
         boxShadow: C.cardShadow,
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
-        ...(glow ? { animation: "neonBreathe 4s ease-in-out infinite" } : {}),
+        ...(accentGlow ? { animation: "accentBreathe 5s ease-in-out infinite" } : {}),
+        ...(glow && !accentGlow ? { animation: "neonBreathe 4s ease-in-out infinite" } : {}),
         ...style,
       }}
       {...props}
@@ -75,9 +77,9 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
         letterSpacing: ".12em",
         cursor: disabled ? "default" : "pointer",
         transition: "all 0.2s",
-        animation: isPrimary && !disabled ? "shimmer 3s ease-in-out infinite" : "none",
+        animation: isPrimary && !disabled ? "shimmerSlow 8s ease-in-out infinite" : "none",
         boxShadow: isPrimary
-          ? "0 4px 24px rgba(170,185,200,.30)"
+          ? `0 4px 20px ${C.accent030}, 0 0 40px ${C.accent010}`
           : "none",
         textTransform: "uppercase",
         opacity: disabled ? 0.4 : 1,
@@ -103,7 +105,7 @@ export function Label({ children, C, style }) {
         marginBottom: 12,
         textTransform: "uppercase",
         lineHeight: 1.4,
-        textShadow: `0 0 20px ${C.accent030}`,
+        textShadow: `0 0 24px ${C.accent040}, 0 0 48px ${C.accent015}`,
         ...style,
       }}
     >
@@ -119,7 +121,7 @@ export function SectionDivider({ C, style }) {
         height: 1.5,
         background: C.dividerGrad,
         margin: "28px 0",
-        boxShadow: `0 0 8px ${C.accent010}`,
+        boxShadow: `0 0 12px ${C.accent015}, 0 0 24px ${C.accent005}`,
         ...style,
       }}
     />
@@ -252,7 +254,7 @@ export function ForgeLogo({ C, size = "md" }) {
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       position: "relative",
-      boxShadow: `0 0 16px ${C.accent010}, ${C.cardShadow}`,
+      boxShadow: `0 0 20px ${C.accent015}, 0 0 40px ${C.accent005}, ${C.cardShadow}`,
       padding: s.pad,
     }}>
       <div style={{
@@ -264,7 +266,7 @@ export function ForgeLogo({ C, size = "md" }) {
         fontSize: s.fe, fontWeight: 800, fontFamily: "var(--d)",
         background: C.gradient, backgroundSize: "300% 100%",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-        animation: "goldShimmer 4s ease-in-out infinite",
+        animation: "goldShimmer 10s ease-in-out infinite",
         filter: `drop-shadow(0 0 12px ${C.accent020})`,
         lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
       }}>Fe</div>

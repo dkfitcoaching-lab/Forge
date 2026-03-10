@@ -58,7 +58,14 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   border-color: ${C.accent};
-  box-shadow: 0 0 0 3px ${C.accent008};
+  box-shadow: 0 0 0 3px ${C.accent015}, 0 0 16px ${C.accent008};
+}
+
+/* Card hover/active feedback */
+.forge-card-interactive:active {
+  transform: scale(0.985);
+  border-color: ${C.accent020} !important;
+  box-shadow: ${C.cardShadow}, 0 0 12px ${C.accent008} !important;
 }
 
 input::placeholder, textarea::placeholder { color: ${C.text4}; }
@@ -106,6 +113,12 @@ input[type="number"] { -moz-appearance: textfield; }
   100% { background-position: -200% center; }
 }
 
+@keyframes shimmerSlow {
+  0% { background-position: 200% center; }
+  50% { background-position: 0% center; }
+  100% { background-position: -200% center; }
+}
+
 @keyframes breathe {
   0%, 100% {
     box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 40px rgba(180,195,210,.08);
@@ -127,6 +140,18 @@ input[type="number"] { -moz-appearance: textfield; }
   }
 }
 
+/* Accent-tinted breathing glow for primary CTA cards */
+@keyframes accentBreathe {
+  0%, 100% {
+    box-shadow: 0 0 12px ${C.accent015}, 0 0 32px ${C.accent008}, 0 4px 20px rgba(0,0,0,.3);
+    border-color: ${C.accent020};
+  }
+  50% {
+    box-shadow: 0 0 20px ${C.accent030}, 0 0 48px ${C.accent015}, 0 4px 20px rgba(0,0,0,.3);
+    border-color: ${C.accent040};
+  }
+}
+
 @keyframes glowPulse {
   0%, 100% { text-shadow: 0 0 14px ${C.accent030}; }
   50% { text-shadow: 0 0 36px ${C.accent060}; }
@@ -144,6 +169,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes goldShimmer {
   0% { background-position: 200% center; }
+  50% { background-position: 0% center; }
   100% { background-position: -200% center; }
 }
 
