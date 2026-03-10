@@ -122,9 +122,9 @@ const SURFACES = {
     isLight: false,
   },
   ivory: {
-    id: 'ivory', name: 'Ivory', desc: 'Light mode',
-    bg: '#F2F2F6', bg2: '#E8E8EE', card: '#FFFFFF', cardHover: '#F8F8FC',
-    text1: '#1a1a2e', text2: '#2d2d44', text3: '#5a5a78', text4: '#8888a0', text5: '#b0b0c4',
+    id: 'ivory', name: 'Ivory', desc: 'Warm light',
+    bg: '#F0EFF4', bg2: '#E6E5EC', card: '#FAF9FE', cardHover: '#F4F3FA',
+    text1: '#16162A', text2: '#2A2A42', text3: '#555570', text4: '#84849C', text5: '#ADADC0',
     isLight: true,
   },
 };
@@ -136,13 +136,13 @@ export function getThemeColors(accentId, surfaceId) {
   // ─── STRUCTURAL COLORS (Princess-style: FIXED cool neutral, not accent-tinted) ───
   // These NEVER change with accent — they provide consistent cool sophistication
   const struct = s.isLight ? {
-    structBorder: 'rgba(40,50,70,0.10)',
-    structBorderHover: 'rgba(40,50,70,0.18)',
-    structBorderStrong: 'rgba(40,50,70,0.28)',
-    structGlass: 'rgba(40,50,70,0.04)',
-    structGlassHover: 'rgba(40,50,70,0.07)',
-    structInset: 'rgba(255,255,255,0.5)',
-    structShadowTint: 'rgba(40,50,70,0.02)',
+    structBorder: 'rgba(30,35,60,0.12)',
+    structBorderHover: 'rgba(30,35,60,0.20)',
+    structBorderStrong: 'rgba(30,35,60,0.30)',
+    structGlass: 'rgba(30,35,60,0.05)',
+    structGlassHover: 'rgba(30,35,60,0.08)',
+    structInset: 'rgba(255,255,255,0.7)',
+    structShadowTint: 'rgba(30,35,60,0.04)',
   } : {
     structBorder: 'rgba(180,195,210,0.08)',
     structBorderHover: 'rgba(180,195,210,0.14)',
@@ -157,16 +157,16 @@ export function getThemeColors(accentId, surfaceId) {
   const cR = hexToRgb(s.card);
   const bR = hexToRgb(s.bg);
   const cardGradient = s.isLight
-    ? `linear-gradient(160deg, ${s.card}, ${s.bg2})`
+    ? `linear-gradient(160deg, ${s.card}, ${s.cardHover})`
     : `linear-gradient(160deg, rgba(${cR.r + 4},${cR.g + 4},${cR.b + 6},0.99), rgba(${bR.r + 4},${bR.g + 4},${bR.b + 6},0.99))`;
 
   // Multi-layer shadow system (Princess-grade depth)
   const cardShadow = s.isLight
-    ? '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6)'
+    ? '0 1px 3px rgba(20,20,40,0.06), 0 4px 16px rgba(20,20,40,0.04), 0 12px 32px rgba(20,20,40,0.02), inset 0 1px 0 rgba(255,255,255,0.8)'
     : `0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 ${struct.structInset}`;
 
   const cardShadowHover = s.isLight
-    ? '0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)'
+    ? '0 2px 8px rgba(20,20,40,0.08), 0 8px 28px rgba(20,20,40,0.06), 0 16px 40px rgba(20,20,40,0.03), inset 0 1px 0 rgba(255,255,255,0.8)'
     : `0 2px 12px rgba(0,0,0,0.5), 0 12px 40px rgba(0,0,0,0.2), 0 0 20px ${rgba(a.accent, 0.06)}, inset 0 1px 0 ${struct.structInset}`;
 
   // Neon breathing shadow (Princess multi-layer)

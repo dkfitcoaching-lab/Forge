@@ -253,11 +253,13 @@ export function NavIcons() {
     ),
     coach: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" />
-        <path d="M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10" />
-        <path d="M12 2c-2.5 3-4 6.5-4 10s1.5 7 4 10" />
-        <path d="M2 12h20" />
-        <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+        {/* Neural/AI brain icon — matches CoachFAB */}
+        <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6l-.8.6V18h-6v-2.4l-.8-.6A7 7 0 0 1 12 2z" />
+        <line x1="9" y1="18" x2="15" y2="18" />
+        <line x1="10" y1="21" x2="14" y2="21" />
+        <circle cx="10" cy="9" r="0.8" fill="currentColor" stroke="none" />
+        <circle cx="14" cy="9" r="0.8" fill="currentColor" stroke="none" />
+        <path d="M10 9l2 2 2-2" strokeWidth="1" />
       </svg>
     ),
     data: (
@@ -328,6 +330,26 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
         marginTop: 1,
       }}>{label}</div>
     </div>
+  );
+}
+
+// ─── FORGE WORDMARK ─────────────────────────────────────────
+// "FORGE" with the F and E subtly highlighted in accent gradient
+// Fe = Iron (atomic number 26) — the periodic table connection made visible
+export function ForgeTitle({ C, size = 18 }) {
+  const accentLetter = {
+    background: C.gradient, backgroundSize: "300% 100%",
+    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+    animation: "goldShimmer 10s ease-in-out infinite",
+    filter: `drop-shadow(0 0 12px ${C.accent020})`,
+  };
+  return (
+    <span style={{ fontSize: size, fontWeight: 800, fontFamily: "var(--d)", letterSpacing: ".1em", lineHeight: 1 }}>
+      <span style={accentLetter}>F</span>
+      <span style={{ color: C.text1, textShadow: `0 0 20px ${C.accent008}` }}>OR</span>
+      <span style={{ color: C.text2, textShadow: `0 0 20px ${C.accent008}` }}>G</span>
+      <span style={accentLetter}>E</span>
+    </span>
   );
 }
 

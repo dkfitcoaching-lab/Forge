@@ -21,6 +21,9 @@ export function CoachFAB({ C, onClick }) {
         <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6l-.8.6V18h-6v-2.4l-.8-.6A7 7 0 0 1 12 2z" />
         <line x1="9" y1="18" x2="15" y2="18" />
         <line x1="10" y1="21" x2="14" y2="21" />
+        <circle cx="10" cy="9" r="0.8" fill={C.accent} stroke="none" />
+        <circle cx="14" cy="9" r="0.8" fill={C.accent} stroke="none" />
+        <path d="M10 9l2 2 2-2" strokeWidth="1" />
       </svg>
     </button>
   );

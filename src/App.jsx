@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
-import { NavIcons, Toast, ForgeLogo } from "./components/Primitives";
+import { NavIcons, Toast, ForgeLogo, ForgeTitle } from "./components/Primitives";
 import storage from "./utils/storage";
 
 import WorkoutPlayer from "./components/WorkoutPlayer";
@@ -233,12 +233,8 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <ForgeLogo C={C} size="md" />
             <div>
-              <div style={{
-                fontSize: 18, fontWeight: 800, color: C.text1,
-                fontFamily: "var(--d)", letterSpacing: ".1em",
-                textShadow: `0 0 24px ${C.accent020}`,
-              }}>
-                FORGE
+              <div>
+                <ForgeTitle C={C} size={18} />
               </div>
               <div style={{
                 fontSize: 8, color: C.text4, fontFamily: "var(--m)",

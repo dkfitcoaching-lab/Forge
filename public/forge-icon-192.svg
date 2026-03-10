@@ -1,15 +1,57 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
-  <rect width="192" height="192" rx="32" fill="#010102"/>
-  <rect x="36" y="36" width="120" height="120" rx="20" fill="none" stroke="rgba(180,195,210,0.25)" stroke-width="2.5"/>
-  <rect x="36" y="36" width="120" height="120" rx="20" fill="url(#g)" opacity="0.08"/>
-  <text x="96" y="58" text-anchor="middle" fill="rgba(180,195,210,0.5)" font-family="monospace" font-size="16" font-weight="500">26</text>
-  <text x="96" y="108" text-anchor="middle" fill="url(#g)" font-family="serif" font-size="56" font-weight="800">Fe</text>
-  <text x="96" y="134" text-anchor="middle" fill="rgba(180,195,210,0.5)" font-family="monospace" font-size="14" font-weight="600" letter-spacing="3">FORGE</text>
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#5EEAD4"/>
-      <stop offset="50%" stop-color="#A7F3D0"/>
-      <stop offset="100%" stop-color="#5EEAD4"/>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a7868"/>
+      <stop offset="35%" stop-color="#40b8a8"/>
+      <stop offset="65%" stop-color="#7EFFF0"/>
+      <stop offset="100%" stop-color="#40b8a8"/>
+    </linearGradient>
+    <linearGradient id="border" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(180,195,210,0.15)"/>
+      <stop offset="50%" stop-color="rgba(180,195,210,0.35)"/>
+      <stop offset="100%" stop-color="rgba(180,195,210,0.15)"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+      <stop offset="50%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <linearGradient id="topEdge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="30%" stop-color="rgba(180,195,210,0.25)"/>
+      <stop offset="70%" stop-color="rgba(180,195,210,0.25)"/>
+      <stop offset="100%" stop-color="transparent"/>
     </linearGradient>
   </defs>
+
+  <!-- Background -->
+  <rect width="192" height="192" rx="38" fill="#020202"/>
+
+  <!-- Outer card border -->
+  <rect x="28" y="28" width="136" height="136" rx="22" fill="none" stroke="url(#border)" stroke-width="1.5"/>
+
+  <!-- Card glass fill -->
+  <rect x="28" y="28" width="136" height="136" rx="22" fill="rgba(170,185,200,0.04)"/>
+
+  <!-- Glass highlight (top half) -->
+  <rect x="29" y="29" width="134" height="68" rx="21" fill="url(#glass)"/>
+
+  <!-- Top edge highlight -->
+  <rect x="48" y="28" width="96" height="1" fill="url(#topEdge)"/>
+
+  <!-- Atomic number (26) -->
+  <text x="42" y="50" fill="rgba(180,195,210,0.5)" font-family="'IBM Plex Mono', 'JetBrains Mono', monospace" font-size="14" font-weight="500">26</text>
+
+  <!-- Fe symbol with glow -->
+  <text x="96" y="112" text-anchor="middle" fill="url(#accent)" font-family="'Cinzel', Georgia, serif" font-size="56" font-weight="800" filter="url(#glow)">Fe</text>
+
+  <!-- FORGE label -->
+  <text x="96" y="140" text-anchor="middle" fill="rgba(180,195,210,0.55)" font-family="'IBM Plex Mono', 'JetBrains Mono', monospace" font-size="12" font-weight="600" letter-spacing="2">FORGE</text>
 </svg>
