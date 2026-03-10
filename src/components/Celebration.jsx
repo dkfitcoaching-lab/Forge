@@ -44,7 +44,7 @@ export function CelebrationBurst({ C, count = 30 }) {
     id: i,
     x: "50%",
     y: "40%",
-    color: [C.accent, C.accentDark, C.accentVivid, C.ok, C.text1][i % 5],
+    color: [C.accent, C.accentDark, C.accentVivid, C.secondary, C.text1][i % 5],
     delay: i * 25,
     size: 4 + Math.random() * 6,
   }));
@@ -76,27 +76,29 @@ export function PRBadge({ pr, C }) {
         padding: "12px 16px",
         marginBottom: 8,
         animation: "fadeIn 0.5s ease",
+        boxShadow: `0 0 16px ${C.accent015}, 0 4px 16px rgba(0,0,0,0.2)`,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <div
           style={{
-            width: 28,
-            height: 28,
+            width: 36,
+            height: 36,
             borderRadius: 8,
             background: C.gradient,
             backgroundSize: "300% 100%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            boxShadow: `0 0 12px ${C.accent020}`,
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.btnText} strokeWidth="2" strokeLinecap="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.btnText} strokeWidth="2" strokeLinecap="round">
             <path d="M12 15l-3 5h6l-3-5z" /><circle cx="12" cy="8" r="6" />
           </svg>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 7, fontWeight: 700, color: C.accent, letterSpacing: ".12em", fontFamily: "var(--m)" }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: ".12em", fontFamily: "var(--m)" }}>
             NEW {pr.type} PR
           </div>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, marginTop: 2 }}>
@@ -136,7 +138,7 @@ export function ReadinessGauge({ score, label, color, C }) {
           />
         ))}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: C[color] || C.accent, fontFamily: "var(--m)" }}>
+      <div style={{ fontSize: 28, fontWeight: 700, color: C[color] || C.accent, fontFamily: "var(--m)", textShadow: `0 0 20px ${C.accent030}` }}>
         {score}%
       </div>
       <div style={{ fontSize: 8, fontWeight: 700, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".16em", marginTop: 2 }}>
@@ -168,7 +170,7 @@ export function StreakFlame({ streak, C }) {
         />
       </svg>
       <div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 16px ${C.accent030}` }}>
           {streak}
         </div>
         <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>STREAK</div>

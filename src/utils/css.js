@@ -62,6 +62,10 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Card hover/active feedback */
+.forge-card-interactive:hover {
+  border-color: ${C.structBorderHover} !important;
+  box-shadow: ${C.cardShadowHover} !important;
+}
 .forge-card-interactive:active {
   transform: scale(0.985);
   border-color: ${C.accent020} !important;

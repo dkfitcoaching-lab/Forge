@@ -42,13 +42,17 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 24 }}>
-        {[{ v: stats.workoutCount, l: "WORKOUTS" }, { v: stats.streak, l: "STREAK" }, { v: stats.checkInCount, l: "CHECK-INS" }].map(({ v, l }) => (
+        {[
+          { v: stats.workoutCount, l: "WORKOUTS", color: C.accent },
+          { v: stats.streak, l: "STREAK", color: C.secondary },
+          { v: stats.checkInCount, l: "CHECK-INS", color: C.accent },
+        ].map(({ v, l, color }) => (
           <div key={l} style={{
             padding: "16px 10px", textAlign: "center",
             background: C.cardGradient, borderRadius: 12,
             border: `1.5px solid ${C.structBorderHover}`, boxShadow: C.cardShadow,
           }}>
-            <div style={{ fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", color: C.accent }}>{v}</div>
+            <div style={{ fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", color, textShadow: `0 0 16px ${color}40` }}>{v}</div>
             <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
           </div>
         ))}
@@ -56,7 +60,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       {stats.totalVolumeAllTime > 0 && (
         <Card C={C} style={{ padding: 14, marginBottom: 24, textAlign: "center" }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)", textShadow: `0 0 20px ${C.secondary030}` }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>TOTAL LBS MOVED</div>
         </Card>
       )}

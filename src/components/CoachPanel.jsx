@@ -57,7 +57,7 @@ export default function CoachPanel({ C }) {
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 16, fontWeight: 900, color: C.btnText, fontFamily: "var(--d)",
           animation: "goldShimmer 10s ease-in-out infinite",
-          boxShadow: `0 4px 16px ${C.accent030}`,
+          boxShadow: `0 4px 16px ${C.accent030}, 0 0 24px ${C.accent010}`,
         }}>
           F
         </div>
@@ -66,7 +66,7 @@ export default function CoachPanel({ C }) {
           <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".14em" }}>DATA-DRIVEN INTELLIGENCE</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 6, height: 6, borderRadius: 3, background: C.ok, animation: "pulse 3s ease-in-out infinite" }} />
+          <div style={{ width: 6, height: 6, borderRadius: 3, background: C.secondary, boxShadow: `0 0 8px ${C.secondary030}`, animation: "pulse 3s ease-in-out infinite" }} />
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>ONLINE</div>
         </div>
       </div>
@@ -154,7 +154,7 @@ export default function CoachPanel({ C }) {
       )}
 
       {/* Input */}
-      <div style={{ padding: "12px 0 4px", borderTop: `1px solid ${C.structBorder}`, display: "flex", gap: 8, flexShrink: 0 }}>
+      <div style={{ padding: "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}

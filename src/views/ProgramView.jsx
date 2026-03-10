@@ -51,11 +51,11 @@ export default function ProgramView({ C, onWork, onNav }) {
                 boxShadow: isCurrent ? `0 0 12px ${C.accent008}` : C.cardShadow,
                 transition: "all 0.2s",
               }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: completed ? C.ok : isCurrent ? C.accent : C.text3, fontFamily: "var(--m)" }}>{day.d}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: completed ? C.secondary : isCurrent ? C.accent : C.text3, fontFamily: "var(--m)" }}>{day.d}</div>
                 <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>
                   {day.rest ? "REST" : day.t.split(" ")[0]}
                 </div>
-                {completed && <div style={{ width: 4, height: 4, borderRadius: 2, background: C.ok, margin: "3px auto 0" }} />}
+                {completed && <div style={{ width: 4, height: 4, borderRadius: 2, background: C.secondary, margin: "3px auto 0" }} />}
               </div>
             );
           })}
@@ -72,10 +72,10 @@ export default function ProgramView({ C, onWork, onNav }) {
             <Card key={day.d} C={C} onClick={() => onWork(day)} style={{ display: "flex", gap: 14, alignItems: "center", cursor: "pointer" }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 8,
-                background: completed ? C.accent010 : C.structGlass,
-                border: `1px solid ${completed ? C.accent : C.structBorderHover}`,
+                background: completed ? C.secondary010 : C.structGlass,
+                border: `1px solid ${completed ? C.secondary : C.structBorderHover}`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, fontWeight: 700, color: completed ? C.ok : C.accent, fontFamily: "var(--m)", flexShrink: 0,
+                fontSize: 13, fontWeight: 700, color: completed ? C.secondary : C.accent, fontFamily: "var(--m)", flexShrink: 0,
               }}>
                 {completed ? "✓" : day.d}
               </div>
@@ -83,7 +83,9 @@ export default function ProgramView({ C, onWork, onNav }) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>Day {day.d}: {day.t}</div>
                 <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{day.x?.length} exercises · ~{day.m} min</div>
               </div>
-              <div style={{ color: C.text4, fontSize: 16 }}>›</div>
+              <div style={{ color: C.text4 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+              </div>
             </Card>
           );
         })}
