@@ -10,7 +10,8 @@ import storage from "../utils/storage";
 
 export default function CheckIn({ C, onBack, initialTab }) {
   const [activeTab, setActiveTab] = useState(initialTab || "log");
-  const [data, setData] = useState({ sl: 5, st: 5, en: 5, dg: 5, ad: 5, wt: "", nt: "", photo: null, photoDate: new Date().toISOString().split("T")[0], isCompetitor: false });
+  const [data, setData] = useState({ sl: 5, st: 5, en: 5, dg: 5, ad: 5, wt: "", nt: "", photo: null, photoDate: new Date().toISOString().split("T")[0], isCompetitor: false, bf: "", waist: "", chest: "", bicL: "", bicR: "", thL: "", thR: "" });
+  const [showMeasurements, setShowMeasurements] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const update = (key, value) => setData(prev => ({ ...prev, [key]: value }));
   const checkIns = getAllCheckIns();
@@ -299,6 +300,59 @@ export default function CheckIn({ C, onBack, initialTab }) {
             <input value={data.wt} onChange={e => update("wt", e.target.value)} placeholder="Enter weight (lbs)" type="number" inputMode="decimal"
               style={{ width: "100%", padding: "14px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text1, fontSize: 18, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
             {weightHistory.length >= 2 && <div style={{ marginTop: 12 }}><LineChart data={weightHistory.slice(-10)} C={C} height={60} /></div>}
+          </Card>
+
+          {/* Body Measurements */}
+          <Card C={C} style={{ padding: 16 }}>
+            <div onClick={() => setShowMeasurements(!showMeasurements)} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer",
+            }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>Body Measurements</div>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2, letterSpacing: ".04em" }}>
+                  Body fat %, waist, chest, biceps, thighs
+                </div>
+              </div>
+              <div style={{ color: C.text4, fontSize: 12, transform: showMeasurements ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 9l6 6 6-6" /></svg>
+              </div>
+            </div>
+
+            {showMeasurements && (
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.structBorder}`, display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  { k: "bf", l: "BODY FAT %", ph: "e.g. 12.5", u: "%" },
+                  { k: "waist", l: "WAIST", ph: "inches", u: "in" },
+                  { k: "chest", l: "CHEST", ph: "inches", u: "in" },
+                ].map(({ k, l, ph, u }) => (
+                  <div key={k}>
+                    <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>{l}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <input value={data[k]} onChange={e => update(k, e.target.value)} placeholder={ph} type="number" inputMode="decimal"
+                        style={{ flex: 1, padding: "10px 12px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text1, fontSize: 14, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
+                      <span style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", minWidth: 16 }}>{u}</span>
+                    </div>
+                  </div>
+                ))}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  {[
+                    { k: "bicL", l: "BICEP (L)" },
+                    { k: "bicR", l: "BICEP (R)" },
+                    { k: "thL", l: "THIGH (L)" },
+                    { k: "thR", l: "THIGH (R)" },
+                  ].map(({ k, l }) => (
+                    <div key={k}>
+                      <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>{l}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <input value={data[k]} onChange={e => update(k, e.target.value)} placeholder="in" type="number" inputMode="decimal"
+                          style={{ flex: 1, padding: "10px 12px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text1, fontSize: 14, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
+                        <span style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)" }}>in</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Sliders */}

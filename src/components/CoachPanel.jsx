@@ -40,22 +40,37 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [showPrompts, setShowPrompts] = useState(true);
+  const [pendingPhoto, setPendingPhoto] = useState(null);
   const scrollRef = useRef();
+  const photoRef = useRef();
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, typing]);
 
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPendingPhoto(ev.target.result);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   const send = () => {
-    if (!input.trim() || typing) return;
+    if ((!input.trim() && !pendingPhoto) || typing) return;
     const userMsg = input.trim();
-    setMessages((prev) => [...prev, { role: "user", text: userMsg, time: Date.now() }]);
+    const photo = pendingPhoto;
+    setMessages((prev) => [...prev, { role: "user", text: userMsg || (photo ? "📷 Photo attached" : ""), time: Date.now(), photo }]);
     setInput("");
+    setPendingPhoto(null);
     setTyping(true);
 
-    const thinkTime = 600 + Math.min(userMsg.length * 8, 800);
+    const thinkTime = 600 + Math.min((userMsg || "").length * 8, 800);
     setTimeout(() => {
-      const response = getCoachResponse(userMsg);
+      const response = photo && !userMsg
+        ? getCoachResponse("Analyze this photo")
+        : getCoachResponse(userMsg);
       setMessages((prev) => [...prev, { role: "assistant", text: response, time: Date.now() }]);
       setTyping(false);
     }, thinkTime);
@@ -151,7 +166,12 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
               maxWidth: "82%",
               boxShadow: m.role === "assistant" ? C.cardShadow : "none",
             }}>
-              <div style={{ fontSize: 12.5, color: m.role === "assistant" ? C.text2 : C.text1, lineHeight: 1.75, whiteSpace: "pre-line" }}>{m.text}</div>
+              {m.photo && (
+                <div style={{ marginBottom: 8, borderRadius: 10, overflow: "hidden" }}>
+                  <img src={m.photo} alt="" style={{ width: "100%", maxHeight: 180, objectFit: "cover", display: "block", borderRadius: 10 }} />
+                </div>
+              )}
+              {m.text && <div style={{ fontSize: 12.5, color: m.role === "assistant" ? C.text2 : C.text1, lineHeight: 1.75, whiteSpace: "pre-line" }}>{m.text}</div>}
               <div style={{ fontSize: 7, color: C.text5, fontFamily: "var(--m)", marginTop: 6, textAlign: m.role === "assistant" ? "left" : "right" }}>{formatTime(m.time)}</div>
             </div>
           </div>
@@ -219,8 +239,35 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
         </div>
       )}
 
+      {/* Photo Preview */}
+      {pendingPhoto && (
+        <div style={{ padding: isOverlay ? "8px 20px 0" : "8px 0 0", flexShrink: 0 }}>
+          <div style={{ position: "relative", display: "inline-block", borderRadius: 10, overflow: "hidden", border: `1px solid ${C.accent030}` }}>
+            <img src={pendingPhoto} alt="" style={{ height: 64, borderRadius: 10, display: "block", objectFit: "cover" }} />
+            <button onClick={() => setPendingPhoto(null)} style={{
+              position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: 9,
+              background: "rgba(0,0,0,0.7)", border: "none", color: "#fff", fontSize: 10,
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input */}
+      <input ref={photoRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoSelect} style={{ display: "none" }} />
       <div style={{ padding: isOverlay ? "12px 20px max(12px, env(safe-area-inset-bottom))" : "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
+        <button onClick={() => photoRef.current?.click()} style={{
+          background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`,
+          borderRadius: 12, width: 48, height: 48, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: pendingPhoto ? C.accent : C.text4, transition: "color 0.2s",
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+          </svg>
+        </button>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -240,9 +287,9 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
         />
         <button
           onClick={send}
-          disabled={typing || !input.trim()}
+          disabled={typing || (!input.trim() && !pendingPhoto)}
           style={{
-            background: typing || !input.trim() ? C.accent020 : C.gradientBtn,
+            background: typing || (!input.trim() && !pendingPhoto) ? C.accent020 : C.gradientBtn,
             backgroundSize: "300% 100%",
             border: "none",
             borderRadius: 12,
@@ -252,7 +299,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
             width: 48,
             height: 48,
             cursor: typing ? "default" : "pointer",
-            animation: !typing && input.trim() ? "shimmerSlow 8s ease-in-out infinite" : "none",
+            animation: !typing && (input.trim() || pendingPhoto) ? "shimmerSlow 8s ease-in-out infinite" : "none",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
