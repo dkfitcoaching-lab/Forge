@@ -4,11 +4,53 @@ import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
 
+const LANGUAGES = [
+  { code: "en", label: "English", native: "English" },
+  { code: "es", label: "Spanish", native: "Español" },
+  { code: "pt", label: "Portuguese", native: "Português" },
+  { code: "fr", label: "French", native: "Français" },
+  { code: "de", label: "German", native: "Deutsch" },
+  { code: "it", label: "Italian", native: "Italiano" },
+  { code: "ja", label: "Japanese", native: "日本語" },
+  { code: "ko", label: "Korean", native: "한국어" },
+  { code: "zh", label: "Chinese", native: "中文" },
+  { code: "ar", label: "Arabic", native: "العربية" },
+  { code: "hi", label: "Hindi", native: "हिन्दी" },
+  { code: "ru", label: "Russian", native: "Русский" },
+];
+
+function detectLanguage() {
+  const stored = storage.get("lang", null);
+  if (stored) return stored;
+  const browserLang = (navigator.language || navigator.userLanguage || "en").split("-")[0].toLowerCase();
+  const match = LANGUAGES.find(l => l.code === browserLang);
+  return match ? match.code : "en";
+}
+
 export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast, onBack }) {
   const [notifications, setNotifications] = useState(() => storage.get("nf", { a: true, b: true, c: true, d: true, e: true }));
   const [showResetModal, setShowResetModal] = useState(false);
+  const [profile, setProfile] = useState(() => storage.get("profile", { phone: "", email: "" }));
+  const [editingField, setEditingField] = useState(null);
+  const [language, setLanguage] = useState(detectLanguage);
+  const [showLangPicker, setShowLangPicker] = useState(false);
   const stats = computeStats();
   const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
+
+  const saveProfile = (key, value) => {
+    const next = { ...profile, [key]: value };
+    setProfile(next);
+    storage.set("profile", next);
+    setEditingField(null);
+    showToast?.("Updated");
+  };
+
+  const changeLang = (code) => {
+    setLanguage(code);
+    storage.set("lang", code);
+    setShowLangPicker(false);
+    showToast?.(`Language set to ${LANGUAGES.find(l => l.code === code)?.label}`);
+  };
 
   return (
     <div>
@@ -66,6 +108,72 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>TOTAL LBS MOVED</div>
         </Card>
       )}
+
+      <SectionDivider C={C} />
+
+      {/* ─── ACCOUNT ─── */}
+      <Label C={C}>ACCOUNT</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
+        {[
+          { k: "email", l: "Email", ph: "your@email.com", type: "email", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
+            </svg>
+          )},
+          { k: "phone", l: "Phone", ph: "+1 (555) 000-0000", type: "tel", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+            </svg>
+          )},
+        ].map(({ k, l, ph, type, icon }, i, arr) => (
+          <div key={k} style={{ padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none" }}>
+            {editingField === k ? (
+              <div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{l.toUpperCase()}</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    autoFocus
+                    type={type}
+                    defaultValue={profile[k]}
+                    id={`profile-${k}`}
+                    placeholder={ph}
+                    onKeyDown={e => { if (e.key === "Enter") saveProfile(k, e.target.value); if (e.key === "Escape") setEditingField(null); }}
+                    style={{
+                      flex: 1, padding: "10px 12px", background: C.structGlass,
+                      border: `1.5px solid ${C.accent030}`, borderRadius: 8,
+                      color: C.text1, fontSize: 14, fontFamily: "var(--m)",
+                      outline: "none",
+                    }}
+                  />
+                  <button onClick={() => saveProfile(k, document.getElementById(`profile-${k}`)?.value || "")} style={{
+                    padding: "8px 14px", background: C.gradientBtn, backgroundSize: "300% 100%",
+                    border: "none", borderRadius: 8, color: C.btnText, fontSize: 9, fontWeight: 700,
+                    fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".06em",
+                  }}>SAVE</button>
+                  <button onClick={() => setEditingField(null)} style={{
+                    padding: "8px 10px", background: "transparent",
+                    border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
+                    color: C.text4, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer",
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div onClick={() => setEditingField(k)} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                {icon}
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
+                  <div style={{ fontSize: 11, color: profile[k] ? C.text3 : C.text5, fontFamily: "var(--m)", marginTop: 1 }}>
+                    {profile[k] || `Add ${l.toLowerCase()}`}
+                  </div>
+                </div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+              </div>
+            )}
+          </div>
+        ))}
+      </Card>
 
       <SectionDivider C={C} />
 
@@ -148,15 +256,51 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       {/* ─── PREFERENCES ─── */}
       <Label C={C}>PREFERENCES</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
-        {[
-          { k: "units", l: "Units", v: "Imperial (lbs)" },
-          { k: "lang", l: "Language", v: "English" },
-        ].map(({ k, l, v }, i, arr) => (
-          <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none" }}>
-            <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
-            <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>{v}</div>
+        {/* Units */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+          <div>
+            <div style={{ fontSize: 13, color: C.text2 }}>Units</div>
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Weight &amp; measurements</div>
           </div>
-        ))}
+          <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>Imperial (lbs)</div>
+        </div>
+
+        {/* Language */}
+        <div style={{ padding: "14px 0" }}>
+          <div onClick={() => setShowLangPicker(!showLangPicker)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
+            <div>
+              <div style={{ fontSize: 13, color: C.text2 }}>Language</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>App interface language</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 11, color: C.text3, fontFamily: "var(--m)" }}>
+                {LANGUAGES.find(l => l.code === language)?.native || "English"}
+              </span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showLangPicker ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          {showLangPicker && (
+            <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
+              {LANGUAGES.map(lang => {
+                const active = language === lang.code;
+                return (
+                  <button key={lang.code} onClick={() => changeLang(lang.code)} style={{
+                    padding: "10px 12px", textAlign: "left",
+                    background: active ? C.accent008 : "transparent",
+                    border: `1px solid ${active ? C.accent030 : C.structBorder}`,
+                    borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
+                  }}>
+                    <div style={{ fontSize: 12, color: active ? C.accent : C.text2, fontWeight: active ? 600 : 400 }}>{lang.native}</div>
+                    <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{lang.label}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </Card>
 
       {/* ─── NOTIFICATIONS ─── */}
