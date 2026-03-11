@@ -94,7 +94,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
       for (let s = 0; s < ex.ns; s++) {
         const w = trackingData[`${exIdx}_${s}_w`];
         const r = trackingData[`${exIdx}_${s}_r`];
-        if (w || r) sets.push({ weight: w ? Number(w) : 0, reps: r ? Number(r) : 0 });
+        if (w && r) sets.push({ weight: Number(w), reps: Number(r) });
       }
       return { name: ex.n, sets };
     });

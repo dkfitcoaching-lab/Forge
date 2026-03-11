@@ -92,6 +92,7 @@ export default function ProgramPDF({ C, onClose }) {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       setGenerating(false);
+      alert("Pop-up blocked. Please allow pop-ups for this site to generate your program PDF.");
       return;
     }
 

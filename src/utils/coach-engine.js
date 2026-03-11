@@ -160,7 +160,7 @@ function generateResponse(userMessage, state) {
 
   // Nutrition questions
   if (msg.includes("nutrition") || msg.includes("meal") || msg.includes("eat") || msg.includes("diet") || msg.includes("calori") || msg.includes("protein") || msg.includes("macro")) {
-    const mealKey = "mc_" + new Date().toDateString();
+    const mealKey = "mc_" + new Date().toISOString().split("T")[0];
     const mealsChecked = storage.get(mealKey, {});
     const completed = Object.values(mealsChecked).filter(Boolean).length;
     return `Today's meal completion: ${completed}/5. Target: 2,500 cal (P: 212g, C: 277g, F: 59g). ${
