@@ -15,6 +15,7 @@ createRoot(document.getElementById('root')).render(
 // Register service worker for PWA offline support
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Forge/sw.js').catch(() => {});
+    const base = import.meta.env.BASE_URL || '/';
+    navigator.serviceWorker.register(`${base}sw.js`).catch(() => {});
   });
 }
