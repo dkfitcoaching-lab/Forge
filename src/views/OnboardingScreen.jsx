@@ -13,7 +13,7 @@ import storage from "../utils/storage";
 const FLOW = [
   // 0 — Opening hook: establish the value gap immediately
   {
-    ai: "Welcome to Forge.\n\nWhat you're about to set up would cost $500+/month from an elite coach. Same methodology. Same intelligence. Adapts to your body, your goals, your response to training.\n\nLet's build your profile.",
+    ai: "Welcome to Forge.\n\nThe coaching methodology behind this system produces elite-level results. The difference is access — what used to require a world-class coach and thousands per month now adapts to your body, your goals, and your data in real time.\n\nLet's build your profile.",
     autoAdvance: true,
     delay: 3200,
   },
@@ -40,7 +40,7 @@ const FLOW = [
       };
       const goals = Array.isArray(d.goal) ? d.goal : [d.goal];
       const parts = goals.map(g => r[g]).filter(Boolean);
-      return parts.length > 0 ? parts.join("\n\n") : "Forge delivers what elite coaches charge $500+/month for — real programming intelligence that adapts to your data.";
+      return parts.length > 0 ? parts.join("\n\n") : "Forge delivers coaching-grade programming intelligence that adapts to your data — the same methodology that drives elite results.";
     },
     followUp: "Now tell me — what's actually holding you back? Select everything that applies.",
     options: [
@@ -124,20 +124,20 @@ const FLOW = [
       const parts = [];
 
       if (t.includes("Hired a personal trainer"))
-        parts.push("A good trainer costs $60–150 per session. That's $500+ a month — and the coaching disappears the moment the session ends. No system running between appointments. No data accumulating. Forge delivers that same coaching intelligence 24/7 for the price of two coffees a week. And it never forgets a single rep you've logged.");
+        parts.push("Great trainers change lives. The challenge is access — the best ones cost thousands a month, and the coaching stops the moment you leave the session. No system running between appointments. No data accumulating over time. Forge delivers that caliber of coaching intelligence around the clock, and it remembers every rep you've ever logged.");
       if (t.includes("Bought an online program"))
-        parts.push("Online programs are static PDFs written for everyone, designed for no one. They can't see your data. They can't adapt to your progress. They can't tell you when to push harder or pull back. Forge is a living system that reads your actual training data and evolves with you.");
+        parts.push("Online programs are a solid starting point — but they're static. They can't see your data, adapt to your progress, or tell you when to push harder. Forge is a living system. It reads your actual training data and evolves with you, session to session.");
       if (t.includes("Used a fitness app"))
-        parts.push("Most fitness apps make you do all the work manually. Log this, track that, figure out the rest yourself. Forge is the opposite — it analyzes your data, detects patterns, identifies when you're ready to progress, and monitors fatigue. The difference between a counter and a coach.");
+        parts.push("There's a difference between tracking and coaching. Tracking records what you did. Coaching knows what you should do next. Forge analyzes your data, detects patterns, identifies when you're ready to progress, and monitors fatigue. It's not a log book — it's an intelligence layer.");
       if (t.includes("Followed YouTube / social media"))
-        parts.push("Social media fitness content is entertainment marketed as education. What works for someone with elite genetics isn't a program — it's a highlight reel. Forge is built on the same methodology real coaches use with real clients getting real results. No trends. No hype.");
+        parts.push("Content creators are great for inspiration — but inspiration isn't a program. Forge is built on methodology refined through real clients getting real results. Not what looks good on camera. What actually works when you show up consistently and train with structure.");
       if (t.includes("Group fitness classes"))
-        parts.push("Group classes are one program for thirty people. Zero individualization. A real coach programs around YOUR goals, YOUR recovery, YOUR progression. That specificity is what drives transformation — and it's exactly what Forge delivers at scale.");
+        parts.push("Group classes build habits and community — that matters. But they can't individualize. They can't track your progression or adapt to your recovery. Forge gives you that layer of specificity on top of whatever else you're doing — programming that's actually built around you.");
 
       if (parts.length === 0 && t.includes("This is my first step"))
-        parts.push("Smart first move. Most people waste years bouncing between random approaches before finding a real system. You're getting coaching-grade intelligence from day one — the same methodology that produces results for elite clients, accessible to everyone.");
+        parts.push("Smart first move. Starting with the right system means every session compounds from day one. Forge gives you coaching-grade intelligence and structure from the start — the same methodology that produces results at the highest level.");
       else if (parts.length === 0)
-        parts.push("The pattern behind every failed approach is the same: no coaching intelligence working between sessions. No data accumulating. No system adapting to your progress. Forge changes that equation.");
+        parts.push("What most approaches are missing is continuity — no intelligence working between sessions, no data accumulating, no system adapting to your progress. That's the gap Forge fills.");
 
       return parts.slice(0, 2).join("\n\n");
     },
@@ -250,7 +250,7 @@ const FLOW = [
         `Nutrition — Macro tracking, meal framework, hydration\n` +
         `Analytics — Fatigue model, PR detection, overload targets\n` +
         `Coaching — 24/7 intelligence that reads your actual data\n\n` +
-        `This is what costs $500+/month from an elite coach. Choose your plan:`;
+        `This level of coaching used to require thousands per month and a waiting list. Choose your plan:`;
     },
     showTiers: true,
   },
@@ -279,7 +279,7 @@ const TIERS = [
   },
   {
     name: "FORGE PRO",
-    tagline: "AI-Powered Performance Coaching",
+    tagline: "Intelligent Coaching System",
     price: "$29.99",
     period: "/mo",
     yearlyPrice: "$19.99",

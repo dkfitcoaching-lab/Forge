@@ -20,7 +20,7 @@ export default function LoginScreen({ C, onLogin }) {
   const features = [
     { label: "YOUR DATA", desc: "Adapts to you" },
     { label: "24 / 7", desc: "Always available" },
-    { label: "$15/MO", desc: "Not $500" },
+    { label: "FROM $15", desc: "Per month" },
   ];
 
   return (
@@ -168,7 +168,7 @@ export default function LoginScreen({ C, onLogin }) {
           transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s", marginBottom: 40,
           maxWidth: 300, margin: "0 auto 40px",
         }}>
-          Elite-level coaching intelligence that adapts to your body, your goals, and your response to training — for the price of two coffees a week.
+          The same coaching intelligence that drives elite results — adapted to your body, your goals, and your response to training. Available 24/7.
         </div>
 
         {/* CTA Button */}
