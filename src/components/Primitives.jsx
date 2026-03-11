@@ -300,13 +300,13 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
   return (
     <div style={{
       width: s.box, height: s.box,
-      border: `1.5px solid ${C.structBorderStrong}`,
+      border: `1.5px solid ${C.accent030}`,
       borderRadius: s.radius,
       background: `linear-gradient(145deg, ${C.structGlass}, rgba(180,195,210,0.06))`,
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       position: "relative",
-      boxShadow: `0 0 24px ${C.accent020}, 0 0 48px ${C.accent008}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+      boxShadow: `0 0 16px ${C.accent020}, 0 0 40px ${C.accent010}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
       padding: s.pad,
       overflow: "hidden",
     }}>

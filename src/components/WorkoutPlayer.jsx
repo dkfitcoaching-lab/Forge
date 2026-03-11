@@ -63,7 +63,8 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
     // Validate: only allow positive numbers, strip non-numeric except decimal
     const cleaned = rawValue.replace(/[^0-9.]/g, '');
     const num = parseFloat(cleaned);
-    const value = cleaned === '' ? '' : (isNaN(num) || num < 0) ? '' : cleaned;
+    const maxVal = field === 'r' ? 100 : 1500; // reps max 100, weight max 1500 lbs
+    const value = cleaned === '' ? '' : (isNaN(num) || num < 0) ? '' : num > maxVal ? String(maxVal) : cleaned;
     const next = { ...trackingData, [`${trackKey}_${field}`]: value };
     setTrackingData(next);
     storage.set(`wp_${day.d}`, next);

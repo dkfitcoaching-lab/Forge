@@ -87,6 +87,11 @@ function analyzeUserState() {
 function generateResponse(userMessage, state) {
   const msg = userMessage.toLowerCase();
 
+  // PDF / program document request
+  if (msg.includes("pdf") || msg.includes("program document") || msg.includes("generate my program") || msg.includes("print my program") || msg.includes("download my program") || msg.includes("full program")) {
+    return "You can generate your complete program document from the **Program** tab. Tap **Generate Program PDF** — you'll be able to select which sections to include (training, nutrition, supplements, cardio, recovery, posing) and save it as a PDF. It's customized to your profile and includes your personal records.";
+  }
+
   // Weight / body composition questions
   if (msg.includes("weight") || msg.includes("body") || msg.includes("scale")) {
     if (state.stats.weightTrend.length >= 2) {
