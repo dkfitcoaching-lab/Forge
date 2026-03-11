@@ -71,8 +71,14 @@ export default function App() {
   // Scroll to top on any navigation change
   const scrollRef = useRef(null);
   const scrollToTop = useCallback(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, []);
+
+  // Auto-scroll to top when view or tab changes
+  useEffect(() => { scrollToTop(); }, [view, tab]);
 
   const startWorkout = (day) => { setWorkoutDay(day); setView("wp"); };
   const exitWorkout = () => { setWorkoutDay(null); setView("main"); setTab("today"); scrollToTop(); };
@@ -139,7 +145,7 @@ export default function App() {
   if (screen === "ob") {
     return (
       <>
-        <OnboardingScreen C={C} onComplete={() => { setScreen("app"); if (!storage.get("wt_done")) setShowWalkthrough(true); }} changeAccent={changeAccent} changeSurface={changeSurface} />
+        <OnboardingScreen C={C} onComplete={() => { setScreen("app"); scrollToTop(); if (!storage.get("wt_done")) setShowWalkthrough(true); }} changeAccent={changeAccent} changeSurface={changeSurface} />
         <style>{css}</style>
       </>
     );
