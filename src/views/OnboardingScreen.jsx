@@ -11,33 +11,36 @@ import storage from "../utils/storage";
 // ══════════════════════════════════════════════════════════════
 
 const FLOW = [
-  // 0 — Opening hook: establish authority + set expectations
+  // 0 — Opening hook: establish the value gap immediately
   {
-    ai: "Welcome to Forge.\n\nI'm your personal performance coach. Over the next two minutes, I'll learn exactly what you need — and show you how Forge delivers it.\n\nLet's get started.",
+    ai: "Welcome to Forge.\n\nThe coaching methodology behind this system produces elite-level results. The difference is access — what used to require a world-class coach and thousands per month now adapts to your body, your goals, and your data in real time.\n\nLet's build your profile.",
     autoAdvance: true,
-    delay: 2800,
+    delay: 3200,
   },
-  // 1 — Primary goal: simple, clear, fast first action
+  // 1 — Primary goal: multi-select, custom SVG icons (no emojis)
   {
-    ai: "What's driving you right now?",
+    ai: "What's driving you right now? Select all that apply.",
     options: [
-      { label: "Build Muscle", icon: "💪" },
-      { label: "Lose Fat", icon: "🔥" },
-      { label: "Get Stronger", icon: "🏋️" },
-      { label: "Improve Performance", icon: "⚡" },
+      { label: "Build Muscle", icon: "muscle" },
+      { label: "Lose Fat", icon: "flame" },
+      { label: "Get Stronger", icon: "barbell" },
+      { label: "Improve Mobility", icon: "mobility" },
     ],
+    multi: true,
     key: "goal",
   },
   // 2 — Validate goal + open the pain (MULTI-SELECT)
   {
     genAi: (d) => {
       const r = {
-        "Build Muscle": "Muscle growth is a science — not a guessing game. Forge runs a 14-day periodized split designed around progressive overload, volume accumulation, and recovery timing. The system tells you exactly when to push harder and when to pull back.",
-        "Lose Fat": "Real fat loss means keeping every pound of muscle you've earned while stripping what you don't need. Forge manages your nutrition, training load, and recovery in one system — so you stay in a deficit without sacrificing strength.",
-        "Get Stronger": "Strength isn't built on motivation. It's built on structured progression. Forge tracks every lift, detects PRs automatically, and tells you precisely when you're ready to add weight. No guesswork.",
-        "Improve Performance": "Performance is the sum of a hundred variables done right. Training density, recovery quality, nutrition timing, fatigue management — Forge tracks all of it and turns the data into decisions.",
+        "Build Muscle": "An elite coach programs hypertrophy through periodized volume, progressive overload, and recovery timing — not random sets and reps. Forge runs that same system. It tracks your volume, detects when you're ready to push harder, and pulls back when your body needs it.",
+        "Lose Fat": "A good coach keeps you in a deficit without sacrificing muscle. That means managing training load, nutrition, and recovery as one system — not three separate apps. Forge does exactly that. Your macros, your meals, your training — one place, adapted to your data.",
+        "Get Stronger": "Strength coaches don't guess when to add weight. They track every lift, analyze progression curves, and time increases to your readiness. Forge does that automatically — PR detection, overload targets, fatigue modeling — the same analytical layer elite coaches use.",
+        "Improve Mobility": "Smart coaches monitor recovery, stress, and readiness daily so you train at the edge of your capacity without crossing into injury. Forge tracks those same signals and adjusts your training intensity before your joints have to tell you.",
       };
-      return r[d.goal] || "Forge is engineered for serious results.";
+      const goals = Array.isArray(d.goal) ? d.goal : [d.goal];
+      const parts = goals.map(g => r[g]).filter(Boolean);
+      return parts.length > 0 ? parts.join("\n\n") : "Forge delivers coaching-grade programming intelligence that adapts to your data — the same methodology that drives elite results.";
     },
     followUp: "Now tell me — what's actually holding you back? Select everything that applies.",
     options: [
@@ -60,19 +63,19 @@ const FLOW = [
       const parts = [];
 
       if (s.includes("Can't stay consistent") || s.includes("No one holding me accountable"))
-        parts.push("Here's the truth about consistency: it's not a character flaw. It's a systems problem. When you open Forge, you see exactly what to do today — your workout, your meals, your check-in. There's no decision fatigue. You just execute. That's how consistency becomes automatic.");
+        parts.push("A coach solves consistency by removing decisions. You show up, they tell you exactly what to do. Forge works the same way — open the app, see today's workout, meals, and check-in. No planning. No decision fatigue. You just execute.");
       if (s.includes("No real program"))
-        parts.push("Walking into a gym without a structured program is the most expensive mistake in fitness. You're investing time with no compounding return. Forge gives you a complete 14-day periodized split — exercise selection, rep schemes, volume progression — engineered by the same principles used by elite coaches.");
+        parts.push("A real coach would never let you walk into a gym without a structured program. Forge gives you a complete 14-day periodized split — the same progressive overload methodology that produces real results — not random workouts pulled from Instagram.");
       if (s.includes("Nutrition is a mess"))
-        parts.push("Nutrition shouldn't require a degree to figure out. The fitness industry has made it deliberately confusing because confused people buy more products. Forge simplifies it: your macros, your meals, your hydration — tracked in seconds, not hours. One system. No noise.");
+        parts.push("Good coaches make nutrition simple: here's what to eat, here's when, here are your macros. Done. Forge does the same — your meals, your macros, your hydration, tracked through conversation in seconds. Not hours of manual logging like MyFitnessPal.");
       if (s.includes("Progress has stalled"))
-        parts.push("A plateau isn't a wall — it's a signal. It means your current stimulus isn't enough. Forge's progressive overload engine analyzes your training data and identifies exactly which exercises are ready for an increase. It takes the guesswork out of breaking through.");
+        parts.push("When a client plateaus, an elite coach digs into the data — volume trends, overload curves, recovery patterns — and finds exactly what needs to change. Forge runs that same analysis automatically and tells you precisely which exercises are ready for an increase.");
       if (s.includes("Too much conflicting info"))
-        parts.push("For every fitness \"expert\" saying one thing, there's another saying the opposite. That's by design — confusion sells supplements, ebooks, and coaching packages. Forge is built on what the research actually shows. One source of truth. No agenda except your results.");
+        parts.push("A coach cuts through the noise. They don't give you ten options — they give you the one thing that works for your situation right now. Forge operates the same way. One system, built on methodology that actually produces results. No conflicting advice.");
       if (s.includes("Recovery or injury concerns"))
-        parts.push("Training intensity without recovery intelligence is a countdown to injury. Forge monitors your fatigue score, sleep quality, and stress levels daily. When your body needs a lighter session, the system tells you — before your joints have to.");
+        parts.push("Smart coaches monitor fatigue, sleep, and stress so they can dial training back before injury happens. Forge tracks those same signals daily and adjusts your readiness score in real time. The intelligence that protects your longevity.");
       if (s.includes("Can't find the time"))
-        parts.push("The problem isn't time — it's efficiency. Most people waste 30-40% of their gym session figuring out what to do next. Forge eliminates that entirely. Every set is programmed, every rest period is timed. You train with purpose and leave.");
+        parts.push("A good coach makes sessions efficient — no wandering, no wasted sets. Forge does the same. Every set is programmed, every rest period is timed. You train with purpose and leave. Most people waste 30-40% of their gym time figuring out what to do next.");
 
       if (parts.length === 0)
         parts.push("These are solvable problems — every single one of them. And they all trace back to the same root cause: no system. A system doesn't rely on motivation. It doesn't need willpower. It runs on structure. That's what Forge is.");
@@ -121,20 +124,20 @@ const FLOW = [
       const parts = [];
 
       if (t.includes("Hired a personal trainer"))
-        parts.push("Personal trainers can be valuable — but at $60–150 per session, you're paying premium for something that disappears the moment the session ends. There's no system running between appointments. No data accumulating. No intelligence improving over time. Forge delivers intelligent coaching 24/7 at a fraction of the cost — and it never forgets a single rep you've logged.");
+        parts.push("Great trainers change lives. The challenge is access — the best ones cost thousands a month, and the coaching stops the moment you leave the session. No system running between appointments. No data accumulating over time. Forge delivers that caliber of coaching intelligence around the clock, and it remembers every rep you've ever logged.");
       if (t.includes("Bought an online program"))
-        parts.push("Most online programs are static PDFs marketed as personalization. They were written for everyone, which means they were designed for no one. They can't see your data. They can't adapt to your progress. They can't tell you when to push harder or when to back off. Forge is a living system that evolves with you.");
+        parts.push("Online programs are a solid starting point — but they're static. They can't see your data, adapt to your progress, or tell you when to push harder. Forge is a living system. It reads your actual training data and evolves with you, session to session.");
       if (t.includes("Used a fitness app"))
-        parts.push("Most fitness apps are glorified counters. They record what you did — but they don't know what you should do next. That's the critical difference. Forge doesn't just track. It analyzes. It detects patterns, identifies overload opportunities, monitors fatigue, and drives intelligent decisions.");
+        parts.push("There's a difference between tracking and coaching. Tracking records what you did. Coaching knows what you should do next. Forge analyzes your data, detects patterns, identifies when you're ready to progress, and monitors fatigue. It's not a log book — it's an intelligence layer.");
       if (t.includes("Followed YouTube / social media"))
-        parts.push("Social media fitness content exists to get views, not to get you results. What works for someone with elite genetics on performance-enhancing drugs is not a program — it's entertainment. Forge is built on evidence-based exercise science. No trends. No hype. Just what works.");
+        parts.push("Content creators are great for inspiration — but inspiration isn't a program. Forge is built on methodology refined through real clients getting real results. Not what looks good on camera. What actually works when you show up consistently and train with structure.");
       if (t.includes("Group fitness classes"))
-        parts.push("Group classes are great for general activity, but they fundamentally cannot be optimized for you. Thirty people, one program, zero individualization. Forge programs around your goals, your recovery, your progression. That specificity is what drives real transformation.");
+        parts.push("Group classes build habits and community — that matters. But they can't individualize. They can't track your progression or adapt to your recovery. Forge gives you that layer of specificity on top of whatever else you're doing — programming that's actually built around you.");
 
       if (parts.length === 0 && t.includes("This is my first step"))
-        parts.push("Smart first move. Most people waste months or years trying everything before finding a system that actually works. You're skipping straight to the solution. Forge gives you the same programming intelligence and tracking tools that elite coaches use — from your very first session.");
+        parts.push("Smart first move. Starting with the right system means every session compounds from day one. Forge gives you coaching-grade intelligence and structure from the start — the same methodology that produces results at the highest level.");
       else if (parts.length === 0)
-        parts.push("The pattern behind every failed approach is the same: no system was working for you between sessions. No data was accumulating. No intelligence was improving. Forge changes that equation entirely.");
+        parts.push("What most approaches are missing is continuity — no intelligence working between sessions, no data accumulating, no system adapting to your progress. That's the gap Forge fills.");
 
       return parts.slice(0, 2).join("\n\n");
     },
@@ -236,18 +239,18 @@ const FLOW = [
   {
     genAi: (d) => {
       const name = d.name || "Athlete";
-      const goal = d.goal || "your goals";
+      const goals = Array.isArray(d.goal) ? d.goal.join(", ") : (d.goal || "your goals");
       const freq = d.frequency || "your schedule";
       const exp = d.experience || "your level";
       return `${name}, your Forge profile is ready.\n\n` +
-        `Goal — ${goal}\n` +
+        `Goal — ${goals}\n` +
         `Training — ${freq} per week\n` +
         `Experience — ${exp}\n` +
-        `Program — AI-periodized, adapts to your data every session\n` +
-        `Nutrition — Full macro tracking with guided meal framework\n` +
-        `Analytics — Fatigue model, PR detection, volume trends, readiness scoring\n` +
-        `Coach — On-demand intelligence that reads your real data, 24/7\n\n` +
-        `Everything is built around what you told me. Choose the plan that matches your commitment:`;
+        `Program — Periodized and adaptive, built from your data\n` +
+        `Nutrition — Macro tracking, meal framework, hydration\n` +
+        `Analytics — Fatigue model, PR detection, overload targets\n` +
+        `Coaching — 24/7 intelligence that reads your actual data\n\n` +
+        `This level of coaching used to require thousands per month and a waiting list. Choose your plan:`;
     },
     showTiers: true,
   },
@@ -276,7 +279,7 @@ const TIERS = [
   },
   {
     name: "FORGE PRO",
-    tagline: "AI-Powered Performance Coaching",
+    tagline: "Intelligent Coaching System",
     price: "$29.99",
     period: "/mo",
     yearlyPrice: "$19.99",
@@ -402,6 +405,44 @@ function UserMsg({ text, C }) {
   );
 }
 
+// ─── CUSTOM SVG ICONS (no emojis) ────────────────────────────
+function GoalIcon({ name, color, size = 15 }) {
+  const s = { width: size, height: size, flexShrink: 0 };
+  const p = { fill: "none", stroke: color, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
+  if (name === "muscle") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M5 18c0-2 1-3 3-4l2-1c1-.5 1.5-1.5 1-3-.3-1-1.5-2.5-.5-5 .8-2 3-3 5-2s3 3 3 5c0 1.5-.5 2.5-1.5 3.5L15 13.5c-1 1-1 2-.5 3.5.3 1 .5 2-.5 3" />
+      <path d="M8 14c-2 .5-4 2-4 4" strokeOpacity="0.5" />
+    </svg>
+  );
+  if (name === "flame") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M12 22c-4.4 0-7-3.2-7-7 0-3 1.5-5.2 3-7 .8-1 1.5-2.2 1.8-3.5.1-.5.8-.6 1-.1C12 7 14 9 14.5 10.5c.1.3.5.3.6 0 .2-.8.4-1.8.4-2.5 0-.4.5-.6.8-.3C18 9.5 19 12 19 15c0 3.8-2.6 7-7 7z" />
+      <path d="M12 22c-1.7 0-3-1.5-3-3.5 0-1.5.8-2.8 1.5-3.5.3-.3.8-.1.8.3 0 .5.3 1 .7 1 .4 0 .7-.5.7-1 0-.3.4-.5.6-.3.8.8 1.7 2 1.7 3.5 0 2-1.3 3.5-3 3.5z" />
+    </svg>
+  );
+  if (name === "barbell") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <rect x="4" y="8" width="3" height="8" rx="1" />
+      <rect x="17" y="8" width="3" height="8" rx="1" />
+      <rect x="1" y="10" width="2" height="4" rx="0.5" />
+      <rect x="21" y="10" width="2" height="4" rx="0.5" />
+    </svg>
+  );
+  if (name === "mobility") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <circle cx="12" cy="4" r="2" />
+      <path d="M9 8h6l-1 5-2 1-2-1-1-5z" />
+      <path d="M8 13l-3 5" />
+      <path d="M16 13l3 5" />
+      <path d="M10 18l-1 4" />
+      <path d="M14 18l1 4" />
+    </svg>
+  );
+  return null;
+}
+
 // ─── OPTION CHIP ─────────────────────────────────────────────
 function OptionChip({ opt, selected, onToggle, C }) {
   const label = typeof opt === "string" ? opt : opt.label;
@@ -427,7 +468,7 @@ function OptionChip({ opt, selected, onToggle, C }) {
       transform: active ? "scale(1.03)" : "scale(1)",
       backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
     }}>
-      {icon && <span style={{ fontSize: 15 }}>{icon}</span>}
+      {icon && <GoalIcon name={icon} color={active ? C.accent : C.text3} size={15} />}
       {label}
       {active && (
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="3" strokeLinecap="round">
