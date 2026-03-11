@@ -24,7 +24,11 @@ const FLOW = [
       { label: "Build Muscle", icon: "muscle" },
       { label: "Lose Fat", icon: "flame" },
       { label: "Get Stronger", icon: "barbell" },
+      { label: "Body Recomposition", icon: "recomp" },
+      { label: "Athletic Performance", icon: "athletic" },
       { label: "Improve Mobility", icon: "mobility" },
+      { label: "General Health", icon: "health" },
+      { label: "Compete / Stage Prep", icon: "compete" },
     ],
     multi: true,
     key: "goal",
@@ -37,6 +41,10 @@ const FLOW = [
         "Lose Fat": "A good coach keeps you in a deficit without sacrificing muscle. That means managing training load, nutrition, and recovery as one system — not three separate apps. Forge does exactly that. Your macros, your meals, your training — one place, adapted to your data.",
         "Get Stronger": "Strength coaches don't guess when to add weight. They track every lift, analyze progression curves, and time increases to your readiness. Forge does that automatically — PR detection, overload targets, fatigue modeling — the same analytical layer elite coaches use.",
         "Improve Mobility": "Smart coaches monitor recovery, stress, and readiness daily so you train at the edge of your capacity without crossing into injury. Forge tracks those same signals and adjusts your training intensity before your joints have to tell you.",
+        "Body Recomposition": "Recomp is the hardest goal to execute alone because you're chasing two competing objectives simultaneously. Elite coaches manage this by precisely balancing training stimulus, caloric intake, and recovery windows. Forge runs that same balancing act — tracking your macros, volume, and body composition signals in one integrated system.",
+        "Athletic Performance": "Performance coaching isn't about getting tired in the gym — it's about targeted adaptation. Power, speed, endurance, and strength all require different programming variables managed in concert. Forge tracks your training load, recovery, and progression across every movement pattern so you peak when it matters.",
+        "General Health": "The best coaches know that sustainable health isn't built on extreme protocols. It's built on consistency — showing up, tracking the basics, and making small improvements over time. Forge gives you that structure: training, nutrition, hydration, sleep, and recovery — all in one system that adapts to your life.",
+        "Compete / Stage Prep": "Contest prep is the most demanding phase of training — every variable matters and the margin for error shrinks by the week. Elite coaches manage nutrition periodization, training volume, recovery, and body composition with surgical precision. Forge gives you that same level of systematic tracking and intelligent load management.",
       };
       const goals = Array.isArray(d.goal) ? d.goal : [d.goal];
       const parts = goals.map(g => r[g]).filter(Boolean);
@@ -440,6 +448,33 @@ function GoalIcon({ name, color, size = 15 }) {
       <path d="M14 18l1 4" />
     </svg>
   );
+  if (name === "recomp") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M8 20V10" /><path d="M12 20V4" /><path d="M16 20V14" />
+      <path d="M4 16l4-6 4 4 4-10 4 6" strokeOpacity="0.5" />
+    </svg>
+  );
+  if (name === "athletic") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <circle cx="12" cy="4" r="2" />
+      <path d="M7 11l5-3 5 3" />
+      <path d="M12 8v6" />
+      <path d="M8 20l4-6 4 6" />
+      <path d="M5 16h14" strokeOpacity="0.4" strokeDasharray="2 2" />
+    </svg>
+  );
+  if (name === "health") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  );
+  if (name === "compete") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M6 9a6 6 0 0 1 12 0c0 3-2 5-6 8-4-3-6-5-6-8z" />
+      <circle cx="12" cy="9" r="2" />
+      <path d="M9 19h6" /><path d="M10 22h4" />
+    </svg>
+  );
   return null;
 }
 
@@ -583,6 +618,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           setMessages(prev => [...prev, { role: "ai", text: FLOW[1].ai }]);
           setTyping(false);
           setShowOpts(true);
+          setShowMultiConfirm(true);
         }, 900);
       }, s0.delay || 1200);
     }, 800);

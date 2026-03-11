@@ -300,13 +300,15 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
   return (
     <div style={{
       width: s.box, height: s.box,
-      border: `1.5px solid ${C.accent030}`,
+      border: `1.5px solid ${size === "sm" ? C.accent040 : C.accent030}`,
       borderRadius: s.radius,
       background: `linear-gradient(145deg, ${C.structGlass}, rgba(180,195,210,0.06))`,
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       position: "relative",
-      boxShadow: `0 0 20px ${C.accent030}, 0 0 50px ${C.accent015}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+      boxShadow: size === "sm"
+        ? `0 0 14px ${C.accent040}, 0 0 30px ${C.accent020}, inset 0 1px 0 rgba(255,255,255,0.08)`
+        : `0 0 20px ${C.accent030}, 0 0 50px ${C.accent015}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
       padding: s.pad,
       overflow: "hidden",
     }}>
@@ -327,7 +329,9 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
         background: C.gradient, backgroundSize: "300% 100%",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
         animation: "goldShimmer 10s ease-in-out infinite",
-        filter: `drop-shadow(0 0 20px ${C.accent040}) drop-shadow(0 0 40px ${C.accent020})`,
+        filter: size === "sm"
+          ? `drop-shadow(0 0 10px ${C.accent060}) drop-shadow(0 0 24px ${C.accent030})`
+          : `drop-shadow(0 0 20px ${C.accent040}) drop-shadow(0 0 40px ${C.accent020})`,
         lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
       }}>{symbol}</div>
       <div style={{
