@@ -306,7 +306,7 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       position: "relative",
-      boxShadow: `0 0 16px ${C.accent020}, 0 0 40px ${C.accent010}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+      boxShadow: `0 0 20px ${C.accent030}, 0 0 50px ${C.accent015}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
       padding: s.pad,
       overflow: "hidden",
     }}>
@@ -327,7 +327,7 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
         background: C.gradient, backgroundSize: "300% 100%",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
         animation: "goldShimmer 10s ease-in-out infinite",
-        filter: `drop-shadow(0 0 16px ${C.accent030})`,
+        filter: `drop-shadow(0 0 20px ${C.accent040}) drop-shadow(0 0 40px ${C.accent020})`,
         lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
       }}>{symbol}</div>
       <div style={{
@@ -348,7 +348,7 @@ export function ForgeTitle({ C, size = 18 }) {
     background: C.gradient, backgroundSize: "300% 100%",
     WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
     animation: "goldShimmer 10s ease-in-out infinite",
-    filter: `drop-shadow(0 0 12px ${C.accent020})`,
+    filter: `drop-shadow(0 0 16px ${C.accent030}) drop-shadow(0 0 40px ${C.accent015})`,
   };
   return (
     <span style={{ fontSize: size, fontWeight: 800, fontFamily: "var(--d)", letterSpacing: ".1em", lineHeight: 1 }}>
