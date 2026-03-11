@@ -3,6 +3,11 @@ import { Card, Label, Button, SectionDivider, Modal } from "../components/Primit
 import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
+import {
+  getNotificationPermission, requestNotificationPermission,
+  isGeolocationSupported, getLocationSettings, setLocationSettings,
+  getGymLocation, saveCurrentAsGym, clearGymLocation,
+} from "../utils/notifications";
 
 const TIME_ZONES = Intl.supportedValuesOf?.("timeZone") || [];
 
@@ -52,6 +57,13 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
   const [tzSearch, setTzSearch] = useState("");
   const [showTraining, setShowTraining] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [locSettings, setLocSettings] = useState(getLocationSettings);
+  const [gymLoc, setGymLoc] = useState(getGymLocation);
+  const [notifPerm, setNotifPerm] = useState(getNotificationPermission);
+  const [savingGym, setSavingGym] = useState(false);
+  const [showCoachVoice, setShowCoachVoice] = useState(false);
+  const [coachVoice, setCoachVoice] = useState(() => storage.get("coach_voice", "default"));
+  const [ttsEnabled, setTtsEnabled] = useState(() => storage.get("tts_enabled", false));
   const photoInputRef = useRef();
   const stats = computeStats();
   const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
@@ -609,6 +621,230 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           )}
         </div>
       </Card>
+
+      <SectionDivider C={C} />
+
+      {/* ─── COACH INTELLIGENCE ─── */}
+      <Label C={C}>COACH INTELLIGENCE</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
+        {/* Text-to-Speech */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+          <div>
+            <div style={{ fontSize: 13, color: C.text2 }}>Voice Responses</div>
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Coach reads messages aloud</div>
+          </div>
+          <div onClick={() => { const next = !ttsEnabled; setTtsEnabled(next); storage.set("tts_enabled", next); }} style={{
+            width: 40, height: 22, borderRadius: 11, cursor: "pointer",
+            background: ttsEnabled ? C.accent : C.accent010,
+            position: "relative", transition: "background 0.2s",
+            boxShadow: ttsEnabled ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12,
+          }}>
+            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: ttsEnabled ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+          </div>
+        </div>
+
+        {/* Voice Selection */}
+        <div style={{ padding: "14px 0" }}>
+          <div onClick={() => setShowCoachVoice(!showCoachVoice)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
+            <div>
+              <div style={{ fontSize: 13, color: C.text2 }}>Coach Voice</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
+                {coachVoice === "default" ? "System default" : coachVoice}
+              </div>
+            </div>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showCoachVoice ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          {showCoachVoice && (
+            <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
+              {(() => {
+                const voices = typeof speechSynthesis !== "undefined" ? speechSynthesis.getVoices().filter(v => v.lang.startsWith("en")).slice(0, 8) : [];
+                const options = [{ id: "default", name: "System Default", detail: "Auto-selected" }, ...voices.map(v => ({ id: v.name, name: v.name, detail: v.lang }))];
+                return options.map(v => (
+                  <button key={v.id} onClick={() => {
+                    setCoachVoice(v.id);
+                    storage.set("coach_voice", v.id);
+                    // Preview the voice
+                    if (typeof speechSynthesis !== "undefined" && v.id !== "default") {
+                      speechSynthesis.cancel();
+                      const u = new SpeechSynthesisUtterance("Forge Coach is ready.");
+                      const found = speechSynthesis.getVoices().find(sv => sv.name === v.id);
+                      if (found) u.voice = found;
+                      speechSynthesis.speak(u);
+                    }
+                    setShowCoachVoice(false);
+                  }} style={{
+                    padding: "10px 12px", textAlign: "left",
+                    background: coachVoice === v.id ? C.accent008 : "transparent",
+                    border: `1px solid ${coachVoice === v.id ? C.accent030 : C.structBorder}`,
+                    borderRadius: 6, cursor: "pointer", transition: "all 0.15s",
+                  }}>
+                    <div style={{ fontSize: 11, color: coachVoice === v.id ? C.accent : C.text2, fontWeight: coachVoice === v.id ? 600 : 400 }}>{v.name}</div>
+                    <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{v.detail}</div>
+                  </button>
+                ));
+              })()}
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <SectionDivider C={C} />
+
+      {/* ─── LOCATION SERVICES ─── */}
+      <Label C={C}>LOCATION SERVICES</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
+        {/* Master toggle */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+          <div>
+            <div style={{ fontSize: 13, color: C.text2 }}>Location Services</div>
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
+              {!isGeolocationSupported() ? "Not supported on this device" : "Enable for gym arrival detection"}
+            </div>
+          </div>
+          <div onClick={() => {
+            if (!isGeolocationSupported()) return;
+            const next = { ...locSettings, enabled: !locSettings.enabled };
+            setLocSettings(next); setLocationSettings(next);
+          }} style={{
+            width: 40, height: 22, borderRadius: 11, cursor: isGeolocationSupported() ? "pointer" : "default",
+            background: locSettings.enabled ? C.accent : C.accent010, opacity: isGeolocationSupported() ? 1 : 0.4,
+            position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
+            boxShadow: locSettings.enabled ? `0 0 8px ${C.accent020}` : "none",
+          }}>
+            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.enabled ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+          </div>
+        </div>
+
+        {/* Gym Detection */}
+        {locSettings.enabled && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+              <div>
+                <div style={{ fontSize: 13, color: C.text2 }}>Gym Arrival Detection</div>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Notify when you arrive at your gym</div>
+              </div>
+              <div onClick={() => {
+                const next = { ...locSettings, gymDetection: !locSettings.gymDetection };
+                setLocSettings(next); setLocationSettings(next);
+              }} style={{
+                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
+                background: locSettings.gymDetection ? C.secondary : C.accent010,
+                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
+                boxShadow: locSettings.gymDetection ? `0 0 8px ${C.secondary020}` : "none",
+              }}>
+                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.gymDetection ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+              </div>
+            </div>
+
+            {/* Home gym flag */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+              <div>
+                <div style={{ fontSize: 13, color: C.text2 }}>I Train at Home</div>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Skip geo-fence — coach adapts to home training</div>
+              </div>
+              <div onClick={() => {
+                const next = { ...locSettings, homeGym: !locSettings.homeGym };
+                setLocSettings(next); setLocationSettings(next);
+              }} style={{
+                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
+                background: locSettings.homeGym ? C.secondary : C.accent010,
+                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
+              }}>
+                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.homeGym ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+              </div>
+            </div>
+
+            {/* Auto-launch workout */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
+              <div>
+                <div style={{ fontSize: 13, color: C.text2 }}>Auto-Launch Workout</div>
+                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Open workout screen on gym arrival</div>
+              </div>
+              <div onClick={() => {
+                const next = { ...locSettings, autoLaunchWorkout: !locSettings.autoLaunchWorkout };
+                setLocSettings(next); setLocationSettings(next);
+              }} style={{
+                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
+                background: locSettings.autoLaunchWorkout ? C.accent : C.accent010,
+                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
+              }}>
+                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.autoLaunchWorkout ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+              </div>
+            </div>
+
+            {/* Save / Clear Gym Location */}
+            <div style={{ padding: "14px 0" }}>
+              {gymLoc ? (
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <div>
+                      <div style={{ fontSize: 12, color: C.text2, fontWeight: 600 }}>{gymLoc.name || "Saved Gym"}</div>
+                      <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>
+                        {gymLoc.lat.toFixed(4)}, {gymLoc.lng.toFixed(4)}
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={() => { clearGymLocation(); setGymLoc(null); showToast?.("Gym location cleared"); }} style={{
+                    padding: "8px 14px", background: "transparent",
+                    border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
+                    color: C.text4, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".06em",
+                  }}>CLEAR GYM LOCATION</button>
+                </div>
+              ) : (
+                <button onClick={async () => {
+                  setSavingGym(true);
+                  try {
+                    const pos = await saveCurrentAsGym(profile.gymName || "My Gym");
+                    setGymLoc({ lat: pos.lat, lng: pos.lng, name: profile.gymName || "My Gym" });
+                    showToast?.("Gym location saved");
+                  } catch {
+                    showToast?.("Location access denied");
+                  }
+                  setSavingGym(false);
+                }} disabled={savingGym} style={{
+                  width: "100%", padding: "12px 16px",
+                  background: C.structGlass, border: `1.5px solid ${C.secondary}`,
+                  borderRadius: 10, color: C.secondary, fontSize: 11, fontWeight: 700,
+                  fontFamily: "var(--m)", cursor: savingGym ? "default" : "pointer",
+                  letterSpacing: ".08em", display: "flex", alignItems: "center",
+                  justifyContent: "center", gap: 8, minHeight: 44,
+                  opacity: savingGym ? 0.6 : 1, transition: "opacity 0.2s",
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+                  </svg>
+                  {savingGym ? "LOCATING..." : "SAVE CURRENT LOCATION AS GYM"}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </Card>
+
+      {/* Notification Permission */}
+      {notifPerm !== "granted" && notifPerm !== "unsupported" && (
+        <button onClick={async () => {
+          const result = await requestNotificationPermission();
+          setNotifPerm(result);
+          showToast?.(result === "granted" ? "Notifications enabled" : "Notifications blocked");
+        }} style={{
+          width: "100%", padding: "14px 16px", marginBottom: 16,
+          background: C.accent008, border: `1.5px solid ${C.accent030}`,
+          borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700,
+          fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".08em",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 44,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" />
+          </svg>
+          ENABLE PUSH NOTIFICATIONS
+        </button>
+      )}
 
       <SectionDivider C={C} />
 

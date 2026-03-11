@@ -5,6 +5,7 @@ import { RadialProgress, MacroRing } from "../components/Charts";
 import { useStaggeredReveal } from "../utils/hooks";
 import { MEALS, MACRO_CAPS, SUPPLEMENTS } from "../data/nutrition";
 import { computeStats, computeReadinessScore, getProgressiveOverloadTargets } from "../utils/analytics";
+import { getProactiveIntelligence } from "../utils/notifications";
 import DAYS from "../data/workouts";
 import storage from "../utils/storage";
 
@@ -80,6 +81,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const readiness = computeReadinessScore();
   const overloadTargets = getProgressiveOverloadTargets(currentDay);
   const overloadReady = overloadTargets ? overloadTargets.filter((t) => t.shouldIncrease) : [];
+  const intel = getProactiveIntelligence();
 
   // Sum actual macros from completed meals (not ratio-based)
   const completedMeals = MEALS.filter((_, i) => mealsChecked[i]);
@@ -126,6 +128,31 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               </div>
               {stats.streak > 0 && <StreakFlame streak={stats.streak} C={C} />}
             </div>
+            {/* ─── PROACTIVE INTELLIGENCE LINE ─── */}
+            {intel && (
+              <div style={{
+                marginTop: 18,
+                padding: "10px 14px",
+                background: C.structGlass,
+                border: `1px solid ${C.accent015}`,
+                borderRadius: 10,
+                display: "flex", alignItems: "center", gap: 10,
+                animation: "fadeIn 0.6s ease 0.4s both",
+              }}>
+                <div style={{
+                  width: 6, height: 6, borderRadius: 3, flexShrink: 0,
+                  background: intel.type === "gym_arrival" || intel.type === "overload" ? C.secondary : C.accent,
+                  boxShadow: `0 0 8px ${intel.type === "gym_arrival" ? C.secondary030 : C.accent020}`,
+                  animation: "pulse 3s ease-in-out infinite",
+                }} />
+                <div style={{
+                  fontSize: 10, color: C.text3, fontFamily: "var(--m)",
+                  letterSpacing: ".03em", lineHeight: 1.5,
+                }}>
+                  {intel.text}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </StaggerItem>

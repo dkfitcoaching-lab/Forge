@@ -242,7 +242,7 @@ export function getProactiveInsight() {
   const insight = state.insights[0];
   switch (insight.type) {
     case "sleep_low":
-      return `I've been watching your sleep data — averaging ${insight.avgSleep}/5 this week. That's your biggest limiter right now. Everything we build in the gym depends on what happens when you're asleep. Let's fix this first.`;
+      return `Your sleep data is flagging — averaging ${insight.avgSleep}/5 this week. That's your biggest limiter right now. Everything we build in the gym depends on what happens when you're asleep. Let's fix this first.`;
     case "stress_high":
       return `Your stress levels are running high (${insight.avgStress}/5). I'm factoring this into your readiness. We may need to dial volume back this week — pushing through elevated cortisol costs more than it builds.`;
     case "overload_ready":
