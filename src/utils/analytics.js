@@ -167,6 +167,35 @@ export function computeStats() {
   // Cycles completed
   const cyclesCompleted = Math.floor(workoutCount / 12); // 12 training days per cycle
 
+  // Top estimated 1RM across all exercises (Epley)
+  let top1RM = 0;
+  let top1RMExercise = "";
+  history.forEach((session) => {
+    if (!session.exercises) return;
+    session.exercises.forEach((ex) => {
+      if (!ex.name || !ex.sets) return;
+      ex.sets.forEach((set) => {
+        if (!set.weight || !set.reps) return;
+        const e1rm = Number(set.weight) * (1 + Number(set.reps) / 30);
+        if (e1rm > top1RM) { top1RM = e1rm; top1RMExercise = ex.name; }
+      });
+    });
+  });
+
+  // Training consistency: workouts / expected workouts based on days since first workout
+  // Program has ~6 training days per 7 calendar days (adjust for typical split)
+  let consistency = 0;
+  if (history.length >= 2) {
+    const firstTs = history[0].timestamp;
+    const lastTs = history[history.length - 1].timestamp;
+    const calendarDays = Math.max(1, Math.round((lastTs - firstTs) / dayMs));
+    const expectedPerWeek = 5; // typical 5-day training week
+    const expectedTotal = Math.max(1, Math.round((calendarDays / 7) * expectedPerWeek));
+    consistency = Math.min(100, Math.round((workoutCount / expectedTotal) * 100));
+  } else if (history.length === 1) {
+    consistency = 100;
+  }
+
   return {
     workoutCount,
     streak,
@@ -176,6 +205,9 @@ export function computeStats() {
     weightTrend,
     muscleVolume,
     cyclesCompleted,
+    top1RM: Math.round(top1RM),
+    top1RMExercise,
+    consistency,
     lastWorkout: history.length > 0 ? history[history.length - 1] : null,
   };
 }

@@ -58,18 +58,16 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
   const [ttsEnabled, setTtsEnabled] = useState(() => storage.get("tts_enabled", false));
   const photoInputRef = useRef();
   const stats = computeStats();
-  const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
 
-  const saveProfile = (key, value) => {
+  const saveProfile = (key, value, silent) => {
     const next = { ...profile, [key]: value };
     setProfile(next);
     storage.set("profile", next);
     setEditingField(null);
-    showToast?.("Updated");
+    if (!silent) showToast?.("Updated");
   };
 
   const [photoCrop, setPhotoCrop] = useState(null); // { src, scale, offsetY }
-  const cropCanvasRef = useRef();
 
   const handleProfilePhoto = (e) => {
     const file = e.target.files?.[0];
@@ -83,7 +81,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
   };
 
   const removeProfilePhoto = () => {
-    saveProfile("photo", null);
+    saveProfile("photo", null, true);
     showToast?.("Photo removed");
   };
 
@@ -96,21 +94,27 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
     const ctx = canvas.getContext("2d");
     const img = new Image();
     img.onload = () => {
+      // Match CSS objectFit:"cover" + scale + translateY exactly
       const scale = photoCrop.scale;
       const aspect = img.width / img.height;
       let dw, dh;
+      // "cover" fills the square — short side matches, long side overflows
       if (aspect >= 1) {
-        dh = size * scale;
-        dw = dh * aspect;
+        dh = size;
+        dw = size * aspect;
       } else {
-        dw = size * scale;
-        dh = dw / aspect;
+        dw = size;
+        dh = size / aspect;
       }
+      // Apply zoom
+      dw *= scale;
+      dh *= scale;
+      // Center, then apply vertical offset (matches CSS translateY(offsetY * 20px) scaled to 256px canvas)
       const dx = (size - dw) / 2;
-      const dy = (size - dh) / 2 + photoCrop.offsetY * size * 0.5;
+      const dy = (size - dh) / 2 + photoCrop.offsetY * 20 * (size / 160);
       ctx.drawImage(img, dx, dy, dw, dh);
       const result = canvas.toDataURL("image/jpeg", 0.85);
-      saveProfile("photo", result);
+      saveProfile("photo", result, true);
       setPhotoCrop(null);
       showToast?.("Photo updated");
     };
@@ -140,7 +144,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
   const filteredTz = tzSearch
     ? TIME_ZONES.filter(tz => tz.toLowerCase().includes(tzSearch.toLowerCase())).slice(0, 8)
-    : [];
+    : TIME_ZONES.filter(tz => tz === timezone || tz.startsWith(timezone.split("/")[0])).slice(0, 6);
 
   return (
     <div>
@@ -259,12 +263,15 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 24 }}>
         {[
-          { v: stats.workoutCount, l: "WORKOUTS", color: C.accent },
-          { v: stats.streak, l: "STREAK", color: C.accent },
-          { v: stats.checkInCount, l: "CHECK-INS", color: C.accent },
-        ].map(({ v, l, color }) => (
+          { v: stats.workoutCount, l: "WORKOUTS" },
+          { v: stats.streak, l: "STREAK" },
+          { v: stats.consistency ? `${stats.consistency}%` : "—", l: "CONSISTENCY" },
+          { v: stats.avgReadiness || "—", l: "READINESS", sub: stats.avgReadiness ? "/10" : null },
+          { v: stats.top1RM ? `${stats.top1RM}` : "—", l: `EST 1RM ${units === "metric" ? "KG" : "LBS"}`, sub: stats.top1RMExercise ? stats.top1RMExercise.split(" ").slice(0, 2).join(" ") : null },
+          { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+        ].map(({ v, l, sub }) => (
           <div key={l} style={{
-            padding: "18px 10px", textAlign: "center",
+            padding: "18px 8px 14px", textAlign: "center",
             background: C.cardGradient, borderRadius: 14,
             border: `1.5px solid ${C.accent015}`, boxShadow: `${C.cardShadow}, 0 0 20px ${C.accent008}`,
             position: "relative", overflow: "hidden",
@@ -273,18 +280,12 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
               position: "absolute", top: 0, left: "20%", right: "20%", height: 1,
               background: C.dividerGrad, opacity: 0.5,
             }} />
-            <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "var(--m)", color, textShadow: `0 0 20px ${color}50` }}>{v}</div>
-            <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: 5 }}>{l}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--m)", color: C.accent, textShadow: `0 0 20px ${C.accent}50` }}>{v}</div>
+            {sub && <div style={{ fontSize: 7, color: C.text3, fontFamily: "var(--m)", marginTop: 1 }}>{sub}</div>}
+            <div style={{ fontSize: 7, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: sub ? 2 : 5 }}>{l}</div>
           </div>
         ))}
       </div>
-
-      {stats.totalVolumeAllTime > 0 && (
-        <Card C={C} style={{ padding: 16, marginBottom: 24, textAlign: "center", borderTop: `2px solid ${C.accent020}` }}>
-          <div style={{ fontSize: 26, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 24px ${C.accent030}` }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
-          <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>TOTAL LBS MOVED</div>
-        </Card>
-      )}
 
       {/* Quick Links to other views */}
       {onNav && (
@@ -597,7 +598,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>GYM NAME</div>
                 <input
                   value={profile.gymName}
-                  onChange={e => saveProfile("gymName", e.target.value)}
+                  onChange={e => saveProfile("gymName", e.target.value, true)}
                   placeholder="e.g. Gold's Gym, Home Gym"
                   style={{
                     width: "100%", padding: "10px 12px", background: C.structGlass,
@@ -614,7 +615,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                     { k: "home", l: "Home Gym", desc: "Personal setup" },
                     { k: "hybrid", l: "Both", desc: "Mixed access" },
                   ].map(({ k, l, desc }) => (
-                    <button key={k} onClick={() => saveProfile("gymType", k)} style={{
+                    <button key={k} onClick={() => saveProfile("gymType", k, true)} style={{
                       flex: 1, padding: "10px 6px", textAlign: "center",
                       background: profile.gymType === k ? C.accent008 : "transparent",
                       border: `1px solid ${profile.gymType === k ? C.accent030 : C.structBorderHover}`,
@@ -648,7 +649,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
               { k: "afternoon", l: "Afternoon", t: "2-6pm" },
               { k: "evening", l: "Evening", t: "6-10pm" },
             ].map(({ k, l, t }) => (
-              <button key={k} onClick={() => saveProfile("trainingTime", profile.trainingTime === k ? "" : k)} style={{
+              <button key={k} onClick={() => saveProfile("trainingTime", profile.trainingTime === k ? "" : k, true)} style={{
                 flex: 1, padding: "8px 4px", textAlign: "center",
                 background: profile.trainingTime === k ? C.accent008 : "transparent",
                 border: `1px solid ${profile.trainingTime === k ? C.accent030 : C.structBorderHover}`,
@@ -685,7 +686,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>CONTACT NAME</div>
                 <input
                   value={profile.emergencyName}
-                  onChange={e => saveProfile("emergencyName", e.target.value)}
+                  onChange={e => saveProfile("emergencyName", e.target.value, true)}
                   placeholder="Full name"
                   style={{
                     width: "100%", padding: "10px 12px", background: C.structGlass,
@@ -698,7 +699,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>CONTACT PHONE</div>
                 <input
                   value={profile.emergencyPhone}
-                  onChange={e => saveProfile("emergencyPhone", e.target.value)}
+                  onChange={e => saveProfile("emergencyPhone", e.target.value, true)}
                   placeholder="+1 (555) 000-0000"
                   type="tel"
                   style={{
@@ -818,7 +819,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
             </div>
           </div>
           <div onClick={() => {
-            const allOn = notifications.a;
+            const allOn = Object.values(notifications).every(Boolean);
             const next = { a: !allOn, b: !allOn, c: !allOn, d: !allOn, e: !allOn };
             setNotifications(next); storage.set("nf", next);
             if (!allOn && getNotificationPermission() !== "granted") {
@@ -826,11 +827,11 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
             }
           }} style={{
             width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-            background: notifications.a ? C.accent : C.accent010,
+            background: Object.values(notifications).every(Boolean) ? C.accent : C.accent010,
             position: "relative", transition: "background 0.2s",
-            boxShadow: notifications.a ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12,
+            boxShadow: Object.values(notifications).every(Boolean) ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12,
           }}>
-            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: notifications.a ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: Object.values(notifications).every(Boolean) ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
           </div>
         </div>
       </Card>
