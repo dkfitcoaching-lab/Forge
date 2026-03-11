@@ -86,7 +86,17 @@ export function getAllPersonalRecords() {
     });
   });
 
-  return prs;
+  // Convert to sorted array for display
+  return Object.entries(prs)
+    .map(([exercise, data]) => ({
+      exercise,
+      type: `Est 1RM: ${Math.round(data.max1RM)} lbs`,
+      value: `${data.maxWeight} lbs`,
+      max1RM: data.max1RM,
+      maxVolume: data.maxVolume,
+      lastDate: data.lastDate,
+    }))
+    .sort((a, b) => b.max1RM - a.max1RM);
 }
 
 export function computeStats() {
@@ -221,7 +231,7 @@ export function computeReadinessScore() {
   const color =
     score >= 80 ? "ok" :
     score >= 60 ? "accent" :
-    score >= 40 ? "accent2" : "warn";
+    score >= 40 ? "accentDark" : "warn";
 
   return { score, label, color, data: latest };
 }

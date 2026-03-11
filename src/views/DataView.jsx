@@ -4,7 +4,7 @@ import BodyHeatMap from "../components/BodyHeatMap";
 import { computeStats, computeFatigueScore, getWorkoutHistory, getAllPersonalRecords } from "../utils/analytics";
 import DAYS from "../data/workouts";
 
-export default function DataView({ C, onNav }) {
+export default function DataView({ C, onNav, onBack }) {
   const stats = computeStats();
   const fatigue = computeFatigueScore();
   const history = getWorkoutHistory();
@@ -24,6 +24,16 @@ export default function DataView({ C, onNav }) {
 
   return (
     <div>
+      {onBack && (
+        <button onClick={onBack} style={{
+          display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
+          color: C.accent, fontSize: 11, fontFamily: "var(--m)", fontWeight: 600,
+          letterSpacing: ".06em", cursor: "pointer", padding: "0 0 16px", marginTop: -4,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+          BACK
+        </button>
+      )}
       {/* ─── HEADER ─── */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 4 }}>Performance Intelligence</div>

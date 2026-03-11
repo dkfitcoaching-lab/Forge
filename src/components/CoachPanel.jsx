@@ -44,6 +44,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
   const [speakingId, setSpeakingId] = useState(null);
   const scrollRef = useRef();
   const photoRef = useRef();
+  const galleryRef = useRef();
   const recognitionRef = useRef(null);
 
   // TTS — speak a coach message
@@ -137,7 +138,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
 
   const quickPrompts = isWorkout
     ? ["Form check tips", "Adjust my rest time", "How's my volume today?", "Push me harder"]
-    : ["Where do I stand?", "Read my fatigue", "Nutrition check", "Am I recovering?"];
+    : ["What should I focus on today?", "Break down my nutrition", "How's my recovery looking?", "What needs work this week?"];
 
   const sendQuick = (prompt) => {
     setShowPrompts(false);
@@ -335,15 +336,28 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
 
       {/* Input */}
       <input ref={photoRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoSelect} style={{ display: "none" }} />
-      <div style={{ padding: isOverlay ? "12px 20px max(12px, env(safe-area-inset-bottom))" : "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
-        <button onClick={() => photoRef.current?.click()} style={{
+      <input ref={galleryRef} type="file" accept="image/*,video/*" multiple onChange={handlePhotoSelect} style={{ display: "none" }} />
+      <div style={{ padding: isOverlay ? "12px 20px max(12px, env(safe-area-inset-bottom))" : "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 6, flexShrink: 0 }}>
+        <button onClick={() => photoRef.current?.click()} title="Take photo" style={{
           background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`,
-          borderRadius: 12, width: 44, height: 48, cursor: "pointer",
+          borderRadius: 12, width: 40, height: 48, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
           color: pendingPhoto ? C.accent : C.text4, transition: "color 0.2s", flexShrink: 0,
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+          </svg>
+        </button>
+        <button onClick={() => galleryRef.current?.click()} title="Upload from gallery" style={{
+          background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`,
+          borderRadius: 12, width: 40, height: 48, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: C.text4, transition: "color 0.2s", flexShrink: 0,
+        }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
           </svg>
         </button>
         {hasSpeechRecognition && (

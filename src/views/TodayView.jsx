@@ -105,11 +105,11 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       <StaggerItem index={0} visible={visible}>
         <div style={{
           margin: "-18px -16px 0", padding: "40px 24px 36px",
-          background: `linear-gradient(180deg, ${C.accent008} 0%, transparent 100%)`,
+          background: `linear-gradient(180deg, ${C.accent005} 0%, transparent 100%)`,
           position: "relative", overflow: "hidden",
         }}>
-          <div style={{ position: "absolute", top: -140, right: -120, width: 360, height: 360, borderRadius: "50%", background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)` }} />
-          <div style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: "50%", background: `radial-gradient(circle, ${C.secondary008} 0%, transparent 70%)` }} />
+          <div style={{ position: "absolute", top: -140, right: -120, width: 360, height: 360, borderRadius: "50%", background: `radial-gradient(circle, ${C.accent005} 0%, transparent 70%)` }} />
+          <div style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: "50%", background: `radial-gradient(circle, ${C.secondary005} 0%, transparent 70%)` }} />
           {/* Bottom edge line */}
           <div style={{ position: "absolute", bottom: 0, left: "5%", right: "5%", height: 1, background: C.dividerGrad, opacity: 0.3 }} />
           <div style={{ position: "relative" }}>
@@ -138,7 +138,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 marginTop: 18,
                 padding: "10px 14px",
                 background: C.structGlass,
-                border: `1px solid ${C.accent015}`,
+                border: `1px solid ${C.accent010}`,
                 borderRadius: 10,
                 display: "flex", alignItems: "center", gap: 10,
                 animation: "fadeIn 0.6s ease 0.4s both",

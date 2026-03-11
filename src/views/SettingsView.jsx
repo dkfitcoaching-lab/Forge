@@ -40,7 +40,7 @@ function detectLanguage() {
   return match ? match.code : "en";
 }
 
-export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast, onBack }) {
+export default function SettingsView({ C, accentId, surfaceId, changeAccent, changeSurface, showToast, onBack, onNav }) {
   const [notifications, setNotifications] = useState(() => storage.get("nf", { a: true, b: true, c: true, d: true, e: true }));
   const [showResetModal, setShowResetModal] = useState(false);
   const [profile, setProfile] = useState(() => storage.get("profile", {
@@ -215,6 +215,20 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         <Card C={C} style={{ padding: 14, marginBottom: 24, textAlign: "center" }}>
           <div style={{ fontSize: 24, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)", textShadow: `0 0 20px ${C.secondary030}` }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>TOTAL LBS MOVED</div>
+        </Card>
+      )}
+
+      {/* Quick Links to other views */}
+      {onNav && (
+        <Card C={C} onClick={() => onNav("data")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", marginBottom: 10 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent008, border: `1px solid ${C.accent015}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round"><polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" /></svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>Analytics & Data</div>
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Fatigue model, volume trends, body composition</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
         </Card>
       )}
 

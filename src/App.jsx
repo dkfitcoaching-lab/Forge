@@ -23,7 +23,11 @@ import ProgramPDF from "./views/ProgramPDF";
 
 export default function App() {
   const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
-  const [surfaceId, setSurfaceId] = useState(() => storage.get("surface", "void"));
+  const [surfaceId, setSurfaceId] = useState(() => {
+    const s = storage.get("surface", "void");
+    if (s === "slate") { storage.set("surface", "titanium"); return "titanium"; }
+    return s;
+  });
   const C = getThemeColors(accentId, surfaceId);
   const css = makeStyles(C);
 
@@ -186,6 +190,7 @@ export default function App() {
     if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
     if (view === "posing") return <PosingView C={C} onBack={goMain} />;
     if (view === "pdf") return <ProgramPDF C={C} onClose={goMain} />;
+    if (view === "data") return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} onBack={goMain} />;
     if (view === "settings") return (
       <SettingsView
         C={C}
@@ -201,16 +206,25 @@ export default function App() {
       case "program": return <ProgramView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} />;
       case "coach": return <CoachPanel C={C} isOverlay={false} />;
       case "data": return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} />;
+      case "profile": return (
+        <SettingsView
+          C={C}
+          accentId={accentId} surfaceId={surfaceId}
+          changeAccent={changeAccent} changeSurface={changeSurface}
+          showToast={showToast}
+          onNav={(v) => { setView(v); scrollToTop(); }}
+        />
+      );
       default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
     }
   };
 
-  // 4 tabs — Coach is #2 (core differentiator)
+  // 4 tabs — Coach is #2 (core differentiator), Profile replaces Data
   const tabs = [
     { k: "today", l: "Today" },
     { k: "coach", l: "Coach" },
     { k: "program", l: "Program" },
-    { k: "data", l: "Data" },
+    { k: "profile", l: "Profile" },
   ];
 
   return (
@@ -371,33 +385,23 @@ export default function App() {
                 }}
               >
                 {active && (
-                  <>
-                    {/* Radial glow halo behind icon */}
-                    <div style={{
-                      position: "absolute", top: "50%", left: "50%",
-                      transform: "translate(-50%, -55%)",
-                      width: 48, height: 48, borderRadius: "50%",
-                      background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)`,
-                      pointerEvents: "none",
-                    }} />
-                    {/* Top accent line */}
-                    <div style={{
-                      position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
-                      width: 32, height: 2, borderRadius: 1,
-                      background: C.gradient, backgroundSize: "300% 100%",
-                      boxShadow: `0 0 14px ${C.accent030}, 0 0 28px ${C.accent010}`,
-                    }} />
-                  </>
+                  <div style={{
+                    position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
+                    width: 24, height: 2, borderRadius: 1,
+                    background: C.accent,
+                    boxShadow: `0 0 6px ${C.accent030}`,
+                  }} />
                 )}
                 <div style={{
-                  animation: active ? "iconGlow 2.5s ease-in-out infinite" : "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
+                  filter: active ? `drop-shadow(0 0 3px ${C.accent030})` : "none",
+                  transition: "filter 0.2s",
                 }}>
                   {icons[t.k]}
                 </div>
                 <span style={{
                   marginTop: 1,
-                  textShadow: active ? `0 0 12px ${C.accent040}` : "none",
+                  textShadow: active ? `0 0 6px ${C.accent020}` : "none",
                 }}>{t.l}</span>
               </div>
             );

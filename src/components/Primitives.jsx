@@ -271,6 +271,13 @@ export function NavIcons() {
         <polyline points="16,6 20,6 20,10" />
       </svg>
     ),
+    // Profile — user silhouette
+    profile: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    ),
     // Settings — three horizontal sliders
     settings: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -307,8 +314,8 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
       alignItems: "center", justifyContent: "center",
       position: "relative",
       boxShadow: size === "sm"
-        ? `0 0 14px ${C.accent040}, 0 0 30px ${C.accent020}, inset 0 1px 0 rgba(255,255,255,0.08)`
-        : `0 0 20px ${C.accent030}, 0 0 50px ${C.accent015}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+        ? `0 0 6px ${C.accent020}, 0 0 14px ${C.accent008}, inset 0 1px 0 rgba(255,255,255,0.08)`
+        : `0 0 14px ${C.accent020}, 0 0 32px ${C.accent008}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
       padding: s.pad,
       overflow: "hidden",
     }}>
@@ -330,8 +337,8 @@ export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
         animation: "goldShimmer 10s ease-in-out infinite",
         filter: size === "sm"
-          ? `drop-shadow(0 0 10px ${C.accent060}) drop-shadow(0 0 24px ${C.accent030})`
-          : `drop-shadow(0 0 20px ${C.accent040}) drop-shadow(0 0 40px ${C.accent020})`,
+          ? `drop-shadow(0 0 4px ${C.accent030}) drop-shadow(0 0 10px ${C.accent015})`
+          : `drop-shadow(0 0 12px ${C.accent030}) drop-shadow(0 0 28px ${C.accent015})`,
         lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
       }}>{symbol}</div>
       <div style={{
