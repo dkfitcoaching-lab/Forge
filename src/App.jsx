@@ -20,6 +20,8 @@ import OnboardingScreen from "./views/OnboardingScreen";
 import Walkthrough from "./components/Walkthrough";
 import PosingView from "./views/PosingView";
 import ProgramPDF from "./views/ProgramPDF";
+import CardioLog from "./views/CardioLog";
+import CalendarView from "./views/CalendarView";
 
 export default function App() {
   const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
@@ -167,6 +169,9 @@ export default function App() {
     if (view === "ci") return <CheckIn C={C} onBack={goMain} />;
     if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
     if (view === "posing") return <PosingView C={C} onBack={goMain} />;
+    if (view === "cardio") return <CardioLog C={C} onBack={goMain} />;
+    if (view === "compare") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
+    if (view === "calendar") return <CalendarView C={C} onBack={goMain} onWork={startWorkout} />;
     if (view === "pdf") return <ProgramPDF C={C} onClose={goMain} />;
     if (view === "data") return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} onBack={goMain} />;
     if (view === "settings") return (

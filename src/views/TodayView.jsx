@@ -7,13 +7,14 @@ import { MEALS, MACRO_CAPS, SUPPLEMENTS } from "../data/nutrition";
 import { computeStats, computeReadinessScore, getProgressiveOverloadTargets } from "../utils/analytics";
 import { getProactiveIntelligence } from "../utils/notifications";
 import DAYS from "../data/workouts";
+import CONFIG from "../data/config";
 import storage from "../utils/storage";
 import { tapLight, tapMedium, tapDouble } from "../utils/haptics";
 
 export default function TodayView({ C, onWork, onNav, showToast }) {
   const activeSessionCheck = storage.get("active_session", null);
   const hasRecovery = activeSessionCheck && activeSessionCheck.dayNum && Date.now() - activeSessionCheck.timestamp < 86400000;
-  const visible = useStaggeredReveal(hasRecovery ? 15 : 14, 55);
+  const visible = useStaggeredReveal(hasRecovery ? 16 : 15, 55);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
@@ -65,14 +66,15 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
     storage.set("sp_" + todayKey, next);
   };
 
+  const cycleLen = CONFIG.program.cycleLength;
   const changeDay = useCallback((dir) => {
     tapDouble();
     const next = dir === "prev"
-      ? (currentDay > 1 ? currentDay - 1 : 14)
-      : (currentDay < 14 ? currentDay + 1 : 1);
+      ? (currentDay > 1 ? currentDay - 1 : cycleLen)
+      : (currentDay < cycleLen ? currentDay + 1 : 1);
     setCurrentDay(next);
     storage.set("cd", next);
-  }, [currentDay]);
+  }, [currentDay, cycleLen]);
 
   const [activeSession] = useState(() => {
     const s = storage.get("active_session", null);
@@ -209,7 +211,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
           </button>
           <div style={{ textAlign: "center", minWidth: 120 }}>
             <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".16em" }}>
-              DAY {currentDay} OF 14
+              DAY {currentDay} OF {cycleLen}
             </div>
             <div style={{ fontSize: 14, fontWeight: 600, color: C.text1, fontFamily: "var(--d)", marginTop: 2 }}>
               {isRest ? "Rest & Recovery" : dayData.t}
@@ -539,8 +541,45 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         </Card>
       </StaggerItem>
 
-      {/* ─── HYDRATION ─── */}
+      {/* ─── CARDIO ─── */}
       <StaggerItem index={7 + so} visible={visible}>
+        {(() => {
+          const cardioToday = storage.get("cardio_" + todayKey, { sessions: [], steps: 0 });
+          const cardioMins = (cardioToday.sessions || []).reduce((a, s) => a + (s.duration || 0), 0);
+          const cardioSteps = cardioToday.steps || 0;
+          return (
+            <Card C={C} onClick={() => onNav?.("cardio")} style={{ padding: 16, cursor: "pointer" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: cardioMins > 0 || cardioSteps > 0 ? 12 : 0 }}>
+                <Label C={C} style={{ marginBottom: 0 }}>Cardio & Steps</Label>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+              </div>
+              {cardioMins > 0 || cardioSteps > 0 ? (
+                <div style={{ display: "flex", gap: 16 }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{cardioMins}</div>
+                    <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em" }}>MIN</div>
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)" }}>{cardioSteps.toLocaleString()}</div>
+                    <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em" }}>STEPS</div>
+                  </div>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: C.text2, fontFamily: "var(--m)" }}>{(cardioToday.sessions || []).length}</div>
+                    <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em" }}>SESSIONS</div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>
+                  Tap to log cardio, steps, or conditioning work
+                </div>
+              )}
+            </Card>
+          );
+        })()}
+      </StaggerItem>
+
+      {/* ─── HYDRATION ─── */}
+      <StaggerItem index={8 + so} visible={visible}>
         <Card C={C} style={{ padding: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
             <Label C={C} style={{ marginBottom: 0 }}>Hydration</Label>
@@ -590,7 +629,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       </StaggerItem>
 
       {/* ─── SUPPLEMENTS ─── */}
-      <StaggerItem index={8 + so} visible={visible}>
+      <StaggerItem index={9 + so} visible={visible}>
         <Label C={C}>Supplements</Label>
         <Card C={C} style={{ padding: "2px 16px" }}>
           {SUPPLEMENTS.map((supp, i) => (
@@ -609,7 +648,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       <SectionDivider C={C} />
 
       {/* ─── LIFETIME STATS or WELCOME ─── */}
-      <StaggerItem index={9 + so} visible={visible}>
+      <StaggerItem index={10 + so} visible={visible}>
         {stats.workoutCount > 0 ? (
           <Card C={C} style={{ padding: "18px 20px", borderTop: `2px solid ${C.accent020}` }}>
             <div style={{ display: "flex", justifyContent: "space-around" }}>

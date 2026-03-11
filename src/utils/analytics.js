@@ -1,5 +1,6 @@
 import storage from "./storage";
 import DAYS from "../data/workouts";
+import CONFIG from "../data/config";
 
 // ══════════════════════════════════════════════════════════════
 // FORGE ANALYTICS ENGINE
@@ -165,7 +166,7 @@ export function computeStats() {
   const muscleVolume = computeMuscleVolume(history);
 
   // Cycles completed
-  const cyclesCompleted = Math.floor(workoutCount / 12); // 12 training days per cycle
+  const cyclesCompleted = Math.floor(workoutCount / CONFIG.program.trainingDaysPerCycle);
 
   // Estimated 1RM for key compound lifts only (Epley formula)
   const COMPOUND_LIFTS = [
