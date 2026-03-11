@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
 import { NavIcons, Toast, ForgeLogo, ForgeTitle } from "./components/Primitives";
@@ -71,8 +71,14 @@ export default function App() {
   // Scroll to top on any navigation change
   const scrollRef = useRef(null);
   const scrollToTop = useCallback(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, []);
+
+  // Auto-scroll to top when view or tab changes (useLayoutEffect to run before paint)
+  useLayoutEffect(() => { scrollToTop(); }, [view, tab]);
 
   const startWorkout = (day) => { setWorkoutDay(day); setView("wp"); };
   const exitWorkout = () => { setWorkoutDay(null); setView("main"); setTab("today"); scrollToTop(); };
@@ -139,7 +145,7 @@ export default function App() {
   if (screen === "ob") {
     return (
       <>
-        <OnboardingScreen C={C} onComplete={() => { setScreen("app"); if (!storage.get("wt_done")) setShowWalkthrough(true); }} changeAccent={changeAccent} changeSurface={changeSurface} />
+        <OnboardingScreen C={C} onComplete={() => { setScreen("app"); scrollToTop(); if (!storage.get("wt_done")) setShowWalkthrough(true); }} changeAccent={changeAccent} changeSurface={changeSurface} />
         <style>{css}</style>
       </>
     );
@@ -197,7 +203,7 @@ export default function App() {
           onNav={(v) => { setView(v); scrollToTop(); }}
         />
       );
-      default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
+      default: return <TodayView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} showToast={showToast} />;
     }
   };
 

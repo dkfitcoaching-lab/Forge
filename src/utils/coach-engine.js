@@ -18,7 +18,7 @@ function analyzeUserState() {
   const stats = computeStats();
   const readiness = computeReadinessScore();
   const fatigue = computeFatigueScore();
-  const currentDay = storage.get("cd", 1);
+  const currentDay = Math.max(1, Math.min(14, storage.get("cd", 1)));
   const dayData = DAYS[currentDay - 1];
   const checkIns = getAllCheckIns();
   const history = getWorkoutHistory();
@@ -94,7 +94,7 @@ function generateResponse(userMessage, state) {
 
   // Weight / body composition questions
   if (msg.includes("weight") || msg.includes("body") || msg.includes("scale")) {
-    if (state.stats.weightTrend.length >= 2) {
+    if (state.stats.weightTrend && state.stats.weightTrend.length >= 2) {
       const first = state.stats.weightTrend[0].weight;
       const last = state.stats.weightTrend[state.stats.weightTrend.length - 1].weight;
       const delta = Math.round((last - first) * 10) / 10;
@@ -124,7 +124,7 @@ function generateResponse(userMessage, state) {
   // Workout / training questions
   if (msg.includes("workout") || msg.includes("train") || msg.includes("session") || msg.includes("exercise")) {
     const parts = [];
-    if (state.dayData) {
+    if (state.dayData && state.dayData.t) {
       parts.push(`Today is Day ${state.currentDay}: ${state.dayData.t}.`);
       if (state.dayData.rest) {
         parts.push("It's a rest day. Recovery is non-negotiable — light walking or stretching only.");
@@ -138,7 +138,7 @@ function generateResponse(userMessage, state) {
     if (state.overloadTargets && state.overloadTargets.length > 0) {
       const increases = state.overloadTargets.filter((t) => t.shouldIncrease);
       if (increases.length > 0) {
-        parts.push(`Progressive overload: ${increases.map((t) => t.name).join(", ")} are ready for a weight increase.`);
+        parts.push(`Progressive overload: ${increases.filter((t) => t.name).map((t) => t.name).join(", ")} are ready for a weight increase.`);
       }
     }
     return parts.join(" ") || "Your training data will build over time. Complete workouts and I'll track your progression automatically.";
@@ -147,7 +147,7 @@ function generateResponse(userMessage, state) {
   // Fatigue questions
   if (msg.includes("fatigue") || msg.includes("overtraining") || msg.includes("deload") || msg.includes("recovery")) {
     if (state.fatigue) {
-      return `Current fatigue level: ${state.fatigue.fatigue}% — ${state.fatigue.label}. Training density: ${state.fatigue.density} sessions/week. Volume trend: ${state.fatigue.volumeTrend}% of average. ${
+      return `Current fatigue level: ${state.fatigue.fatigue || 0}% — ${state.fatigue.label || "Unknown"}. Training density: ${state.fatigue.density || 0} sessions/week. Volume trend: ${state.fatigue.volumeTrend || 0}% of average. ${
         state.fatigue.fatigue >= 75
           ? "I'd recommend a deload week: same exercises, 60% of your working weights, cut sets by 40%."
           : state.fatigue.fatigue < 25

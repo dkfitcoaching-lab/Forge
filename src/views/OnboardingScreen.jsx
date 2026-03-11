@@ -73,20 +73,20 @@ const FLOW = [
       if (s.includes("Can't stay consistent") || s.includes("No one holding me accountable"))
         parts.push("Consistency. That's the one variable that separates results from intentions.\n\nHere's what I'm building for you: every morning, your entire day is already laid out — workout, meals, supplements, check-in. No decisions. No guesswork. You open the app and execute. Streak tracking holds you accountable without judgment. And unlike a human coach who clocks out at 5 PM, this system is waiting for you at 5 AM.");
       if (s.includes("No real program"))
-        parts.push("No program means no progression. And no progression means wasted effort.\n\nI'm loading a 14-day periodized split into your profile right now — targeted muscle groups, intelligent volume progression, form cues on every movement. This isn't a static PDF. The system tracks your lifts and tells you when it's time to add weight. Your program evolves as you do.");
+        parts.push("No program means no progression. And no progression means wasted effort.\n\nOnce you're inside, your AI coach will build a periodized program custom to your goals, experience, and schedule — targeted muscle groups, intelligent volume progression, form cues on every movement. This isn't a static PDF. The system tracks your lifts and tells you when it's time to add weight. Your program evolves as you do.");
       if (s.includes("Nutrition is a mess"))
-        parts.push("Nutrition without structure is the number one reason people train hard and see nothing.\n\nI'm setting up your meal framework now — 5 structured meals with macro targets calibrated to your goals. One-tap logging. Hydration tracking. Snap a photo of your plate and get instant macro estimates. The days of guessing what to eat are over.");
+        parts.push("Nutrition without structure is the number one reason people train hard and see nothing.\n\nYour coach will set up a meal framework tailored to your goals — structured meals with macro targets calibrated to you. One-tap logging. Hydration tracking. Snap a photo of your plate and get instant macro estimates. The days of guessing what to eat are over.");
       if (s.includes("Progress has stalled"))
-        parts.push("Plateaus happen when the intelligence layer is missing. You're training on feel instead of data.\n\nForge is already building your analytics engine — progressive overload detection across every exercise, volume trend analysis, fatigue modeling. The system will tell you exactly which lifts are ready for an increase and which need more time. That's the difference between hoping and knowing.");
+        parts.push("Plateaus happen when the intelligence layer is missing. You're training on feel instead of data.\n\nForge gives you a real analytics engine — progressive overload detection across every exercise, volume trend analysis, fatigue modeling. The system tells you exactly which lifts are ready for an increase and which need more time. That's the difference between hoping and knowing.");
       if (s.includes("Too much conflicting info"))
         parts.push("Information overload is the modern fitness epidemic. A thousand voices, zero clarity.\n\nForge eliminates that noise. One system. One methodology. One source of truth built on your actual data — not someone else's opinion. When you ask the coach a question, it answers from what it sees in your training, your nutrition, your recovery. Not from a content library.");
       if (s.includes("Recovery or injury concerns"))
-        parts.push("Training through warning signs is how careers end early.\n\nI'm activating daily readiness monitoring — sleep quality, stress levels, energy, accumulated fatigue. The system builds a recovery profile that flags risk before your body has to. When fatigue index spikes, your training intensity auto-adjusts. Protection built into every session.");
+        parts.push("Training through warning signs is how careers end early.\n\nForge includes daily readiness monitoring — sleep quality, stress levels, energy, accumulated fatigue. The system builds a recovery profile that flags risk before your body has to. When fatigue index spikes, your training intensity auto-adjusts. Protection built into every session.");
       if (s.includes("Can't find the time"))
         parts.push("Time isn't the problem — wasted time is. Most people spend 30-40% of their gym time figuring out what to do next.\n\nForge eliminates that entirely. Walk in, press start. Every set is programmed. Every rest period is timed. The guided workout player keeps you moving with purpose. You'll get more done in 45 minutes than most people do in 90.");
 
       if (parts.length === 0)
-        parts.push("Every one of these problems traces back to the same root cause: no system. Motivation fades. Willpower runs out. But a system built on real data and intelligent programming? That compounds.\n\nI'm building that system for you right now. It never takes a day off, and it gets smarter every session.");
+        parts.push("Every one of these problems traces back to the same root cause: no system. Motivation fades. Willpower runs out. But a system built on real data and intelligent programming? That compounds.\n\nThat's what Forge is. It never takes a day off, and it gets smarter every session.");
 
       return parts.slice(0, 2).join("\n\n");
     },
@@ -169,7 +169,7 @@ const FLOW = [
       const val = [];
 
       if (p.includes("A real training program"))
-        val.push("TRAINING ENGINE — 14-day periodized split, intelligent volume progression, form cues on every movement");
+        val.push("TRAINING ENGINE — Custom periodized program built by your AI coach, intelligent volume progression, form cues on every movement");
       if (p.includes("Nutrition that makes sense"))
         val.push("NUTRITION SYSTEM — Structured meals, precision macros, photo estimation, hydration + supplement tracking");
       if (p.includes("Tracking my progress"))
@@ -198,8 +198,8 @@ const FLOW = [
   {
     genAi: (d) => {
       const f = d.frequency || "";
-      if (f === "6–7 days") return "That level of commitment is rare — and it's exactly what produces uncommon results. Forge's 14-day cycle programs strategic recovery days because growth happens during rest. The system ensures maximum stimulus on training days and maximum recovery on off days. Nothing is left to chance.";
-      if (f === "4–5 days") return "Four to five days is the optimal window for most serious trainees. The Forge 14-day split was designed around this exact frequency — enough stimulus to drive adaptation, enough recovery to sustain it. Every session has a clear purpose. Zero filler.";
+      if (f === "6–7 days") return "That level of commitment is rare — and it's exactly what produces uncommon results. Forge programs strategic recovery days because growth happens during rest. The system ensures maximum stimulus on training days and maximum recovery on off days. Nothing is left to chance.";
+      if (f === "4–5 days") return "Four to five days is the optimal window for most serious trainees. Your custom program will be designed around this exact frequency — enough stimulus to drive adaptation, enough recovery to sustain it. Every session has a clear purpose. Zero filler.";
       return "Fewer days means every session carries more weight — and the program accounts for that. Forge maximizes stimulus efficiency so you get more out of less. Strategic exercise selection, precise volume targets, and intelligent sequencing ensure nothing is wasted.";
     },
     followUp: "What's your age range?",
@@ -250,15 +250,15 @@ const FLOW = [
       const goals = Array.isArray(d.goal) ? d.goal.join(", ") : (d.goal || "your goals");
       const freq = d.frequency || "your schedule";
       const exp = d.experience || "your level";
-      return `${name}, your system is built.\n\n` +
+      return `${name}, your profile is complete.\n\n` +
         `GOAL — ${goals}\n` +
         `FREQUENCY — ${freq} per week\n` +
         `EXPERIENCE — ${exp}\n` +
-        `PROGRAM — Periodized. Adaptive. Built from your data.\n` +
+        `PROGRAM — Your AI coach will build a custom program when you start\n` +
         `NUTRITION — Precision macros. Structured meals. Hydration.\n` +
         `ANALYTICS — Fatigue model. PR detection. Overload engine.\n` +
         `COACH — Lives in your pocket. Learns your patterns. Never sleeps.\n\n` +
-        `Everything is loaded. The intelligence starts working the moment you begin. Choose your plan:`;
+        `Choose your plan and your coach takes over from here:`;
     },
     showTiers: true,
   },
@@ -274,7 +274,7 @@ const TIERS = [
     yearlyPrice: "$9.99",
     yearlyPeriod: "/mo billed annually",
     features: [
-      "14-day periodized program that adapts to you",
+      "Custom periodized program built by your AI coach",
       "Guided workout player with intelligent rest timers",
       "Precision nutrition — macros, meals, hydration",
       "Supplement protocol with daily tracking",
@@ -597,12 +597,23 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
   const [inputValue, setInputValue] = useState("");
   const [userData, setUserData] = useState({});
   const [yearlyBilling, setYearlyBilling] = useState(true);
+  const [pendingTheme, setPendingTheme] = useState(null);
+  const [pendingSurface, setPendingSurface] = useState(null);
   const scrollRef = useRef();
   const inputRef = useRef();
   const started = useRef(false);
 
   const scroll = () => {
-    if (scrollRef.current) setTimeout(() => { scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, 60);
+    // Scroll the chat container AND the window to follow messages
+    const doScroll = () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    };
+    // Double-fire: once immediately for fast response, once after render
+    setTimeout(doScroll, 60);
+    setTimeout(doScroll, 300);
   };
 
   useEffect(() => {
@@ -642,6 +653,8 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     setShowTiers(false);
     setMultiSelections([]);
     setInputValue("");
+    setPendingTheme(null);
+    setPendingSurface(null);
   };
 
   const advanceFlow = (newData, ni) => {
@@ -650,7 +663,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     setFlowIdx(ni);
     setTyping(true);
 
-    const aiText = next.genAi ? next.genAi(newData) : next.ai;
+    const aiText = next.genAi ? (next.genAi(newData) || next.ai || "") : (next.ai || "");
     const full = next.followUp ? `${aiText}\n\n${next.followUp}` : aiText;
 
     setTimeout(() => {
@@ -691,7 +704,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
   const confirmMulti = () => {
     const step = FLOW[flowIdx];
-    const selected = multiSelections.length > 0 ? multiSelections : ["None selected"];
+    const selected = multiSelections.length > 0 ? multiSelections : [];
     const newData = { ...userData, [step.key]: selected };
     setUserData(newData);
     clearInteractive();
@@ -710,38 +723,54 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     advanceFlow(newData, flowIdx + 1);
   };
 
-  const pickTheme = (id) => {
-    const names = { forge: "Forge Teal", platinum: "Platinum", obsidian: "Obsidian Violet", ember: "Ember", arctic: "Arctic Blue", crimson: "Crimson", gold: "Gold", rose: "Rose" };
-    const newData = { ...userData, theme: id };
+  const previewTheme = (id) => {
+    setPendingTheme(id);
+    changeAccent?.(id); // Live preview
+  };
+
+  const confirmTheme = () => {
+    if (!pendingTheme) return;
+    const names = Object.fromEntries(Object.entries(ACCENTS).map(([id, a]) => [id, a.name]));
+    const newData = { ...userData, theme: pendingTheme };
     setUserData(newData);
     clearInteractive();
-    changeAccent?.(id);
-    setMessages(prev => [...prev, { role: "user", text: names[id] || id }]);
+    setPendingTheme(null);
+    setMessages(prev => [...prev, { role: "user", text: names[pendingTheme] || pendingTheme }]);
     advanceFlow(newData, flowIdx + 1);
   };
 
-  const pickSurface = (id) => {
-    const newData = { ...userData, surface: id };
+  const previewSurface = (id) => {
+    setPendingSurface(id);
+    changeSurface?.(id); // Live preview
+  };
+
+  const confirmSurface = () => {
+    if (!pendingSurface) return;
+    const newData = { ...userData, surface: pendingSurface };
     setUserData(newData);
     clearInteractive();
-    changeSurface?.(id);
-    const surf = SURFACES[id];
-    setMessages(prev => [...prev, { role: "user", text: surf?.name || id }]);
+    const surf = SURFACES[pendingSurface];
+    setPendingSurface(null);
+    setMessages(prev => [...prev, { role: "user", text: surf?.name || pendingSurface }]);
     advanceFlow(newData, flowIdx + 1);
   };
 
   const selectTier = (tier) => {
-    const newData = {
-      ...userData,
-      tier: tier.name,
-      tierPrice: yearlyBilling ? tier.yearlyPrice : tier.price,
-      billing: yearlyBilling ? "yearly" : "monthly",
-    };
-    storage.set("ob", true);
-    storage.set("ob_data", newData);
-    storage.set("user_name", newData.name || "");
-    storage.set("user_tier", tier.name);
-    onComplete();
+    try {
+      const newData = {
+        ...userData,
+        tier: tier.name,
+        tierPrice: yearlyBilling ? tier.yearlyPrice : tier.price,
+        billing: yearlyBilling ? "yearly" : "monthly",
+      };
+      storage.set("ob", true);
+      storage.set("ob_data", newData);
+      storage.set("user_name", newData.name || "");
+      storage.set("user_tier", tier.name);
+      onComplete();
+    } catch (e) {
+      console.error("Onboarding save error:", e);
+    }
   };
 
   const totalSteps = FLOW.length;
@@ -749,28 +778,30 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
   return (
     <div style={{
-      minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", color: C.text1,
+      minHeight: "100vh",
+      background: "linear-gradient(180deg, #08080c 0%, #0c0e14 30%, #12151e 60%, #181c28 100%)",
+      fontFamily: "var(--b)", color: C.text1,
       display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
     }}>
-      {/* Atmosphere orbs */}
+      {/* Atmosphere — subtle silver/steel orbs, NOT theme-colored */}
       <div className="forge-orb" style={{
         position: "fixed", top: "8%", left: "50%",
         width: 700, height: 700, borderRadius: "50%",
-        background: `radial-gradient(circle, ${C.accent008} 0%, ${C.accent005} 30%, transparent 60%)`,
+        background: "radial-gradient(circle, rgba(180,195,215,0.04) 0%, rgba(140,160,180,0.02) 30%, transparent 60%)",
         animation: "orbFloat 10s ease-in-out infinite", pointerEvents: "none",
       }} />
       <div className="forge-orb" style={{
         position: "fixed", bottom: "10%", left: "25%",
         width: 400, height: 400, borderRadius: "50%",
-        background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
+        background: "radial-gradient(circle, rgba(200,210,225,0.03) 0%, transparent 60%)",
         animation: "orbFloat2 14s ease-in-out infinite", pointerEvents: "none",
       }} />
 
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", gap: 10, padding: "14px 20px",
-        borderBottom: `1px solid ${C.structBorder}`,
-        background: C.headerBg,
+        borderBottom: "1px solid rgba(180,195,215,0.08)",
+        background: "rgba(8,8,12,0.85)",
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         position: "sticky", top: 0, zIndex: 10,
       }}>
@@ -856,125 +887,183 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           </div>
         )}
 
-        {/* Text input */}
+        {/* Text input — premium styled */}
         {showInput && !typing && (
           <div style={{
             padding: "4px 0 4px 40px",
             animation: "fi 0.4s ease",
-            display: "flex", gap: 8, maxWidth: 340,
+            maxWidth: 380,
           }}>
-            <input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") submitInput(); }}
-              placeholder={FLOW[flowIdx]?.inputPlaceholder || "Type here..."}
-              style={{
-                flex: 1, padding: "12px 18px",
-                background: C.structGlass,
-                border: `1.5px solid ${C.structBorderHover}`,
-                borderRadius: 24,
-                color: C.text1,
-                fontSize: 14,
-                fontFamily: "var(--b)",
-                fontWeight: 500,
-                outline: "none",
-                backdropFilter: "blur(8px)",
-                transition: "border-color 0.2s",
-              }}
-            />
-            <button onClick={submitInput} disabled={!inputValue.trim()} style={{
-              width: 44, height: 44, borderRadius: 22,
-              background: inputValue.trim() ? C.gradientBtn : C.structGlass,
-              backgroundSize: "300% 100%",
-              border: `1.5px solid ${inputValue.trim() ? C.accent030 : C.structBorderHover}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: inputValue.trim() ? "pointer" : "default",
-              transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
-              opacity: inputValue.trim() ? 1 : 0.4,
-              flexShrink: 0,
-              boxShadow: inputValue.trim() ? `0 0 12px ${C.accent015}` : "none",
+            <div style={{
+              display: "flex", gap: 8, alignItems: "center",
+              padding: "4px 4px 4px 20px",
+              background: "rgba(20,22,30,0.7)",
+              border: `1.5px solid ${inputValue.trim() ? `${C.accent}40` : "rgba(180,195,215,0.15)"}`,
+              borderRadius: 28,
+              backdropFilter: "blur(12px)",
+              transition: "border-color 0.3s, box-shadow 0.3s",
+              boxShadow: inputValue.trim() ? `0 0 20px ${C.accent}10, inset 0 1px 0 rgba(255,255,255,0.03)` : "inset 0 1px 0 rgba(255,255,255,0.03)",
             }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={inputValue.trim() ? C.btnText : C.text4} strokeWidth="2" strokeLinecap="round">
-                <path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" />
-              </svg>
-            </button>
+              <input
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") submitInput(); }}
+                placeholder={FLOW[flowIdx]?.inputPlaceholder || "Type here..."}
+                style={{
+                  flex: 1, padding: "12px 0",
+                  background: "transparent",
+                  border: "none",
+                  color: "#F0F2FA",
+                  fontSize: 14,
+                  fontFamily: "var(--b)",
+                  fontWeight: 500,
+                  outline: "none",
+                }}
+              />
+              <button onClick={submitInput} disabled={!inputValue.trim()} style={{
+                width: 40, height: 40, borderRadius: 20,
+                background: inputValue.trim() ? C.gradientBtn : "rgba(40,44,56,0.6)",
+                backgroundSize: "300% 100%",
+                border: "none",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: inputValue.trim() ? "pointer" : "default",
+                transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+                opacity: inputValue.trim() ? 1 : 0.3,
+                flexShrink: 0,
+                boxShadow: inputValue.trim() ? `0 0 12px ${C.accent}20` : "none",
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={inputValue.trim() ? (C.btnText || "#fff") : "#5C6680"} strokeWidth="2" strokeLinecap="round">
+                  <path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Theme picker */}
+        {/* Theme picker with preview + confirm */}
         {showThemePicker && !typing && (
           <div style={{ padding: "8px 0 4px 40px", animation: "fi 0.5s ease" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, maxWidth: 320 }}>
-              {Object.values(ACCENTS).map((acc) => (
-                <button key={acc.id} onClick={() => pickTheme(acc.id)} style={{
-                  padding: "14px 6px",
-                  background: C.cardGradient,
-                  border: `1.5px solid ${C.structBorderHover}`,
-                  borderRadius: 12,
-                  cursor: "pointer",
-                  display: "flex", flexDirection: "column",
-                  alignItems: "center", gap: 8,
-                  transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
-                  position: "relative", overflow: "hidden",
-                  backdropFilter: "blur(8px)",
-                }}>
-                  <div style={{
-                    position: "absolute", top: 0, left: "10%", right: "10%", height: 2,
-                    background: acc.gradient, backgroundSize: "300% 100%",
-                    borderRadius: 1,
-                    boxShadow: `0 0 8px ${acc.accent}30`,
-                  }} />
-                  <div style={{
-                    width: 30, height: 30, borderRadius: 15,
-                    background: acc.gradient, backgroundSize: "300% 100%",
-                    boxShadow: `0 0 16px ${acc.accent}40, 0 2px 8px rgba(0,0,0,0.3)`,
-                    border: `2px solid ${acc.accent}50`,
-                  }} />
-                  <div style={{
-                    fontSize: 8, color: C.text3, fontFamily: "var(--m)",
-                    letterSpacing: ".08em", fontWeight: 600,
-                  }}>{acc.name.toUpperCase()}</div>
-                </button>
-              ))}
+              {Object.values(ACCENTS).map((acc) => {
+                const isSelected = pendingTheme === acc.id;
+                return (
+                  <button key={acc.id} onClick={() => previewTheme(acc.id)} style={{
+                    padding: "14px 6px",
+                    background: isSelected ? `${acc.accent}10` : "rgba(20,22,30,0.6)",
+                    border: `1.5px solid ${isSelected ? acc.accent : "rgba(180,195,215,0.12)"}`,
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 8,
+                    transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
+                    position: "relative", overflow: "hidden",
+                    backdropFilter: "blur(8px)",
+                    transform: isSelected ? "scale(1.05)" : "scale(1)",
+                    boxShadow: isSelected ? `0 0 20px ${acc.accent}25` : "none",
+                  }}>
+                    <div style={{
+                      position: "absolute", top: 0, left: "10%", right: "10%", height: 2,
+                      background: acc.gradient, backgroundSize: "300% 100%",
+                      borderRadius: 1,
+                      boxShadow: `0 0 8px ${acc.accent}30`,
+                    }} />
+                    <div style={{
+                      width: 30, height: 30, borderRadius: 15,
+                      background: acc.gradient, backgroundSize: "300% 100%",
+                      boxShadow: `0 0 16px ${acc.accent}40, 0 2px 8px rgba(0,0,0,0.3)`,
+                      border: `2px solid ${acc.accent}50`,
+                    }} />
+                    <div style={{
+                      fontSize: 8, color: isSelected ? "#E8ECF4" : "#8892A8", fontFamily: "var(--m)",
+                      letterSpacing: ".08em", fontWeight: 600,
+                    }}>{acc.name.toUpperCase()}</div>
+                    {isSelected && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={acc.accent} strokeWidth="3" strokeLinecap="round" style={{ position: "absolute", top: 6, right: 6 }}>
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
             </div>
+            {pendingTheme && (
+              <button onClick={confirmTheme} style={{
+                marginTop: 14, padding: "11px 28px",
+                background: C.gradientBtn || "rgba(168,184,200,0.12)",
+                backgroundSize: "300% 100%",
+                border: `1.5px solid ${C.accent}40`,
+                borderRadius: 8,
+                color: C.btnText || "#E8ECF4",
+                fontSize: 10, fontFamily: "var(--m)", fontWeight: 700,
+                letterSpacing: ".14em", cursor: "pointer",
+                minHeight: 42,
+                boxShadow: `0 0 16px ${C.accent}20`,
+                transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+              }}>CONFIRM COLOR</button>
+            )}
           </div>
         )}
 
-        {/* Surface picker */}
+        {/* Surface picker with preview + confirm */}
         {showSurfacePicker && !typing && (
           <div style={{ padding: "8px 0 4px 40px", animation: "fi 0.5s ease" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, maxWidth: 380 }}>
-              {Object.values(SURFACES).map((surf) => (
-                <button key={surf.id} onClick={() => pickSurface(surf.id)} style={{
-                  padding: "14px 6px",
-                  background: surf.bg,
-                  border: `1.5px solid ${C.structBorderHover}`,
-                  borderRadius: 12,
-                  cursor: "pointer",
-                  display: "flex", flexDirection: "column",
-                  alignItems: "center", gap: 6,
-                  transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
-                  position: "relative",
-                  overflow: "hidden",
-                }}>
-                  <div style={{
-                    width: 26, height: 26, borderRadius: 7,
-                    background: surf.card,
-                    border: "1px solid rgba(180,195,210,0.15)",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                  }} />
-                  <div style={{
-                    fontSize: 8, color: surf.isLight ? "#1a1a2e" : "#C8CDD2", fontFamily: "var(--m)",
-                    letterSpacing: ".06em", fontWeight: 600,
-                  }}>{surf.name.toUpperCase()}</div>
-                  <div style={{
-                    fontSize: 5, color: surf.isLight ? "#5a5a78" : "#788090", fontFamily: "var(--m)",
-                    letterSpacing: ".04em",
-                  }}>{surf.desc}</div>
-                </button>
-              ))}
+              {Object.values(SURFACES).map((surf) => {
+                const isSelected = pendingSurface === surf.id;
+                return (
+                  <button key={surf.id} onClick={() => previewSurface(surf.id)} style={{
+                    padding: "14px 6px",
+                    background: surf.bg,
+                    border: `1.5px solid ${isSelected ? C.accent : "rgba(180,195,215,0.12)"}`,
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 6,
+                    transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
+                    position: "relative",
+                    overflow: "hidden",
+                    transform: isSelected ? "scale(1.05)" : "scale(1)",
+                    boxShadow: isSelected ? `0 0 16px ${C.accent}25` : "none",
+                  }}>
+                    <div style={{
+                      width: 26, height: 26, borderRadius: 7,
+                      background: surf.card,
+                      border: isSelected ? `1.5px solid ${C.accent}` : "1px solid rgba(180,195,210,0.15)",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                    }} />
+                    <div style={{
+                      fontSize: 8, color: isSelected ? "#E8ECF4" : (surf.isLight ? "#1a1a2e" : "#C8CDD2"), fontFamily: "var(--m)",
+                      letterSpacing: ".06em", fontWeight: 600,
+                    }}>{surf.name.toUpperCase()}</div>
+                    <div style={{
+                      fontSize: 5, color: surf.isLight ? "#5a5a78" : "#788090", fontFamily: "var(--m)",
+                      letterSpacing: ".04em",
+                    }}>{surf.desc}</div>
+                    {isSelected && (
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="3" strokeLinecap="round" style={{ position: "absolute", top: 4, right: 4 }}>
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
             </div>
+            {pendingSurface && (
+              <button onClick={confirmSurface} style={{
+                marginTop: 14, padding: "11px 28px",
+                background: C.gradientBtn || "rgba(168,184,200,0.12)",
+                backgroundSize: "300% 100%",
+                border: `1.5px solid ${C.accent}40`,
+                borderRadius: 8,
+                color: C.btnText || "#E8ECF4",
+                fontSize: 10, fontFamily: "var(--m)", fontWeight: 700,
+                letterSpacing: ".14em", cursor: "pointer",
+                minHeight: 42,
+                boxShadow: `0 0 16px ${C.accent}20`,
+                transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+              }}>CONFIRM SURFACE</button>
+            )}
           </div>
         )}
 

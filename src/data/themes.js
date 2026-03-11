@@ -19,15 +19,6 @@ function rgba(hex, alpha) {
 
 // ─── 8 ACCENT PALETTES ──────────────────────────────────────
 const ACCENTS = {
-  platinum: {
-    id: 'platinum', name: 'Platinum',
-    accent: '#90A4AE', accentDark: '#546E7A', accentDeep: '#455A64',
-    accentVivid: '#CFD8DC', accentBright: '#ECEFF1',
-    secondary: '#B0BEC5',
-    ok: '#78c878', warn: '#C06070', danger: '#C06070',
-    gradient: 'linear-gradient(135deg, #455A64, #90A4AE, #ECEFF1, #90A4AE, #455A64)',
-    gradientBtn: 'linear-gradient(135deg, rgba(144,164,174,0.08), rgba(176,190,197,0.16), rgba(144,164,174,0.08))',
-  },
   forge: {
     id: 'forge', name: 'Forge',
     accent: '#00E0A0', accentDark: '#00C48C', accentDeep: '#008060',
@@ -36,6 +27,15 @@ const ACCENTS = {
     ok: '#00E0A0', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #008060, #00C48C, #40FFD0, #00C48C, #008060)',
     gradientBtn: 'linear-gradient(135deg, rgba(0,224,160,0.08), rgba(64,255,208,0.16), rgba(0,224,160,0.08))',
+  },
+  platinum: {
+    id: 'platinum', name: 'Platinum',
+    accent: '#A8B8C8', accentDark: '#6882A0', accentDeep: '#4A6080',
+    accentVivid: '#D0DCE8', accentBright: '#ECF0F6',
+    secondary: '#B8C8D8',
+    ok: '#78c878', warn: '#C06070', danger: '#C06070',
+    gradient: 'linear-gradient(135deg, #4A6080, #8098B0, #C8D8E8, #E8F0F8, #C8D8E8, #8098B0, #4A6080)',
+    gradientBtn: 'linear-gradient(135deg, rgba(168,184,200,0.08), rgba(200,216,232,0.16), rgba(168,184,200,0.08))',
   },
   obsidian: {
     id: 'obsidian', name: 'Obsidian',
@@ -121,11 +121,11 @@ const SURFACES = {
     isLight: false,
   },
   titanium: {
-    id: 'titanium', name: 'Titanium', desc: 'Brushed metal alloy',
-    bg: '#0e1014', bg2: '#14161c', card: '#1c1e26', cardHover: '#24262e',
-    // Warm steel — slightly warmer than carbon
-    bgGradient: 'linear-gradient(180deg, #0e1014 0%, #12141c 50%, #161820 100%)',
-    text1: '#EAECF4', text2: '#B4BAC8', text3: '#7C8498', text4: '#525A6C', text5: '#3A4054',
+    id: 'titanium', name: 'Titanium', desc: 'Polished brushed silver',
+    bg: '#0f1118', bg2: '#161a24', card: '#1e2230', cardHover: '#272c3c',
+    // Premium brushed silver — luminous steel with depth
+    bgGradient: 'linear-gradient(180deg, #0d0f16 0%, #141824 35%, #1a2030 65%, #202838 100%)',
+    text1: '#F0F2FA', text2: '#C4CCD8', text3: '#8892A8', text4: '#5C6680', text5: '#3E485C',
     isLight: false,
   },
   ivory: {
