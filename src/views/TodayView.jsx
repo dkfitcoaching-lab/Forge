@@ -87,6 +87,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const macroC = completedMeals.reduce((sum, m) => sum + m.c, 0);
   const macroF = completedMeals.reduce((sum, m) => sum + m.f, 0);
   const consumedCal = completedMeals.reduce((sum, m) => sum + m.cal, 0);
+  const totalCal = MACRO_CAPS.cal;
 
   const suppTotal = SUPPLEMENTS.length;
   const suppDone = Object.values(suppChecked).filter(Boolean).length;
