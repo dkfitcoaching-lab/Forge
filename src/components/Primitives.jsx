@@ -161,22 +161,23 @@ export function SectionDivider({ C, style }) {
   );
 }
 
-export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon }) {
+export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon, lowLabel, highLabel, desc }) {
   const pct = ((value - min) / (max - min)) * 100;
 
   return (
-    <div style={{ marginBottom: 18 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: desc ? 2 : 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {icon && <span style={{ fontSize: 14, filter: `drop-shadow(0 0 4px ${C.accent030})` }}>{icon}</span>}
           <span style={{ fontSize: 10, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".12em" }}>
             {label}
           </span>
         </div>
-        <span style={{ fontSize: 14, fontWeight: 700, color: C.text1, fontFamily: "var(--m)" }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--m)" }}>
           {value}
         </span>
       </div>
+      {desc && <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginBottom: 8 }}>{desc}</div>}
       <div
         style={{ position: "relative", height: 44, display: "flex", alignItems: "center", touchAction: "none" }}
         onPointerDown={(e) => {
@@ -220,6 +221,13 @@ export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon
           border: `2px solid ${C.text1}`,
         }} />
       </div>
+      {/* Scale labels */}
+      {(lowLabel || highLabel) && (
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2, padding: "0 2px" }}>
+          <span style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".04em" }}>{lowLabel || ""}</span>
+          <span style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".04em" }}>{highLabel || ""}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -355,16 +355,26 @@ export default function CheckIn({ C, onBack, initialTab }) {
             )}
           </Card>
 
-          {/* Sliders */}
+          {/* Recovery & Wellness */}
+          <Label C={C}>RECOVERY</Label>
           <Card C={C} style={{ padding: 16 }}>
-            <SliderInput label="SLEEP QUALITY" value={data.sl} onChange={v => update("sl", v)} min={1} max={10} C={C} />
-            <SliderInput label="STRESS LEVEL" value={data.st} onChange={v => update("st", v)} min={1} max={10} C={C} />
-            <SliderInput label="ENERGY LEVEL" value={data.en} onChange={v => update("en", v)} min={1} max={10} C={C} />
-            <SliderInput label="DIGESTION" value={data.dg} onChange={v => update("dg", v)} min={1} max={10} C={C} />
-            <SliderInput label="ADHERENCE" value={data.ad} onChange={v => update("ad", v)} min={1} max={10} C={C} />
+            <SliderInput label="SLEEP QUALITY" value={data.sl} onChange={v => update("sl", v)} min={1} max={10} C={C}
+              icon="🌙" lowLabel="Terrible" highLabel="Best ever" desc="How restful was last night's sleep?" />
+            <SliderInput label="ENERGY LEVEL" value={data.en} onChange={v => update("en", v)} min={1} max={10} C={C}
+              icon="⚡" lowLabel="Exhausted" highLabel="Unstoppable" desc="How energized do you feel right now?" />
+            <SliderInput label="STRESS LEVEL" value={data.st} onChange={v => update("st", v)} min={1} max={10} C={C}
+              icon="🧠" lowLabel="Calm" highLabel="Overwhelmed" desc="Lower is better — 1 means zen, 10 means maxed out" />
           </Card>
 
-          {/* Competitor Prep */}
+          <Label C={C}>NUTRITION & COMPLIANCE</Label>
+          <Card C={C} style={{ padding: 16 }}>
+            <SliderInput label="DIGESTION" value={data.dg} onChange={v => update("dg", v)} min={1} max={10} C={C}
+              icon="🍽️" lowLabel="Poor" highLabel="Perfect" desc="Bloating, discomfort, regularity" />
+            <SliderInput label="ADHERENCE" value={data.ad} onChange={v => update("ad", v)} min={1} max={10} C={C}
+              icon="🎯" lowLabel="Off plan" highLabel="Nailed it" desc="How closely did you follow your nutrition & training plan?" />
+          </Card>
+
+          {/* Competitor Prep — hidden behind toggle */}
           <Card C={C} style={{ padding: 16 }}>
             <div onClick={() => update("isCompetitor", !data.isCompetitor)} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer",
@@ -372,7 +382,7 @@ export default function CheckIn({ C, onBack, initialTab }) {
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>Competitor Mode</div>
                 <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2, letterSpacing: ".04em" }}>
-                  Track posing, conditioning, peak week metrics
+                  For athletes in contest prep — posing, conditioning, peak week
                 </div>
               </div>
               <div style={{
@@ -391,9 +401,12 @@ export default function CheckIn({ C, onBack, initialTab }) {
 
             {data.isCompetitor && (
               <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.structBorder}` }}>
-                <SliderInput label="CONDITIONING" value={data.cond || 5} onChange={v => update("cond", v)} min={1} max={10} C={C} />
-                <SliderInput label="POSING PRACTICE" value={data.posing || 5} onChange={v => update("posing", v)} min={1} max={10} C={C} />
-                <SliderInput label="WATER LOAD" value={data.waterLoad || 5} onChange={v => update("waterLoad", v)} min={1} max={10} C={C} />
+                <SliderInput label="CONDITIONING" value={data.cond || 5} onChange={v => update("cond", v)} min={1} max={10} C={C}
+                  lowLabel="Soft" highLabel="Shredded" desc="Visible striations, vascularity, dryness" />
+                <SliderInput label="POSING PRACTICE" value={data.posing || 5} onChange={v => update("posing", v)} min={1} max={10} C={C}
+                  lowLabel="Skipped" highLabel="Full session" desc="Mandatories + transitions practiced today" />
+                <SliderInput label="WATER LOAD" value={data.waterLoad || 5} onChange={v => update("waterLoad", v)} min={1} max={10} C={C}
+                  lowLabel="Depleted" highLabel="Full load" desc="Hydration manipulation for peak week" />
               </div>
             )}
           </Card>

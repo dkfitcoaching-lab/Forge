@@ -749,7 +749,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
   return (
     <div style={{
-      minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", color: C.text1,
+      minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", color: C.text1,
       display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
     }}>
       {/* Atmosphere orbs */}

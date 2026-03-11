@@ -31,7 +31,7 @@ export function makeStyles(C) {
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
 body {
-  background: ${C.bg};
+  background: ${C.bgGradient || C.bg};
   color: ${C.text1};
   font-family: var(--b);
   min-height: 100vh;
@@ -129,22 +129,22 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes breathe {
   0%, 100% {
-    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 40px rgba(180,195,210,.08);
+    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 40px ${C.accent010};
   }
   50% {
-    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 60px rgba(180,195,210,.15);
+    box-shadow: 0 4px 30px rgba(0,0,0,.5), 0 0 60px ${C.accent020};
   }
 }
 
-/* Princess-exact multi-layer structural neon glow */
+/* Accent-infused neon glow */
 @keyframes neonBreathe {
   0%, 100% {
-    box-shadow: 0 0 10px rgba(180,195,210,.25), 0 0 28px rgba(170,185,200,.12), 0 0 55px rgba(160,175,190,.06), inset 0 0 15px rgba(170,185,200,.02);
-    border-color: ${C.structBorderStrong};
+    box-shadow: 0 0 10px ${C.accent015}, 0 0 28px ${C.accent008}, 0 0 55px ${C.accent005}, inset 0 0 15px ${C.accent005};
+    border-color: ${C.accent020};
   }
   50% {
-    box-shadow: 0 0 18px rgba(180,195,210,.35), 0 0 40px rgba(170,185,200,.2), 0 0 70px rgba(160,175,190,.08), inset 0 0 25px rgba(170,185,200,.04);
-    border-color: rgba(180,195,210,.35);
+    box-shadow: 0 0 18px ${C.accent030}, 0 0 40px ${C.accent015}, 0 0 70px ${C.accent008}, inset 0 0 25px ${C.accent008};
+    border-color: ${C.accent030};
   }
 }
 
@@ -171,8 +171,8 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(180,195,210,.08), 0 0 40px rgba(170,185,200,.04); }
-  50% { box-shadow: 0 0 30px rgba(180,195,210,.15), 0 0 60px rgba(170,185,200,.08); }
+  0%, 100% { box-shadow: 0 0 20px ${C.accent010}, 0 0 40px ${C.accent005}; }
+  50% { box-shadow: 0 0 30px ${C.accent020}, 0 0 60px ${C.accent010}; }
 }
 
 @keyframes goldShimmer {

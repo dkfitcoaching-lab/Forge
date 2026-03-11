@@ -129,104 +129,136 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       {/* Profile Header */}
       <input ref={photoInputRef} type="file" accept="image/*" onChange={handleProfilePhoto} style={{ display: "none" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
-        <div onClick={() => photoInputRef.current?.click()} style={{
-          width: 56, height: 56, borderRadius: 16,
-          background: profile.photo ? "none" : C.gradient,
-          backgroundSize: "300% 100%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 22, fontWeight: 900, fontFamily: "var(--d)",
-          color: C.btnText, animation: profile.photo ? "none" : "shimmerSlow 10s ease-in-out infinite",
-          boxShadow: `0 4px 20px ${C.accent030}`,
-          cursor: "pointer", position: "relative", overflow: "hidden",
-        }}>
-          {profile.photo ? (
-            <img src={profile.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
-          ) : (
-            profile.name ? profile.name.charAt(0).toUpperCase() : "F"
-          )}
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: 18,
-            background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
-            display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 2,
-          }}>
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
-              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
-            </svg>
+      <Card C={C} style={{
+        padding: 24, marginBottom: 20, position: "relative", overflow: "hidden",
+        borderTop: `2px solid ${C.accent030}`,
+      }}>
+        {/* Background atmosphere */}
+        <div style={{
+          position: "absolute", top: -40, right: -40, width: 180, height: 180, borderRadius: "50%",
+          background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)`,
+          pointerEvents: "none",
+        }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 18, position: "relative" }}>
+          {/* Avatar with glow ring */}
+          <div style={{ position: "relative" }}>
+            <div style={{
+              position: "absolute", inset: -3, borderRadius: 19, border: `1.5px solid ${C.accent030}`,
+              boxShadow: `0 0 16px ${C.accent020}, inset 0 0 8px ${C.accent010}`,
+            }} />
+            <div onClick={() => photoInputRef.current?.click()} style={{
+              width: 64, height: 64, borderRadius: 16,
+              background: profile.photo ? "none" : C.gradient,
+              backgroundSize: "300% 100%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, fontWeight: 900, fontFamily: "var(--d)",
+              color: C.btnText, animation: profile.photo ? "none" : "shimmerSlow 10s ease-in-out infinite",
+              boxShadow: `0 4px 24px ${C.accent030}, 0 0 40px ${C.accent010}`,
+              cursor: "pointer", position: "relative", overflow: "hidden",
+            }}>
+              {profile.photo ? (
+                <img src={profile.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
+              ) : (
+                profile.name ? profile.name.charAt(0).toUpperCase() : "F"
+              )}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0, height: 20,
+                background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
+                display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 3,
+              }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div style={{ flex: 1 }}>
+            {editingField === "name" ? (
+              <div style={{ display: "flex", gap: 6 }}>
+                <input
+                  autoFocus
+                  defaultValue={profile.name}
+                  id="profile-name"
+                  placeholder="Your name"
+                  onKeyDown={e => { if (e.key === "Enter") saveProfile("name", e.target.value); if (e.key === "Escape") setEditingField(null); }}
+                  style={{
+                    flex: 1, padding: "8px 10px", background: C.structGlass,
+                    border: `1.5px solid ${C.accent030}`, borderRadius: 8,
+                    color: C.text1, fontSize: 16, fontWeight: 700, fontFamily: "var(--d)",
+                    outline: "none",
+                  }}
+                />
+                <button onClick={() => saveProfile("name", document.getElementById("profile-name")?.value || "")} style={{
+                  padding: "6px 12px", background: C.gradientBtn, backgroundSize: "300% 100%",
+                  border: "none", borderRadius: 8, color: C.btnText, fontSize: 9, fontWeight: 700,
+                  fontFamily: "var(--m)", cursor: "pointer",
+                }}>SAVE</button>
+              </div>
+            ) : (
+              <div onClick={() => setEditingField("name")} style={{ cursor: "pointer" }}>
+                <div style={{ fontSize: 20, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", textShadow: `0 0 20px ${C.accent010}` }}>
+                  {profile.name || "Forge Athlete"}
+                </div>
+                <div style={{ fontSize: 10, color: C.text3, fontFamily: "var(--m)", letterSpacing: ".1em", display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                  {stats.cyclesCompleted > 0 ? `CYCLE ${stats.cyclesCompleted + 1}` : "PREMIUM MEMBER"}
+                  {!profile.name && (
+                    <span style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)" }}>tap to edit</span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-        <div style={{ flex: 1 }}>
-          {editingField === "name" ? (
-            <div style={{ display: "flex", gap: 6 }}>
-              <input
-                autoFocus
-                defaultValue={profile.name}
-                id="profile-name"
-                placeholder="Your name"
-                onKeyDown={e => { if (e.key === "Enter") saveProfile("name", e.target.value); if (e.key === "Escape") setEditingField(null); }}
-                style={{
-                  flex: 1, padding: "8px 10px", background: C.structGlass,
-                  border: `1.5px solid ${C.accent030}`, borderRadius: 8,
-                  color: C.text1, fontSize: 16, fontWeight: 700, fontFamily: "var(--d)",
-                  outline: "none",
-                }}
-              />
-              <button onClick={() => saveProfile("name", document.getElementById("profile-name")?.value || "")} style={{
-                padding: "6px 12px", background: C.gradientBtn, backgroundSize: "300% 100%",
-                border: "none", borderRadius: 8, color: C.btnText, fontSize: 9, fontWeight: 700,
-                fontFamily: "var(--m)", cursor: "pointer",
-              }}>SAVE</button>
-            </div>
-          ) : (
-            <div onClick={() => setEditingField("name")} style={{ cursor: "pointer" }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>
-                {profile.name || "Forge Athlete"}
-              </div>
-              <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", display: "flex", alignItems: "center", gap: 6 }}>
-                {stats.cyclesCompleted > 0 ? `CYCLE ${stats.cyclesCompleted + 1}` : "PREMIUM MEMBER"}
-                {!profile.name && (
-                  <span style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)" }}>tap to edit</span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      </Card>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 24 }}>
         {[
           { v: stats.workoutCount, l: "WORKOUTS", color: C.accent },
-          { v: stats.streak, l: "STREAK", color: C.secondary },
+          { v: stats.streak, l: "STREAK", color: C.accent },
           { v: stats.checkInCount, l: "CHECK-INS", color: C.accent },
         ].map(({ v, l, color }) => (
           <div key={l} style={{
-            padding: "16px 10px", textAlign: "center",
-            background: C.cardGradient, borderRadius: 12,
-            border: `1.5px solid ${C.structBorderHover}`, boxShadow: C.cardShadow,
+            padding: "18px 10px", textAlign: "center",
+            background: C.cardGradient, borderRadius: 14,
+            border: `1.5px solid ${C.accent015}`, boxShadow: `${C.cardShadow}, 0 0 20px ${C.accent008}`,
+            position: "relative", overflow: "hidden",
           }}>
-            <div style={{ fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", color, textShadow: `0 0 16px ${color}40` }}>{v}</div>
-            <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
+            <div style={{
+              position: "absolute", top: 0, left: "20%", right: "20%", height: 1,
+              background: C.dividerGrad, opacity: 0.5,
+            }} />
+            <div style={{ fontSize: 24, fontWeight: 700, fontFamily: "var(--m)", color, textShadow: `0 0 20px ${color}50` }}>{v}</div>
+            <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: 5 }}>{l}</div>
           </div>
         ))}
       </div>
 
       {stats.totalVolumeAllTime > 0 && (
-        <Card C={C} style={{ padding: 14, marginBottom: 24, textAlign: "center" }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)", textShadow: `0 0 20px ${C.secondary030}` }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
+        <Card C={C} style={{ padding: 16, marginBottom: 24, textAlign: "center", borderTop: `2px solid ${C.accent020}` }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 24px ${C.accent030}` }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
           <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>TOTAL LBS MOVED</div>
         </Card>
       )}
 
       {/* Quick Links to other views */}
       {onNav && (
-        <Card C={C} onClick={() => onNav("data")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", marginBottom: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent008, border: `1px solid ${C.accent015}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round"><polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" /></svg>
+        <Card C={C} onClick={() => onNav("data")} style={{
+          cursor: "pointer", display: "flex", alignItems: "center", gap: 12,
+          padding: "16px 18px", marginBottom: 10,
+          borderLeft: `2px solid ${C.accent030}`,
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 12,
+            background: C.accent008, border: `1px solid ${C.accent020}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: `0 0 12px ${C.accent010}`,
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round"><polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" /></svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>Analytics & Data</div>
-            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Fatigue model, volume trends, body composition</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>Analytics & Data</div>
+            <div style={{ fontSize: 10, color: C.text3, fontFamily: "var(--m)", marginTop: 2 }}>Fatigue model, volume trends, body composition</div>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
         </Card>

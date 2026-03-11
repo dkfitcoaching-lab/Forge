@@ -130,7 +130,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
   // ─── OVERVIEW ──────────────────────────────────────────────
   if (phase === "overview") {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", position: "relative" }}>
+      <div style={{ minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", position: "relative" }}>
         <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }}>
           <div style={{ position: "absolute", top: "-10%", left: "50%", transform: "translateX(-50%)", width: "120%", height: "40%", background: C.atmosphereGrad }} />
         </div>

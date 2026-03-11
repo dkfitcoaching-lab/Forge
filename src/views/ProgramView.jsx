@@ -192,13 +192,13 @@ export default function ProgramView({ C, onWork, onNav }) {
         </Card>
 
         {/* Program Guide */}
-        <Card C={C} onClick={() => onNav("gd")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
+        <Card C={C} onClick={() => onNav("gd")} accentGlow style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 10,
-            background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`,
+            background: C.structGlass, border: `1.5px solid ${C.accent030}`,
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.text3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
             </svg>
           </div>

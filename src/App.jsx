@@ -105,7 +105,7 @@ export default function App() {
     return (
       <>
         <div style={{
-          minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column",
+          minHeight: "100vh", background: C.bgGradient || C.bg, display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden",
           ...(splashFading ? { animation: "splashFadeOut 0.4s ease forwards" } : {}),
         }}>
@@ -227,24 +227,31 @@ export default function App() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", color: C.text1 }}>
+    <div style={{ minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", color: C.text1 }}>
       {/* ─── ATMOSPHERIC BACKGROUND ─── */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+        {/* Top accent wash — strong and visible */}
         <div style={{
           position: "absolute", top: "-20%", left: "50%", transform: "translateX(-50%)",
-          width: "120%", height: "60%",
+          width: "140%", height: "70%",
           background: C.atmosphereGrad,
         }} />
+        {/* Bottom accent wash */}
+        {C.atmosphereGrad2 && <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "40%",
+          background: C.atmosphereGrad2,
+        }} />}
+        {/* Floating orbs */}
         <div className="forge-orb" style={{
-          position: "absolute", top: "15%", left: "50%",
-          width: 600, height: 600, borderRadius: "50%",
-          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
+          position: "absolute", top: "10%", left: "50%",
+          width: 700, height: 700, borderRadius: "50%",
+          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 55%)`,
           animation: "orbFloat 8s ease-in-out infinite",
         }} />
         <div className="forge-orb" style={{
-          position: "absolute", top: "60%", left: "30%",
-          width: 400, height: 400, borderRadius: "50%",
-          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
+          position: "absolute", top: "55%", left: "25%",
+          width: 500, height: 500, borderRadius: "50%",
+          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 55%)`,
           animation: "orbFloat2 10s ease-in-out infinite",
         }} />
       </div>
