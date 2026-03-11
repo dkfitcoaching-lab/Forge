@@ -95,7 +95,14 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
       for (let s = 0; s < ex.ns; s++) {
         const w = trackingData[`${exIdx}_${s}_w`];
         const r = trackingData[`${exIdx}_${s}_r`];
-        if (w && r) sets.push({ weight: Number(w), reps: Number(r) });
+        if (w && r) {
+          const setData = { weight: Number(w), reps: Number(r) };
+          const rpe = trackingData[`${exIdx}_${s}_rpe`];
+          const note = trackingData[`${exIdx}_${s}_note`];
+          if (rpe) setData.rpe = Number(rpe);
+          if (note) setData.note = note;
+          sets.push(setData);
+        }
       }
       return { name: ex.n, sets };
     });
@@ -130,7 +137,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
   // ─── OVERVIEW ──────────────────────────────────────────────
   if (phase === "overview") {
     return (
-      <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", position: "relative" }}>
+      <div style={{ minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", position: "relative" }}>
         <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }}>
           <div style={{ position: "absolute", top: "-10%", left: "50%", transform: "translateX(-50%)", width: "120%", height: "40%", background: C.atmosphereGrad }} />
         </div>
@@ -279,7 +286,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
               <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>LAST: {prevSetData.weight} lbs × {prevSetData.reps} reps</div>
             </div>
           )}
-          <div style={{ display: "flex", gap: 16, marginBottom: 18 }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 14 }}>
             {[{ f: "w", p: "lbs", l: "WEIGHT" }, { f: "r", p: "reps", l: "REPS" }].map(({ f, p, l }) => (
               <div key={f} style={{ flex: 1 }}>
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 6 }}>{l}</div>
@@ -287,6 +294,28 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
                   style={{ width: "100%", padding: "14px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text1, fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
               </div>
             ))}
+          </div>
+          {/* RPE + Notes row */}
+          <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 6 }}>RPE (1-10)</div>
+              <div style={{ display: "flex", gap: 3 }}>
+                {[6, 7, 8, 9, 10].map(v => {
+                  const active = Number(trackingData[`${trackKey}_rpe`]) === v;
+                  return (
+                    <button key={v} onClick={() => saveValue("rpe", String(v))}
+                      style={{ flex: 1, padding: "10px 0", background: active ? C.accent010 : C.structGlass, border: `1.5px solid ${active ? C.accent : C.structBorderHover}`, borderRadius: 8, color: active ? C.accent : C.text3, fontSize: 13, fontWeight: 600, fontFamily: "var(--m)", cursor: "pointer", transition: "all .15s" }}>
+                      {v}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          {/* Optional note */}
+          <div style={{ marginBottom: 18 }}>
+            <input value={trackingData[`${trackKey}_note`] || ""} onChange={(e) => { const next = { ...trackingData, [`${trackKey}_note`]: e.target.value }; setTrackingData(next); storage.set(`wp_${day.d}`, next); }} placeholder="Note (optional — form, tempo, pain...)"
+              style={{ width: "100%", padding: "10px 14px", background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8, color: C.text3, fontSize: 11, fontFamily: "var(--m)", outline: "none" }} />
           </div>
           <Button C={C} onClick={completeSet}>COMPLETE SET</Button>
         </Card>

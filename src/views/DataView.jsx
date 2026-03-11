@@ -3,6 +3,7 @@ import { BarChart, LineChart, RadialProgress } from "../components/Charts";
 import BodyHeatMap from "../components/BodyHeatMap";
 import { computeStats, computeFatigueScore, getWorkoutHistory, getAllPersonalRecords } from "../utils/analytics";
 import DAYS from "../data/workouts";
+import CONFIG from "../data/config";
 
 export default function DataView({ C, onNav, onBack }) {
   const stats = computeStats();
@@ -21,6 +22,28 @@ export default function DataView({ C, onNav, onBack }) {
     value: w.weight,
     label: w.date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
   }));
+
+  // Sets per week (last 8 weeks)
+  const dayMs = 86400000;
+  const setsPerWeekData = [];
+  if (history.length > 0) {
+    for (let w = 7; w >= 0; w--) {
+      const weekStart = Date.now() - (w + 1) * 7 * dayMs;
+      const weekEnd = Date.now() - w * 7 * dayMs;
+      const weekSessions = history.filter(h => h.timestamp >= weekStart && h.timestamp < weekEnd);
+      const totalSets = weekSessions.reduce((acc, s) => acc + (s.exercises || []).reduce((a, ex) => a + (ex.sets?.length || 0), 0), 0);
+      setsPerWeekData.push({ value: totalSets, label: w === 0 ? "This" : w === 1 ? "Last" : `${w}w` });
+    }
+  }
+
+  // Average RPE from recent sessions (if tracked)
+  const recentRPEs = [];
+  history.slice(-10).forEach(s => {
+    (s.exercises || []).forEach(ex => {
+      (ex.sets || []).forEach(set => { if (set.rpe) recentRPEs.push(set.rpe); });
+    });
+  });
+  const avgRPE = recentRPEs.length > 0 ? (recentRPEs.reduce((a, b) => a + b, 0) / recentRPEs.length).toFixed(1) : null;
 
   return (
     <div>
@@ -56,9 +79,9 @@ export default function DataView({ C, onNav, onBack }) {
         ))}
       </div>
 
-      {/* ─── 14-DAY CYCLE ─── */}
-      <Label C={C}>14-Day Cycle</Label>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 5, marginBottom: 8 }}>
+      {/* ─── CYCLE TRACKER ─── */}
+      <Label C={C}>{CONFIG.program.cycleLength}-Day Cycle</Label>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(7, CONFIG.program.cycleLength)}, 1fr)`, gap: 5, marginBottom: 8 }}>
         {DAYS.map((day) => {
           const completed = history.some((h) => h.dayNum === day.d);
           return (
@@ -132,6 +155,40 @@ export default function DataView({ C, onNav, onBack }) {
         </>
       )}
 
+      {/* ─── SETS PER WEEK ─── */}
+      {setsPerWeekData.some(d => d.value > 0) && (
+        <>
+          <Label C={C} style={{ marginTop: 16 }}>Sets Per Week</Label>
+          <Card C={C} style={{ padding: 20, marginBottom: 8 }}>
+            <BarChart data={setsPerWeekData} C={C} height={120} />
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 10, textAlign: "center" }}>
+              Total working sets completed each week — the primary driver of muscle growth
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* ─── RPE TRACKING ─── */}
+      {avgRPE && (
+        <>
+          <Label C={C} style={{ marginTop: 16 }}>Effort Tracking</Label>
+          <Card C={C} style={{ padding: 20, marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Average RPE</div>
+                <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 4 }}>
+                  {Number(avgRPE) >= 9 ? "Very high intensity — monitor recovery" : Number(avgRPE) >= 7.5 ? "Productive range — good stimulus" : Number(avgRPE) >= 6 ? "Moderate effort — room to push harder" : "Low effort — increase intensity"}
+                </div>
+              </div>
+              <RadialProgress value={Number(avgRPE) * 10} max={100} C={C} size={68} label="RPE" />
+            </div>
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 12, textAlign: "center" }}>
+              Based on {recentRPEs.length} sets across your last {Math.min(10, history.length)} sessions
+            </div>
+          </Card>
+        </>
+      )}
+
       {/* ─── WEIGHT TREND ─── */}
       {weightChartData.length >= 2 && (
         <>
@@ -187,6 +244,11 @@ export default function DataView({ C, onNav, onBack }) {
       {/* ─── TOOLS ─── */}
       <Label C={C}>Tools</Label>
       {[
+        { l: "Progress Comparison", d: "Side-by-side before & after with branded export", v: "compare", icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="3" width="8" height="18" rx="1" /><rect x="14" y="3" width="8" height="18" rx="1" /><path d="M12 6v12" strokeDasharray="2 2" />
+          </svg>
+        )},
         { l: "Program Guide", d: "The methodology behind your results", v: "gd", icon: (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
@@ -195,6 +257,16 @@ export default function DataView({ C, onNav, onBack }) {
         { l: "Volume Log", d: "Training tonnage and progression curves", v: "vl", icon: (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
             <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+        )},
+        { l: "Cardio Log", d: "Track conditioning, steps, and active recovery", v: "cardio", icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.42 4.58a5.4 5.4 0 00-7.65 0L12 5.34l-.77-.76a5.4 5.4 0 00-7.65 7.65l.77.76L12 20.66l7.65-7.67.77-.76a5.4 5.4 0 000-7.65z" />
+          </svg>
+        )},
+        { l: "Training Calendar", d: "Schedule mapped to dates + phone calendar export", v: "calendar", icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
           </svg>
         )},
         { l: "Daily Check-In", d: "The data your coach reads every morning", v: "ci", icon: (

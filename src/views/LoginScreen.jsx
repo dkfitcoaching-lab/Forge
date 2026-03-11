@@ -25,7 +25,7 @@ export default function LoginScreen({ C, onLogin }) {
 
   return (
     <div style={{
-      minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", color: C.text1,
+      minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", color: C.text1,
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "48px 32px", textAlign: "center", position: "relative", overflow: "hidden",
     }}>

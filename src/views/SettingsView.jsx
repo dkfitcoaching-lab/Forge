@@ -3,11 +3,7 @@ import { Card, Label, Button, SectionDivider, Modal } from "../components/Primit
 import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
-import {
-  getNotificationPermission, requestNotificationPermission,
-  isGeolocationSupported, getLocationSettings, setLocationSettings,
-  getGymLocation, saveCurrentAsGym, clearGymLocation,
-} from "../utils/notifications";
+import { getNotificationPermission, requestNotificationPermission } from "../utils/notifications";
 
 const TIME_ZONES = Intl.supportedValuesOf?.("timeZone") || [];
 
@@ -57,35 +53,74 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
   const [tzSearch, setTzSearch] = useState("");
   const [showTraining, setShowTraining] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
-  const [locSettings, setLocSettings] = useState(getLocationSettings);
-  const [gymLoc, setGymLoc] = useState(getGymLocation);
-  const [notifPerm, setNotifPerm] = useState(getNotificationPermission);
-  const [savingGym, setSavingGym] = useState(false);
   const [showCoachVoice, setShowCoachVoice] = useState(false);
   const [coachVoice, setCoachVoice] = useState(() => storage.get("coach_voice", "default"));
   const [ttsEnabled, setTtsEnabled] = useState(() => storage.get("tts_enabled", false));
   const photoInputRef = useRef();
   const stats = computeStats();
-  const toggleNotif = (key) => { const next = { ...notifications, [key]: !notifications[key] }; setNotifications(next); storage.set("nf", next); };
+  const obData = storage.get("ob_data", {});
+  const userGoals = Array.isArray(obData.goal) ? obData.goal : obData.goal ? [obData.goal] : [];
 
-  const saveProfile = (key, value) => {
+  const saveProfile = (key, value, silent) => {
     const next = { ...profile, [key]: value };
     setProfile(next);
     storage.set("profile", next);
     setEditingField(null);
-    showToast?.("Updated");
+    if (!silent) showToast?.("Updated");
   };
+
+  const [photoCrop, setPhotoCrop] = useState(null); // { src, scale, offsetY }
 
   const handleProfilePhoto = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      saveProfile("photo", ev.target.result);
-      showToast?.("Photo updated");
+      setPhotoCrop({ src: ev.target.result, scale: 1, offsetY: 0 });
     };
     reader.readAsDataURL(file);
     e.target.value = "";
+  };
+
+  const removeProfilePhoto = () => {
+    saveProfile("photo", null, true);
+    showToast?.("Photo removed");
+  };
+
+  const applyCrop = () => {
+    if (!photoCrop) return;
+    const canvas = document.createElement("canvas");
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      // Match CSS objectFit:"cover" + scale + translateY exactly
+      const scale = photoCrop.scale;
+      const aspect = img.width / img.height;
+      let dw, dh;
+      // "cover" fills the square — short side matches, long side overflows
+      if (aspect >= 1) {
+        dh = size;
+        dw = size * aspect;
+      } else {
+        dw = size;
+        dh = size / aspect;
+      }
+      // Apply zoom
+      dw *= scale;
+      dh *= scale;
+      // Center, then apply vertical offset (matches CSS translateY(offsetY * 20px) scaled to 256px canvas)
+      const dx = (size - dw) / 2;
+      const dy = (size - dh) / 2 + photoCrop.offsetY * 20 * (size / 160);
+      ctx.drawImage(img, dx, dy, dw, dh);
+      const result = canvas.toDataURL("image/jpeg", 0.85);
+      saveProfile("photo", result, true);
+      setPhotoCrop(null);
+      showToast?.("Photo updated");
+    };
+    img.src = photoCrop.src;
   };
 
   const changeLang = (code) => {
@@ -111,7 +146,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
   const filteredTz = tzSearch
     ? TIME_ZONES.filter(tz => tz.toLowerCase().includes(tzSearch.toLowerCase())).slice(0, 8)
-    : [];
+    : TIME_ZONES.filter(tz => tz === timezone || tz.startsWith(timezone.split("/")[0])).slice(0, 6);
 
   return (
     <div>
@@ -129,104 +164,206 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       {/* Profile Header */}
       <input ref={photoInputRef} type="file" accept="image/*" onChange={handleProfilePhoto} style={{ display: "none" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
-        <div onClick={() => photoInputRef.current?.click()} style={{
-          width: 56, height: 56, borderRadius: 16,
-          background: profile.photo ? "none" : C.gradient,
-          backgroundSize: "300% 100%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 22, fontWeight: 900, fontFamily: "var(--d)",
-          color: C.btnText, animation: profile.photo ? "none" : "shimmerSlow 10s ease-in-out infinite",
-          boxShadow: `0 4px 20px ${C.accent030}`,
-          cursor: "pointer", position: "relative", overflow: "hidden",
-        }}>
-          {profile.photo ? (
-            <img src={profile.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
-          ) : (
-            profile.name ? profile.name.charAt(0).toUpperCase() : "F"
-          )}
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: 18,
-            background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
-            display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 2,
-          }}>
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
-              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
-            </svg>
-          </div>
-        </div>
-        <div style={{ flex: 1 }}>
-          {editingField === "name" ? (
-            <div style={{ display: "flex", gap: 6 }}>
-              <input
-                autoFocus
-                defaultValue={profile.name}
-                id="profile-name"
-                placeholder="Your name"
-                onKeyDown={e => { if (e.key === "Enter") saveProfile("name", e.target.value); if (e.key === "Escape") setEditingField(null); }}
-                style={{
-                  flex: 1, padding: "8px 10px", background: C.structGlass,
-                  border: `1.5px solid ${C.accent030}`, borderRadius: 8,
-                  color: C.text1, fontSize: 16, fontWeight: 700, fontFamily: "var(--d)",
-                  outline: "none",
-                }}
-              />
-              <button onClick={() => saveProfile("name", document.getElementById("profile-name")?.value || "")} style={{
-                padding: "6px 12px", background: C.gradientBtn, backgroundSize: "300% 100%",
-                border: "none", borderRadius: 8, color: C.btnText, fontSize: 9, fontWeight: 700,
-                fontFamily: "var(--m)", cursor: "pointer",
-              }}>SAVE</button>
-            </div>
-          ) : (
-            <div onClick={() => setEditingField("name")} style={{ cursor: "pointer" }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>
-                {profile.name || "Forge Athlete"}
-              </div>
-              <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", display: "flex", alignItems: "center", gap: 6 }}>
-                {stats.cyclesCompleted > 0 ? `CYCLE ${stats.cyclesCompleted + 1}` : "PREMIUM MEMBER"}
-                {!profile.name && (
-                  <span style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)" }}>tap to edit</span>
-                )}
+      <Card C={C} style={{
+        padding: 24, marginBottom: 20, position: "relative", overflow: "hidden",
+        borderTop: `2px solid ${C.accent030}`,
+      }}>
+        {/* Background atmosphere */}
+        <div style={{
+          position: "absolute", top: -40, right: -40, width: 180, height: 180, borderRadius: "50%",
+          background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)`,
+          pointerEvents: "none",
+        }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 18, position: "relative" }}>
+          {/* Avatar with glow ring */}
+          <div style={{ position: "relative" }}>
+            <div style={{
+              position: "absolute", inset: -3, borderRadius: 19, border: `1.5px solid ${C.accent030}`,
+              boxShadow: `0 0 16px ${C.accent020}, inset 0 0 8px ${C.accent010}`,
+            }} />
+            <div onClick={() => photoInputRef.current?.click()} style={{
+              width: 64, height: 64, borderRadius: 16,
+              background: profile.photo ? "none" : C.gradient,
+              backgroundSize: "300% 100%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, fontWeight: 900, fontFamily: "var(--d)",
+              color: C.btnText, animation: profile.photo ? "none" : "shimmerSlow 10s ease-in-out infinite",
+              boxShadow: `0 4px 24px ${C.accent030}, 0 0 40px ${C.accent010}`,
+              cursor: "pointer", position: "relative", overflow: "hidden",
+            }}>
+              {profile.photo ? (
+                <img src={profile.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
+              ) : (
+                profile.name ? profile.name.charAt(0).toUpperCase() : "F"
+              )}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0, height: 20,
+                background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
+                display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 3,
+              }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+                </svg>
               </div>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 24 }}>
-        {[
-          { v: stats.workoutCount, l: "WORKOUTS", color: C.accent },
-          { v: stats.streak, l: "STREAK", color: C.secondary },
-          { v: stats.checkInCount, l: "CHECK-INS", color: C.accent },
-        ].map(({ v, l, color }) => (
-          <div key={l} style={{
-            padding: "16px 10px", textAlign: "center",
-            background: C.cardGradient, borderRadius: 12,
-            border: `1.5px solid ${C.structBorderHover}`, boxShadow: C.cardShadow,
-          }}>
-            <div style={{ fontSize: 22, fontWeight: 600, fontFamily: "var(--m)", color, textShadow: `0 0 16px ${color}40` }}>{v}</div>
-            <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
+            {/* Remove photo button */}
+            {profile.photo && (
+              <button onClick={(e) => { e.stopPropagation(); removeProfilePhoto(); }} style={{
+                position: "absolute", top: -6, right: -6,
+                width: 20, height: 20, borderRadius: 10,
+                background: C.danger || "#ff4444", border: `2px solid ${C.card}`,
+                color: "#fff", fontSize: 10, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
+                zIndex: 2,
+              }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
           </div>
-        ))}
-      </div>
+          <div style={{ flex: 1 }}>
+            {editingField === "name" ? (
+              <div style={{ display: "flex", gap: 6 }}>
+                <input
+                  autoFocus
+                  defaultValue={profile.name}
+                  id="profile-name"
+                  placeholder="Your name"
+                  onKeyDown={e => { if (e.key === "Enter") saveProfile("name", e.target.value); if (e.key === "Escape") setEditingField(null); }}
+                  style={{
+                    flex: 1, padding: "8px 10px", background: C.structGlass,
+                    border: `1.5px solid ${C.accent030}`, borderRadius: 8,
+                    color: C.text1, fontSize: 16, fontWeight: 700, fontFamily: "var(--d)",
+                    outline: "none",
+                  }}
+                />
+                <button onClick={() => saveProfile("name", document.getElementById("profile-name")?.value || "")} style={{
+                  padding: "6px 12px", background: C.gradientBtn, backgroundSize: "300% 100%",
+                  border: "none", borderRadius: 8, color: C.btnText, fontSize: 9, fontWeight: 700,
+                  fontFamily: "var(--m)", cursor: "pointer",
+                }}>SAVE</button>
+              </div>
+            ) : (
+              <div onClick={() => setEditingField("name")} style={{ cursor: "pointer" }}>
+                <div style={{ fontSize: 20, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", textShadow: `0 0 20px ${C.accent010}` }}>
+                  {profile.name || "Forge Athlete"}
+                </div>
+                <div style={{ fontSize: 10, color: C.text3, fontFamily: "var(--m)", letterSpacing: ".1em", display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                  {stats.cyclesCompleted > 0 ? `CYCLE ${stats.cyclesCompleted + 1}` : "PREMIUM MEMBER"}
+                  {!profile.name && (
+                    <span style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)" }}>tap to edit</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
 
-      {stats.totalVolumeAllTime > 0 && (
-        <Card C={C} style={{ padding: 14, marginBottom: 24, textAlign: "center" }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)", textShadow: `0 0 20px ${C.secondary030}` }}>{Math.round(stats.totalVolumeAllTime).toLocaleString()}</div>
-          <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 4 }}>TOTAL LBS MOVED</div>
-        </Card>
-      )}
+      {/* Stats — goal-specific metrics */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 24 }}>
+        {(() => {
+          const u = units === "metric" ? "KG" : "LBS";
+          const g = userGoals;
+          const has = (s) => g.some(x => x.includes(s));
+
+          // Universal row: workouts + streak always shown
+          const metrics = [
+            { v: stats.workoutCount, l: "WORKOUTS" },
+            { v: stats.streak, l: "STREAK" },
+          ];
+
+          // Third slot: consistency for most goals, check-ins for health/mobility
+          if (has("Health") || has("Mobility")) {
+            metrics.push({ v: stats.checkInCount, l: "CHECK-INS" });
+          } else {
+            metrics.push({ v: stats.consistency ? `${stats.consistency}%` : "—", l: "CONSISTENCY" });
+          }
+
+          // Goal-specific row 2 (slots 4-6)
+          if (has("Stronger")) {
+            // Strength: 1RM, PRs hit, cycles
+            metrics.push(
+              { v: stats.top1RM || "—", l: `EST 1RM ${u}`, sub: stats.top1RMExercise ? stats.top1RMExercise.split(" ").slice(0, 2).join(" ") : null },
+              { v: stats.prCount || 0, l: "PRs HIT" },
+              { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+            );
+          } else if (has("Lose Fat")) {
+            // Fat loss: weight delta, consistency, weekly vol
+            metrics.push(
+              { v: stats.weightDelta !== null ? `${stats.weightDelta > 0 ? "+" : ""}${stats.weightDelta}` : "—", l: `${u} CHANGE`, sub: stats.weightDelta !== null ? "since start" : null },
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "ADHERENCE" },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+            );
+          } else if (has("Muscle") || has("Hypertrophy")) {
+            // Hypertrophy: weekly volume, muscle balance, cycles
+            metrics.push(
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+              { v: stats.muscleBalance ? `${stats.muscleBalance}%` : "—", l: "BALANCE", sub: "muscle distribution" },
+              { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+            );
+          } else if (has("Recomp")) {
+            // Recomp: weight delta, weekly volume, consistency
+            metrics.push(
+              { v: stats.weightDelta !== null ? `${stats.weightDelta > 0 ? "+" : ""}${stats.weightDelta}` : "—", l: `${u} CHANGE`, sub: stats.weightDelta !== null ? "since start" : null },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "ADHERENCE" },
+            );
+          } else if (has("Athletic") || has("Compete")) {
+            // Performance/competition: 1RM, weekly volume, consistency
+            metrics.push(
+              { v: stats.top1RM || "—", l: `EST 1RM ${u}`, sub: stats.top1RMExercise ? stats.top1RMExercise.split(" ").slice(0, 2).join(" ") : null },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "ADHERENCE" },
+            );
+          } else {
+            // Default / General Health / Mobility / no goal set
+            metrics.push(
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "CONSISTENCY" },
+              { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+            );
+          }
+
+          return metrics.map(({ v, l, sub }) => (
+            <div key={l} style={{
+              padding: "18px 8px 14px", textAlign: "center",
+              background: C.cardGradient, borderRadius: 14,
+              border: `1.5px solid ${C.accent015}`, boxShadow: `${C.cardShadow}, 0 0 20px ${C.accent008}`,
+              position: "relative", overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", top: 0, left: "20%", right: "20%", height: 1,
+                background: C.dividerGrad, opacity: 0.5,
+              }} />
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--m)", color: C.accent, textShadow: `0 0 20px ${C.accent}50` }}>{v}</div>
+              {sub && <div style={{ fontSize: 7, color: C.text3, fontFamily: "var(--m)", marginTop: 1 }}>{sub}</div>}
+              <div style={{ fontSize: 7, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: sub ? 2 : 5 }}>{l}</div>
+            </div>
+          ));
+        })()}
+      </div>
 
       {/* Quick Links to other views */}
       {onNav && (
-        <Card C={C} onClick={() => onNav("data")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", marginBottom: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: C.accent008, border: `1px solid ${C.accent015}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round"><polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" /></svg>
+        <Card C={C} onClick={() => onNav("data")} style={{
+          cursor: "pointer", display: "flex", alignItems: "center", gap: 12,
+          padding: "16px 18px", marginBottom: 10,
+          borderLeft: `2px solid ${C.accent030}`,
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 12,
+            background: C.accent008, border: `1px solid ${C.accent020}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: `0 0 12px ${C.accent010}`,
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round"><polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" /></svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>Analytics & Data</div>
-            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Fatigue model, volume trends, body composition</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>Analytics & Data</div>
+            <div style={{ fontSize: 10, color: C.text3, fontFamily: "var(--m)", marginTop: 2 }}>Fatigue model, volume trends, body composition</div>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
         </Card>
@@ -520,7 +657,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>GYM NAME</div>
                 <input
                   value={profile.gymName}
-                  onChange={e => saveProfile("gymName", e.target.value)}
+                  onChange={e => saveProfile("gymName", e.target.value, true)}
                   placeholder="e.g. Gold's Gym, Home Gym"
                   style={{
                     width: "100%", padding: "10px 12px", background: C.structGlass,
@@ -537,7 +674,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                     { k: "home", l: "Home Gym", desc: "Personal setup" },
                     { k: "hybrid", l: "Both", desc: "Mixed access" },
                   ].map(({ k, l, desc }) => (
-                    <button key={k} onClick={() => saveProfile("gymType", k)} style={{
+                    <button key={k} onClick={() => saveProfile("gymType", k, true)} style={{
                       flex: 1, padding: "10px 6px", textAlign: "center",
                       background: profile.gymType === k ? C.accent008 : "transparent",
                       border: `1px solid ${profile.gymType === k ? C.accent030 : C.structBorderHover}`,
@@ -571,7 +708,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
               { k: "afternoon", l: "Afternoon", t: "2-6pm" },
               { k: "evening", l: "Evening", t: "6-10pm" },
             ].map(({ k, l, t }) => (
-              <button key={k} onClick={() => saveProfile("trainingTime", profile.trainingTime === k ? "" : k)} style={{
+              <button key={k} onClick={() => saveProfile("trainingTime", profile.trainingTime === k ? "" : k, true)} style={{
                 flex: 1, padding: "8px 4px", textAlign: "center",
                 background: profile.trainingTime === k ? C.accent008 : "transparent",
                 border: `1px solid ${profile.trainingTime === k ? C.accent030 : C.structBorderHover}`,
@@ -608,7 +745,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>CONTACT NAME</div>
                 <input
                   value={profile.emergencyName}
-                  onChange={e => saveProfile("emergencyName", e.target.value)}
+                  onChange={e => saveProfile("emergencyName", e.target.value, true)}
                   placeholder="Full name"
                   style={{
                     width: "100%", padding: "10px 12px", background: C.structGlass,
@@ -621,7 +758,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 4 }}>CONTACT PHONE</div>
                 <input
                   value={profile.emergencyPhone}
-                  onChange={e => saveProfile("emergencyPhone", e.target.value)}
+                  onChange={e => saveProfile("emergencyPhone", e.target.value, true)}
                   placeholder="+1 (555) 000-0000"
                   type="tel"
                   style={{
@@ -633,31 +770,6 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
               </div>
             </div>
           )}
-        </div>
-      </Card>
-
-      {/* ─── HEALTH INTEGRATIONS (collapsed — all coming soon) ─── */}
-      <Card C={C} style={{ padding: "14px 16px", marginBottom: 16, opacity: 0.7 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-            background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-            </svg>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, color: C.text2 }}>Health Integrations</div>
-            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Apple Health, Google Fit, Oura, WHOOP, Garmin</div>
-          </div>
-          <div style={{
-            padding: "4px 10px", borderRadius: 6,
-            background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
-          }}>
-            <div style={{ fontSize: 8, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".08em", color: C.text4 }}>COMING SOON</div>
-          </div>
         </div>
       </Card>
 
@@ -682,13 +794,16 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           </div>
         </div>
 
-        {/* Voice Selection */}
+        {/* Voice Selection — ElevenLabs Premium */}
         <div style={{ padding: "14px 0" }}>
           <div onClick={() => setShowCoachVoice(!showCoachVoice)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
             <div>
               <div style={{ fontSize: 13, color: C.text2 }}>Coach Voice</div>
               <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
-                {coachVoice === "default" ? "System default" : coachVoice}
+                {(() => {
+                  const voiceMap = { default: "Atlas — Authoritative", rachel: "Rachel — Warm & Clear", adam: "Adam — Deep & Calm", bella: "Bella — Energetic", marcus: "Marcus — Commanding" };
+                  return voiceMap[coachVoice] || "Atlas — Authoritative";
+                })()}
               </div>
             </div>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showCoachVoice ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
@@ -697,33 +812,51 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           </div>
           {showCoachVoice && (
             <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
-              {(() => {
-                const voices = typeof speechSynthesis !== "undefined" ? speechSynthesis.getVoices().filter(v => v.lang.startsWith("en")).slice(0, 8) : [];
-                const options = [{ id: "default", name: "System Default", detail: "Auto-selected" }, ...voices.map(v => ({ id: v.name, name: v.name, detail: v.lang }))];
-                return options.map(v => (
-                  <button key={v.id} onClick={() => {
-                    setCoachVoice(v.id);
-                    storage.set("coach_voice", v.id);
-                    // Preview the voice
-                    if (typeof speechSynthesis !== "undefined" && v.id !== "default") {
-                      speechSynthesis.cancel();
-                      const u = new SpeechSynthesisUtterance("Forge Coach is ready.");
-                      const found = speechSynthesis.getVoices().find(sv => sv.name === v.id);
-                      if (found) u.voice = found;
-                      speechSynthesis.speak(u);
-                    }
-                    setShowCoachVoice(false);
-                  }} style={{
-                    padding: "10px 12px", textAlign: "left",
-                    background: coachVoice === v.id ? C.accent008 : "transparent",
-                    border: `1px solid ${coachVoice === v.id ? C.accent030 : C.structBorder}`,
-                    borderRadius: 6, cursor: "pointer", transition: "all 0.15s",
+              {[
+                { id: "default", name: "Atlas", detail: "Authoritative & direct — default coach tone", tier: "Premium" },
+                { id: "rachel", name: "Rachel", detail: "Warm, clear & motivating — female", tier: "Premium" },
+                { id: "adam", name: "Adam", detail: "Deep, calm & reassuring — male", tier: "Premium" },
+                { id: "bella", name: "Bella", detail: "High energy & enthusiastic — female", tier: "Elite" },
+                { id: "marcus", name: "Marcus", detail: "Commanding & intense — male", tier: "Elite" },
+              ].map(v => (
+                <button key={v.id} onClick={() => {
+                  setCoachVoice(v.id);
+                  storage.set("coach_voice", v.id);
+                  showToast?.(`Voice: ${v.name}`);
+                  setShowCoachVoice(false);
+                }} style={{
+                  padding: "12px 14px", textAlign: "left",
+                  background: coachVoice === v.id ? C.accent008 : "transparent",
+                  border: `1px solid ${coachVoice === v.id ? C.accent030 : C.structBorder}`,
+                  borderRadius: 8, cursor: "pointer", transition: "all 0.15s",
+                  display: "flex", alignItems: "center", gap: 12,
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    background: coachVoice === v.id ? C.accent010 : C.structGlass,
+                    border: `1px solid ${coachVoice === v.id ? C.accent020 : C.structBorder}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
                   }}>
-                    <div style={{ fontSize: 11, color: coachVoice === v.id ? C.accent : C.text2, fontWeight: coachVoice === v.id ? 600 : 400 }}>{v.name}</div>
-                    <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{v.detail}</div>
-                  </button>
-                ));
-              })()}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={coachVoice === v.id ? C.accent : C.text3} strokeWidth="1.5" strokeLinecap="round">
+                      <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" /><path d="M19 10v2a7 7 0 01-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 12, color: coachVoice === v.id ? C.accent : C.text1, fontWeight: 600 }}>{v.name}</span>
+                      <span style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".08em", background: C.accent008, padding: "1px 5px", borderRadius: 4, fontWeight: 600 }}>{v.tier}</span>
+                    </div>
+                    <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{v.detail}</div>
+                  </div>
+                  {coachVoice === v.id && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
+                  )}
+                </button>
+              ))}
+              <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", textAlign: "center", marginTop: 6, letterSpacing: ".06em" }}>
+                Powered by ElevenLabs · Neural voice synthesis
+              </div>
             </div>
           )}
         </div>
@@ -731,183 +864,35 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       <SectionDivider C={C} />
 
-      {/* ─── LOCATION SERVICES ─── */}
-      <Label C={C}>LOCATION SERVICES</Label>
-      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
-        {/* Master toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-          <div>
-            <div style={{ fontSize: 13, color: C.text2 }}>Location Services</div>
-            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
-              {!isGeolocationSupported() ? "Not supported on this device" : "Enable for gym arrival detection"}
+      {/* ─── NOTIFICATIONS ─── */}
+      <Label C={C}>NOTIFICATIONS</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" />
+            </svg>
+            <div>
+              <div style={{ fontSize: 13, color: C.text2 }}>Push Notifications</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Workouts, meals, check-in reminders</div>
             </div>
           </div>
           <div onClick={() => {
-            if (!isGeolocationSupported()) return;
-            const next = { ...locSettings, enabled: !locSettings.enabled };
-            setLocSettings(next); setLocationSettings(next);
+            const allOn = Object.values(notifications).every(Boolean);
+            const next = { a: !allOn, b: !allOn, c: !allOn, d: !allOn, e: !allOn };
+            setNotifications(next); storage.set("nf", next);
+            if (!allOn && getNotificationPermission() !== "granted") {
+              requestNotificationPermission().then(r => showToast?.(r === "granted" ? "Notifications enabled" : "Notifications blocked"));
+            }
           }} style={{
-            width: 40, height: 22, borderRadius: 11, cursor: isGeolocationSupported() ? "pointer" : "default",
-            background: locSettings.enabled ? C.accent : C.accent010, opacity: isGeolocationSupported() ? 1 : 0.4,
-            position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-            boxShadow: locSettings.enabled ? `0 0 8px ${C.accent020}` : "none",
+            width: 40, height: 22, borderRadius: 11, cursor: "pointer",
+            background: Object.values(notifications).every(Boolean) ? C.accent : C.accent010,
+            position: "relative", transition: "background 0.2s",
+            boxShadow: Object.values(notifications).every(Boolean) ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12,
           }}>
-            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.enabled ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: Object.values(notifications).every(Boolean) ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
           </div>
         </div>
-
-        {/* Gym Detection */}
-        {locSettings.enabled && (
-          <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-              <div>
-                <div style={{ fontSize: 13, color: C.text2 }}>Gym Arrival Detection</div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Notify when you arrive at your gym</div>
-              </div>
-              <div onClick={() => {
-                const next = { ...locSettings, gymDetection: !locSettings.gymDetection };
-                setLocSettings(next); setLocationSettings(next);
-              }} style={{
-                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-                background: locSettings.gymDetection ? C.secondary : C.accent010,
-                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-                boxShadow: locSettings.gymDetection ? `0 0 8px ${C.secondary020}` : "none",
-              }}>
-                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.gymDetection ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-              </div>
-            </div>
-
-            {/* Home gym flag */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-              <div>
-                <div style={{ fontSize: 13, color: C.text2 }}>I Train at Home</div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Skip geo-fence — coach adapts to home training</div>
-              </div>
-              <div onClick={() => {
-                const next = { ...locSettings, homeGym: !locSettings.homeGym };
-                setLocSettings(next); setLocationSettings(next);
-              }} style={{
-                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-                background: locSettings.homeGym ? C.secondary : C.accent010,
-                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-              }}>
-                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.homeGym ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-              </div>
-            </div>
-
-            {/* Auto-launch workout */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-              <div>
-                <div style={{ fontSize: 13, color: C.text2 }}>Auto-Launch Workout</div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Open workout screen on gym arrival</div>
-              </div>
-              <div onClick={() => {
-                const next = { ...locSettings, autoLaunchWorkout: !locSettings.autoLaunchWorkout };
-                setLocSettings(next); setLocationSettings(next);
-              }} style={{
-                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-                background: locSettings.autoLaunchWorkout ? C.accent : C.accent010,
-                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-              }}>
-                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.autoLaunchWorkout ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-              </div>
-            </div>
-
-            {/* Save / Clear Gym Location */}
-            <div style={{ padding: "14px 0" }}>
-              {gymLoc ? (
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-                    </svg>
-                    <div>
-                      <div style={{ fontSize: 12, color: C.text2, fontWeight: 600 }}>{gymLoc.name || "Saved Gym"}</div>
-                      <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>
-                        {gymLoc.lat.toFixed(4)}, {gymLoc.lng.toFixed(4)}
-                      </div>
-                    </div>
-                  </div>
-                  <button onClick={() => { clearGymLocation(); setGymLoc(null); showToast?.("Gym location cleared"); }} style={{
-                    padding: "8px 14px", background: "transparent",
-                    border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
-                    color: C.text4, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".06em",
-                  }}>CLEAR GYM LOCATION</button>
-                </div>
-              ) : (
-                <button onClick={async () => {
-                  setSavingGym(true);
-                  try {
-                    const pos = await saveCurrentAsGym(profile.gymName || "My Gym");
-                    setGymLoc({ lat: pos.lat, lng: pos.lng, name: profile.gymName || "My Gym" });
-                    showToast?.("Gym location saved");
-                  } catch {
-                    showToast?.("Location access denied");
-                  }
-                  setSavingGym(false);
-                }} disabled={savingGym} style={{
-                  width: "100%", padding: "12px 16px",
-                  background: C.structGlass, border: `1.5px solid ${C.secondary}`,
-                  borderRadius: 10, color: C.secondary, fontSize: 11, fontWeight: 700,
-                  fontFamily: "var(--m)", cursor: savingGym ? "default" : "pointer",
-                  letterSpacing: ".08em", display: "flex", alignItems: "center",
-                  justifyContent: "center", gap: 8, minHeight: 44,
-                  opacity: savingGym ? 0.6 : 1, transition: "opacity 0.2s",
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-                  </svg>
-                  {savingGym ? "LOCATING..." : "SAVE CURRENT LOCATION AS GYM"}
-                </button>
-              )}
-            </div>
-          </>
-        )}
-      </Card>
-
-      <SectionDivider C={C} />
-
-      {/* ─── NOTIFICATIONS ─── */}
-      <Label C={C}>NOTIFICATIONS</Label>
-
-      {/* Notification Permission */}
-      {notifPerm !== "granted" && notifPerm !== "unsupported" && (
-        <button onClick={async () => {
-          const result = await requestNotificationPermission();
-          setNotifPerm(result);
-          showToast?.(result === "granted" ? "Notifications enabled" : "Notifications blocked");
-        }} style={{
-          width: "100%", padding: "14px 16px", marginBottom: 10,
-          background: C.accent008, border: `1.5px solid ${C.accent030}`,
-          borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700,
-          fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".08em",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 44,
-        }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-          ENABLE PUSH NOTIFICATIONS
-        </button>
-      )}
-
-      <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
-        {[
-          { k: "a", l: "Workouts", desc: "Daily training reminders" },
-          { k: "b", l: "Weight Reminders", desc: "Morning weigh-in" },
-          { k: "c", l: "Meal Tracking", desc: "Meal timing alerts" },
-          { k: "d", l: "Supplements", desc: "Daily supplement check" },
-          { k: "e", l: "Check-Ins", desc: "Weekly body check-in" },
-        ].map(({ k, l, desc }, i, arr) => (
-          <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none", cursor: "pointer" }}>
-            <div>
-              <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
-              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
-            </div>
-            <div style={{ width: 40, height: 22, borderRadius: 11, background: notifications[k] ? C.accent : C.accent010, position: "relative", transition: "background 0.2s", boxShadow: notifications[k] ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12 }}>
-              <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: notifications[k] ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-            </div>
-          </div>
-        ))}
       </Card>
 
       <SectionDivider C={C} />
@@ -915,53 +900,22 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       {/* ─── DATA ─── */}
       <Label C={C}>DATA</Label>
 
-      {/* Backup reminder */}
-      {(() => {
-        const lastBackup = storage.get("last_backup", null);
-        const daysSince = lastBackup ? Math.floor((Date.now() - lastBackup) / 86400000) : null;
-        const needsBackup = !lastBackup || daysSince >= 7;
-        if (!needsBackup) return null;
-        return (
-          <Card C={C} style={{ padding: "12px 16px", marginBottom: 12, borderColor: C.warn + "30" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.warn} strokeWidth="2" strokeLinecap="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.text2 }}>
-                  {lastBackup ? `Last backup: ${daysSince} days ago` : "No backup on file"}
-                </div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
-                  Export your data to protect your progress
-                </div>
-              </div>
+      <Card C={C} style={{ padding: "2px 16px" }}>
+        <div onClick={() => setShowResetModal(true)} style={{
+          padding: "14px 0", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.danger} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.danger }}>Reset All Data</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Permanently delete all progress</div>
             </div>
-          </Card>
-        );
-      })()}
-
-      <button onClick={() => {
-        const exportData = {};
-        Object.keys(localStorage).filter(k => k.startsWith("f_")).forEach(k => {
-          try { exportData[k] = JSON.parse(localStorage.getItem(k)); } catch { exportData[k] = localStorage.getItem(k); }
-        });
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = `forge-export-${new Date().toISOString().split("T")[0]}.json`; a.click();
-        URL.revokeObjectURL(url);
-        storage.set("last_backup", Date.now());
-        showToast?.("Data exported");
-      }}
-        style={{ width: "100%", padding: 14, background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 10, minHeight: 44 }}>
-        EXPORT ALL DATA
-      </button>
-
-      <button
-        style={{ width: "100%", padding: 14, background: `${C.danger}06`, border: `1.5px solid ${C.danger}25`, borderRadius: 10, color: C.danger, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44 }}
-        onClick={() => setShowResetModal(true)}>
-        RESET ALL DATA
-      </button>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+        </div>
+      </Card>
 
       {showResetModal && (
         <Modal
@@ -986,6 +940,71 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 8 }}>PERFORMANCE SYSTEM</div>
         <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
       </div>
+
+      {/* ─── PHOTO CROP MODAL ─── */}
+      {photoCrop && (
+        <div onClick={() => setPhotoCrop(null)} style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,0.8)",
+          backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 24, animation: "backdropIn .2s ease",
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: C.cardGradient,
+            border: `1.5px solid ${C.structBorderStrong}`,
+            borderRadius: 16, padding: 24, maxWidth: 340, width: "100%",
+            animation: "modalIn .25s ease",
+            boxShadow: `0 20px 60px rgba(0,0,0,.5), ${C.neonShadow}`,
+          }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 16, textAlign: "center" }}>
+              Adjust Photo
+            </div>
+
+            {/* Preview */}
+            <div style={{
+              width: 160, height: 160, borderRadius: 16, margin: "0 auto 20px",
+              overflow: "hidden", border: `2px solid ${C.accent030}`,
+              boxShadow: `0 0 20px ${C.accent015}`,
+              position: "relative",
+            }}>
+              <img src={photoCrop.src} alt="Preview" style={{
+                width: "100%", height: "100%", objectFit: "cover",
+                transform: `scale(${photoCrop.scale}) translateY(${photoCrop.offsetY * 20}px)`,
+                transition: "transform 0.1s ease",
+              }} />
+            </div>
+
+            {/* Scale slider */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>ZOOM</span>
+                <span style={{ fontSize: 11, color: C.text1, fontFamily: "var(--m)", fontWeight: 600 }}>{Math.round(photoCrop.scale * 100)}%</span>
+              </div>
+              <input type="range" min="100" max="250" value={Math.round(photoCrop.scale * 100)}
+                onChange={e => setPhotoCrop(p => ({ ...p, scale: Number(e.target.value) / 100 }))}
+                style={{ width: "100%", accentColor: C.accent }} />
+            </div>
+
+            {/* Position slider */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>POSITION</span>
+                <span style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)" }}>↕ Vertical</span>
+              </div>
+              <input type="range" min="-100" max="100" value={Math.round(photoCrop.offsetY * 100)}
+                onChange={e => setPhotoCrop(p => ({ ...p, offsetY: Number(e.target.value) / 100 }))}
+                style={{ width: "100%", accentColor: C.accent }} />
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <Button C={C} variant="ghost" onClick={() => setPhotoCrop(null)} style={{ flex: 1 }}>CANCEL</Button>
+              <Button C={C} onClick={applyCrop} style={{ flex: 1 }}>SAVE</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -161,22 +161,23 @@ export function SectionDivider({ C, style }) {
   );
 }
 
-export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon }) {
+export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon, lowLabel, highLabel, desc }) {
   const pct = ((value - min) / (max - min)) * 100;
 
   return (
-    <div style={{ marginBottom: 18 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: desc ? 2 : 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {icon && <span style={{ fontSize: 14, filter: `drop-shadow(0 0 4px ${C.accent030})` }}>{icon}</span>}
           <span style={{ fontSize: 10, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".12em" }}>
             {label}
           </span>
         </div>
-        <span style={{ fontSize: 14, fontWeight: 700, color: C.text1, fontFamily: "var(--m)" }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--m)" }}>
           {value}
         </span>
       </div>
+      {desc && <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginBottom: 8 }}>{desc}</div>}
       <div
         style={{ position: "relative", height: 44, display: "flex", alignItems: "center", touchAction: "none" }}
         onPointerDown={(e) => {
@@ -220,6 +221,13 @@ export function SliderInput({ label, value, onChange, min = 1, max = 10, C, icon
           border: `2px solid ${C.text1}`,
         }} />
       </div>
+      {/* Scale labels */}
+      {(lowLabel || highLabel) && (
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2, padding: "0 2px" }}>
+          <span style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".04em" }}>{lowLabel || ""}</span>
+          <span style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".04em" }}>{highLabel || ""}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -246,20 +254,25 @@ export function NavIcons() {
         <line x1="19" y1="12" x2="22" y2="12" />
       </svg>
     ),
-    // Coach — 4-point star: AI intelligence spark
+    // Coach — AI chat bubble with sparkle: intelligent coaching
     coach: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l2.1 7.9L22 12l-7.9 2.1L12 22l-2.1-7.9L2 12l7.9-2.1Z" />
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+        <path d="M12 7v0" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M9 11h6" />
+        <path d="M10 14h4" />
       </svg>
     ),
-    // Program — grid/calendar: structured plan
+    // Program — dumbbell: your training program
     program: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="3" />
-        <line x1="3" y1="9" x2="21" y2="9" />
-        <line x1="3" y1="15" x2="21" y2="15" />
-        <line x1="9" y1="9" x2="9" y2="21" />
-        <line x1="15" y1="9" x2="15" y2="21" />
+        <path d="M6.5 6.5a2 2 0 013 0v11a2 2 0 01-3 0z" />
+        <path d="M14.5 6.5a2 2 0 013 0v11a2 2 0 01-3 0z" />
+        <line x1="9.5" y1="12" x2="14.5" y2="12" strokeWidth="2" />
+        <line x1="4" y1="9" x2="6.5" y2="9" />
+        <line x1="4" y1="15" x2="6.5" y2="15" />
+        <line x1="17.5" y1="9" x2="20" y2="9" />
+        <line x1="17.5" y1="15" x2="20" y2="15" />
       </svg>
     ),
     // Data — ascending trend with arrow

@@ -3,7 +3,7 @@ import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
 import { NavIcons, Toast, ForgeLogo, ForgeTitle } from "./components/Primitives";
 import storage from "./utils/storage";
-import { startGymWatch, stopGymWatch, getLocationSettings, getGymArrivalMessage, sendNotification } from "./utils/notifications";
+// Notifications engine available for mainframe integration
 import DAYS from "./data/workouts";
 
 import WorkoutPlayer from "./components/WorkoutPlayer";
@@ -20,6 +20,8 @@ import OnboardingScreen from "./views/OnboardingScreen";
 import Walkthrough from "./components/Walkthrough";
 import PosingView from "./views/PosingView";
 import ProgramPDF from "./views/ProgramPDF";
+import CardioLog from "./views/CardioLog";
+import CalendarView from "./views/CalendarView";
 
 export default function App() {
   const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
@@ -49,28 +51,6 @@ export default function App() {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
   }, []);
-
-  // Gym arrival detection — auto-launch workout on arrival
-  useEffect(() => {
-    if (screen !== "app") return;
-    const onGymArrival = () => {
-      const msg = getGymArrivalMessage();
-      sendNotification(msg.title, msg.body, { tag: "gym-arrival" });
-      showToast("Welcome to the gym");
-      // Auto-navigate to today's workout if enabled
-      const locSettings = getLocationSettings();
-      if (locSettings.autoLaunchWorkout) {
-        const currentDay = storage.get("cd", 1);
-        const dayData = DAYS[currentDay - 1];
-        if (dayData && !dayData.rest) {
-          setTab("today");
-          setView("main");
-        }
-      }
-    };
-    startGymWatch(onGymArrival);
-    return () => stopGymWatch();
-  }, [screen]);
 
   // Splash screen — tighter timing + fade-out instead of hard unmount
   useEffect(() => {
@@ -105,7 +85,7 @@ export default function App() {
     return (
       <>
         <div style={{
-          minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column",
+          minHeight: "100vh", background: C.bgGradient || C.bg, display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden",
           ...(splashFading ? { animation: "splashFadeOut 0.4s ease forwards" } : {}),
         }}>
@@ -189,6 +169,9 @@ export default function App() {
     if (view === "ci") return <CheckIn C={C} onBack={goMain} />;
     if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
     if (view === "posing") return <PosingView C={C} onBack={goMain} />;
+    if (view === "cardio") return <CardioLog C={C} onBack={goMain} />;
+    if (view === "compare") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
+    if (view === "calendar") return <CalendarView C={C} onBack={goMain} onWork={startWorkout} />;
     if (view === "pdf") return <ProgramPDF C={C} onClose={goMain} />;
     if (view === "data") return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} onBack={goMain} />;
     if (view === "settings") return (
@@ -227,24 +210,31 @@ export default function App() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "var(--b)", color: C.text1 }}>
+    <div style={{ minHeight: "100vh", background: C.bgGradient || C.bg, fontFamily: "var(--b)", color: C.text1 }}>
       {/* ─── ATMOSPHERIC BACKGROUND ─── */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+        {/* Top accent wash — strong and visible */}
         <div style={{
           position: "absolute", top: "-20%", left: "50%", transform: "translateX(-50%)",
-          width: "120%", height: "60%",
+          width: "140%", height: "70%",
           background: C.atmosphereGrad,
         }} />
+        {/* Bottom accent wash */}
+        {C.atmosphereGrad2 && <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "40%",
+          background: C.atmosphereGrad2,
+        }} />}
+        {/* Floating orbs */}
         <div className="forge-orb" style={{
-          position: "absolute", top: "15%", left: "50%",
-          width: 600, height: 600, borderRadius: "50%",
-          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
+          position: "absolute", top: "10%", left: "50%",
+          width: 700, height: 700, borderRadius: "50%",
+          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 55%)`,
           animation: "orbFloat 8s ease-in-out infinite",
         }} />
         <div className="forge-orb" style={{
-          position: "absolute", top: "60%", left: "30%",
-          width: 400, height: 400, borderRadius: "50%",
-          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 60%)`,
+          position: "absolute", top: "55%", left: "25%",
+          width: 500, height: 500, borderRadius: "50%",
+          background: `radial-gradient(circle, ${C.atmosphereOrb} 0%, transparent 55%)`,
           animation: "orbFloat2 10s ease-in-out infinite",
         }} />
       </div>

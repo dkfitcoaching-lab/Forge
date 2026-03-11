@@ -208,23 +208,6 @@ export default function CheckIn({ C, onBack, initialTab }) {
       {/* ═══════════════════════════════════════════════════════════ */}
       {activeTab === "log" && (
         <>
-          {/* Trend Sparklines */}
-          {checkIns.length >= 3 && (
-            <Card C={C} style={{ padding: 16, marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
-                {[
-                  { label: "SLEEP", data: sleepTrend, color: C.accent },
-                  { label: "ENERGY", data: energyTrend, color: C.secondary },
-                ].map(({ label, data: d, color }) => (
-                  <div key={label} style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 8, color, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{label} TREND</div>
-                    <MiniSparkline data={d} C={C} width={80} height={24} />
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
-
           {/* Photo Upload */}
           <Label C={C}>Progress Photo</Label>
           <Card C={C} style={{ padding: 16, marginBottom: 6 }}>
@@ -355,16 +338,26 @@ export default function CheckIn({ C, onBack, initialTab }) {
             )}
           </Card>
 
-          {/* Sliders */}
+          {/* Recovery & Wellness */}
+          <Label C={C}>RECOVERY</Label>
           <Card C={C} style={{ padding: 16 }}>
-            <SliderInput label="SLEEP QUALITY" value={data.sl} onChange={v => update("sl", v)} min={1} max={10} C={C} />
-            <SliderInput label="STRESS LEVEL" value={data.st} onChange={v => update("st", v)} min={1} max={10} C={C} />
-            <SliderInput label="ENERGY LEVEL" value={data.en} onChange={v => update("en", v)} min={1} max={10} C={C} />
-            <SliderInput label="DIGESTION" value={data.dg} onChange={v => update("dg", v)} min={1} max={10} C={C} />
-            <SliderInput label="ADHERENCE" value={data.ad} onChange={v => update("ad", v)} min={1} max={10} C={C} />
+            <SliderInput label="SLEEP QUALITY" value={data.sl} onChange={v => update("sl", v)} min={1} max={10} C={C}
+              icon="🌙" lowLabel="Terrible" highLabel="Best ever" desc="How restful was last night's sleep?" />
+            <SliderInput label="ENERGY LEVEL" value={data.en} onChange={v => update("en", v)} min={1} max={10} C={C}
+              icon="⚡" lowLabel="Exhausted" highLabel="Unstoppable" desc="How energized do you feel right now?" />
+            <SliderInput label="STRESS LEVEL" value={data.st} onChange={v => update("st", v)} min={1} max={10} C={C}
+              icon="🧠" lowLabel="Calm" highLabel="Overwhelmed" desc="Lower is better — 1 means zen, 10 means maxed out" />
           </Card>
 
-          {/* Competitor Prep */}
+          <Label C={C}>NUTRITION & COMPLIANCE</Label>
+          <Card C={C} style={{ padding: 16 }}>
+            <SliderInput label="DIGESTION" value={data.dg} onChange={v => update("dg", v)} min={1} max={10} C={C}
+              icon="🍽️" lowLabel="Poor" highLabel="Perfect" desc="Bloating, discomfort, regularity" />
+            <SliderInput label="ADHERENCE" value={data.ad} onChange={v => update("ad", v)} min={1} max={10} C={C}
+              icon="🎯" lowLabel="Off plan" highLabel="Nailed it" desc="How closely did you follow your nutrition & training plan?" />
+          </Card>
+
+          {/* Competitor Prep — hidden behind toggle */}
           <Card C={C} style={{ padding: 16 }}>
             <div onClick={() => update("isCompetitor", !data.isCompetitor)} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer",
@@ -372,7 +365,7 @@ export default function CheckIn({ C, onBack, initialTab }) {
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>Competitor Mode</div>
                 <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2, letterSpacing: ".04em" }}>
-                  Track posing, conditioning, peak week metrics
+                  For athletes in contest prep — posing, conditioning, peak week
                 </div>
               </div>
               <div style={{
@@ -391,9 +384,12 @@ export default function CheckIn({ C, onBack, initialTab }) {
 
             {data.isCompetitor && (
               <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.structBorder}` }}>
-                <SliderInput label="CONDITIONING" value={data.cond || 5} onChange={v => update("cond", v)} min={1} max={10} C={C} />
-                <SliderInput label="POSING PRACTICE" value={data.posing || 5} onChange={v => update("posing", v)} min={1} max={10} C={C} />
-                <SliderInput label="WATER LOAD" value={data.waterLoad || 5} onChange={v => update("waterLoad", v)} min={1} max={10} C={C} />
+                <SliderInput label="CONDITIONING" value={data.cond || 5} onChange={v => update("cond", v)} min={1} max={10} C={C}
+                  lowLabel="Soft" highLabel="Shredded" desc="Visible striations, vascularity, dryness" />
+                <SliderInput label="POSING PRACTICE" value={data.posing || 5} onChange={v => update("posing", v)} min={1} max={10} C={C}
+                  lowLabel="Skipped" highLabel="Full session" desc="Mandatories + transitions practiced today" />
+                <SliderInput label="WATER LOAD" value={data.waterLoad || 5} onChange={v => update("waterLoad", v)} min={1} max={10} C={C}
+                  lowLabel="Depleted" highLabel="Full load" desc="Hydration manipulation for peak week" />
               </div>
             )}
           </Card>
@@ -439,22 +435,99 @@ export default function CheckIn({ C, onBack, initialTab }) {
             )}
           </div>
 
-          {/* Compare View */}
+          {/* Compare View — Branded Side by Side */}
           {compareMode && selected.length === 2 && comparePhotos.length === 2 && (
-            <Card C={C} style={{ marginBottom: 16, padding: 12 }}>
-              <Label C={C}>Side by Side</Label>
-              <div style={{ display: "flex", gap: 4 }}>
-                {comparePhotos.map((photo) => (
-                  <div key={photo.id} style={{ flex: 1 }}>
+            <Card C={C} style={{ marginBottom: 16, padding: 0, overflow: "hidden" }} id="forge-compare">
+              {/* Header */}
+              <div style={{ padding: "14px 16px 10px", borderBottom: `1px solid ${C.structBorder}` }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <Label C={C} style={{ marginBottom: 0 }}>PROGRESS COMPARISON</Label>
+                  <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>
+                    {(() => {
+                      const d1 = new Date(comparePhotos[0].date || comparePhotos[0].timestamp);
+                      const d2 = new Date(comparePhotos[1].date || comparePhotos[1].timestamp);
+                      const diffDays = Math.abs(Math.round((d2 - d1) / 86400000));
+                      return diffDays > 0 ? `${diffDays} DAYS APART` : "SAME DAY";
+                    })()}
+                  </div>
+                </div>
+              </div>
+              {/* Photos */}
+              <div style={{ display: "flex", gap: 2, padding: 2 }}>
+                {comparePhotos.map((photo, idx) => (
+                  <div key={photo.id} style={{ flex: 1, position: "relative" }}>
                     <img src={photo.data} alt={photo.label} style={{
                       width: "100%", aspectRatio: "3/4", objectFit: "cover",
-                      borderRadius: 8, border: `1px solid ${C.structBorderHover}`,
+                      borderRadius: 6,
                     }} />
-                    <div style={{ fontSize: 9, color: C.text3, fontFamily: "var(--m)", textAlign: "center", marginTop: 4 }}>
-                      {photo.label}
+                    <div style={{
+                      position: "absolute", bottom: 0, left: 0, right: 0,
+                      padding: "16px 8px 8px", textAlign: "center",
+                      background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
+                      borderRadius: "0 0 6px 6px",
+                    }}>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: "#fff", fontFamily: "var(--m)", letterSpacing: ".08em" }}>
+                        {photo.label || (idx === 0 ? "BEFORE" : "AFTER")}
+                      </div>
+                      <div style={{ fontSize: 7, color: "rgba(255,255,255,0.6)", fontFamily: "var(--m)", marginTop: 2 }}>
+                        {new Date(photo.date || photo.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </div>
                     </div>
                   </div>
                 ))}
+              </div>
+              {/* Forge Branding Footer */}
+              <div style={{
+                padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "space-between",
+                borderTop: `1px solid ${C.structBorder}`, background: C.structGlass,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 4, border: `1px solid ${C.accent}30`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9, fontWeight: 700, color: C.accent, fontFamily: "var(--d)",
+                  }}>Fe</div>
+                  <span style={{ fontSize: 9, color: C.text3, fontFamily: "var(--m)", letterSpacing: ".1em" }}>FORGE</span>
+                </div>
+                <button onClick={() => {
+                  // Create branded canvas from the two comparison photos
+                  const canvas = document.createElement("canvas");
+                  const size = 600;
+                  canvas.width = size * 2 + 40;
+                  canvas.height = size * 1.33 + 80;
+                  const ctx = canvas.getContext("2d");
+                  ctx.fillStyle = "#0a0a0e";
+                  ctx.fillRect(0, 0, canvas.width, canvas.height);
+                  ctx.fillStyle = "#999";
+                  ctx.font = "bold 10px monospace";
+                  ctx.fillText("FORGE — Progress Comparison", 20, canvas.height - 16);
+                  const loadImg = (src) => new Promise(r => { const img = new Image(); img.onload = () => r(img); img.src = src; });
+                  Promise.all(comparePhotos.map(p => loadImg(p.data))).then(([img1, img2]) => {
+                    ctx.drawImage(img1, 16, 40, size, size * 1.33);
+                    ctx.drawImage(img2, size + 24, 40, size, size * 1.33);
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "bold 11px monospace";
+                    ctx.fillText(comparePhotos[0].label || "BEFORE", 16, 30);
+                    ctx.fillText(comparePhotos[1].label || "AFTER", size + 24, 30);
+                    const downloadFallback = () => {
+                      const a = document.createElement("a");
+                      a.href = canvas.toDataURL("image/png");
+                      a.download = "forge-progress.png";
+                      a.click();
+                    };
+                    canvas.toBlob((blob) => {
+                      if (navigator.share && blob) {
+                        navigator.share({ files: [new File([blob], "forge-progress.png", { type: "image/png" })] }).catch(downloadFallback);
+                      } else {
+                        downloadFallback();
+                      }
+                    }, "image/png");
+                  });
+                }} style={{
+                  background: "none", border: `1px solid ${C.structBorderHover}`, borderRadius: 6,
+                  color: C.accent, fontSize: 9, fontFamily: "var(--m)", letterSpacing: ".08em",
+                  padding: "6px 12px", cursor: "pointer",
+                }}>SHARE</button>
               </div>
             </Card>
           )}

@@ -1,5 +1,6 @@
 import storage from "./storage";
 import DAYS from "../data/workouts";
+import CONFIG from "../data/config";
 
 // ══════════════════════════════════════════════════════════════
 // FORGE ANALYTICS ENGINE
@@ -165,7 +166,88 @@ export function computeStats() {
   const muscleVolume = computeMuscleVolume(history);
 
   // Cycles completed
-  const cyclesCompleted = Math.floor(workoutCount / 12); // 12 training days per cycle
+  const cyclesCompleted = Math.floor(workoutCount / CONFIG.program.trainingDaysPerCycle);
+
+  // Estimated 1RM for key compound lifts only (Epley formula)
+  const COMPOUND_LIFTS = [
+    "Flat Barbell Bench Press", "Barbell Back Squat", "Romanian Deadlift",
+    "Barbell Row", "Seated Dumbbell Press", "Leg Press",
+    "Close Grip Bench Press", "Hip Thrust", "Pull-Ups / Lat Pulldown",
+  ];
+  const compound1RMs = {};
+  let top1RM = 0;
+  let top1RMExercise = "";
+  history.forEach((session) => {
+    if (!session.exercises) return;
+    session.exercises.forEach((ex) => {
+      if (!ex.name || !ex.sets) return;
+      const isCompound = COMPOUND_LIFTS.some(c => ex.name.includes(c) || c.includes(ex.name));
+      if (!isCompound) return;
+      ex.sets.forEach((set) => {
+        if (!set.weight || !set.reps) return;
+        const e1rm = Number(set.weight) * (1 + Number(set.reps) / 30);
+        if (!compound1RMs[ex.name] || e1rm > compound1RMs[ex.name]) {
+          compound1RMs[ex.name] = e1rm;
+        }
+        if (e1rm > top1RM) { top1RM = e1rm; top1RMExercise = ex.name; }
+      });
+    });
+  });
+
+  // Training consistency: workouts / expected workouts based on days since first workout
+  let consistency = 0;
+  if (history.length >= 2) {
+    const firstTs = history[0].timestamp;
+    const lastTs = history[history.length - 1].timestamp;
+    const calendarDays = Math.max(1, Math.round((lastTs - firstTs) / dayMs));
+    const expectedPerWeek = 5;
+    const expectedTotal = Math.max(1, Math.round((calendarDays / 7) * expectedPerWeek));
+    consistency = Math.min(100, Math.round((workoutCount / expectedTotal) * 100));
+  } else if (history.length === 1) {
+    consistency = 100;
+  }
+
+  // PR count (total unique exercise PRs hit)
+  let prCount = 0;
+  const prMap = {};
+  history.forEach((session) => {
+    if (!session.exercises) return;
+    session.exercises.forEach((ex) => {
+      if (!ex.name || !ex.sets) return;
+      ex.sets.forEach((set) => {
+        if (!set.weight || !set.reps) return;
+        const w = Number(set.weight);
+        const key = ex.name;
+        if (!prMap[key] || w > prMap[key]) {
+          if (prMap[key]) prCount++; // new PR (beat previous best)
+          prMap[key] = w;
+        }
+      });
+    });
+  });
+
+  // Weekly average volume (last 4 weeks)
+  const fourWeeksAgo = Date.now() - 28 * dayMs;
+  const recentSessions = history.filter(h => h.timestamp >= fourWeeksAgo);
+  const weeksActive = Math.max(1, Math.ceil((Date.now() - fourWeeksAgo) / (7 * dayMs)));
+  const weeklyAvgVolume = recentSessions.length > 0
+    ? Math.round(recentSessions.reduce((s, h) => s + (h.totalVolume || 0), 0) / weeksActive)
+    : 0;
+
+  // Weight delta (first recorded vs most recent)
+  let weightDelta = null;
+  if (weightTrend.length >= 2) {
+    weightDelta = +(weightTrend[weightTrend.length - 1].weight - weightTrend[0].weight).toFixed(1);
+  }
+
+  // Muscle balance score: how evenly volume is distributed (0-100, 100 = perfectly balanced)
+  const muscleValues = Object.values(muscleVolume).filter(v => v > 0);
+  let muscleBalance = 0;
+  if (muscleValues.length >= 2) {
+    const avg = muscleValues.reduce((s, v) => s + v, 0) / muscleValues.length;
+    const deviation = muscleValues.reduce((s, v) => s + Math.abs(v - avg), 0) / muscleValues.length;
+    muscleBalance = Math.max(0, Math.round(100 - (deviation / avg) * 100));
+  }
 
   return {
     workoutCount,
@@ -176,6 +258,13 @@ export function computeStats() {
     weightTrend,
     muscleVolume,
     cyclesCompleted,
+    top1RM: Math.round(top1RM),
+    top1RMExercise,
+    consistency,
+    prCount,
+    weeklyAvgVolume,
+    weightDelta,
+    muscleBalance,
     lastWorkout: history.length > 0 ? history[history.length - 1] : null,
   };
 }

@@ -80,6 +80,21 @@ const CONFIG = {
     visionCostPerImage: 0.005,         // Claude Vision per image
   },
 
+  // ─── PROGRAM ARCHITECTURE ──────────────────────────────────
+  // Defines the training split structure. When backend is live,
+  // this gets replaced per-client based on their coach's programming.
+  // The UI derives ALL cycle logic from these values — nothing hardcoded.
+  program: {
+    cycleLength: 14,                   // total days in one cycle
+    restDays: [7, 14],                 // which day numbers are rest days
+    get trainingDaysPerCycle() {
+      return this.cycleLength - this.restDays.length;
+    },
+    deloadEveryNCycles: 5,             // deload frequency
+    deloadVolumeReduction: 0.4,        // 40% volume reduction on deload
+    minCyclesBeforeChange: 5,          // minimum cycles before program changes
+  },
+
   // ─── FEATURE FLAGS ─────────────────────────────────────────
   // Toggle features on/off globally. Backend can override per-user.
   features: {
