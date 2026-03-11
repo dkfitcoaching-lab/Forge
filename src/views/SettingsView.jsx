@@ -624,6 +624,70 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       <SectionDivider C={C} />
 
+      {/* ─── HEALTH DATA ─── */}
+      <Label C={C}>HEALTH DATA</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
+        {[
+          { k: "apple_health", l: "Apple Health", desc: "Sync sleep, heart rate, steps, and activity rings", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+            </svg>
+          ), status: "coming_soon" },
+          { k: "google_fit", l: "Google Fit", desc: "Import workouts, sleep data, and daily metrics", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+            </svg>
+          ), status: "coming_soon" },
+          { k: "oura", l: "Oura Ring", desc: "Sleep stages, readiness score, HRV data", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
+              <circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="4" />
+            </svg>
+          ), status: "coming_soon" },
+          { k: "whoop", l: "WHOOP", desc: "Strain, recovery, and sleep performance", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          ), status: "coming_soon" },
+          { k: "garmin", l: "Garmin", desc: "Training load, body battery, and VO2 max", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+          ), status: "coming_soon" },
+        ].map(({ k, l, desc, icon, status }, i, arr) => (
+          <div key={k} style={{
+            display: "flex", alignItems: "center", gap: 12, padding: "14px 0",
+            borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none",
+          }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+              background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>{icon}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
+            </div>
+            <div style={{
+              padding: "4px 10px", borderRadius: 6,
+              background: status === "connected" ? C.secondary010 : C.structGlass,
+              border: `1px solid ${status === "connected" ? C.secondary : C.structBorderHover}`,
+            }}>
+              <div style={{
+                fontSize: 8, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".08em",
+                color: status === "connected" ? C.secondary : C.text4,
+              }}>
+                {status === "connected" ? "CONNECTED" : "COMING SOON"}
+              </div>
+            </div>
+          </div>
+        ))}
+      </Card>
+      <div style={{ fontSize: 9, color: C.text5, fontFamily: "var(--m)", marginBottom: 16, lineHeight: 1.6, padding: "0 4px" }}>
+        Health integrations feed real biometric data directly into your coach&apos;s intelligence engine — sleep quality, recovery state, heart rate variability, and daily strain become factors in your programming.
+      </div>
+
+      <SectionDivider C={C} />
+
       {/* ─── COACH INTELLIGENCE ─── */}
       <Label C={C}>COACH INTELLIGENCE</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>

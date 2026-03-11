@@ -4,6 +4,7 @@ import { CelebrationBurst, PRBadge } from "./Celebration";
 import { formatTime } from "../utils/helpers";
 import { detectNewPRs, getWorkoutHistory } from "../utils/analytics";
 import storage from "../utils/storage";
+import { tapMedium, tapSuccess, tapCelebration, tapHeavy } from "../utils/haptics";
 
 export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) {
   const exercises = day.x || [];
@@ -54,7 +55,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
       restRef.current = setTimeout(() => setRestSeconds(s => s - 1), 1000);
     } else if (restSeconds === 0 && resting) {
       setResting(false);
-      try { navigator.vibrate?.(100); } catch {}
+      tapSuccess();
     }
     return () => clearTimeout(restRef.current);
   }, [resting, restSeconds, phase]);
@@ -73,7 +74,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
   const getRestTime = () => exercise.tg === "FST-7" ? 40 : exercise.p ? 90 : 60;
 
   const completeSet = () => {
-    try { navigator.vibrate?.(10); } catch {}
+    tapMedium();
     if (setIndex < numSets - 1) {
       setSetIndex(setIndex + 1);
       setResting(true);
@@ -110,9 +111,8 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
     setNewPRs(prs);
     storage.set(`wh_${Date.now()}`, sessionData);
     clearActiveSession();
-    if (prs.length > 0) setShowCelebration(true);
+    if (prs.length > 0) { setShowCelebration(true); tapCelebration(); } else { tapHeavy(); }
     setPhase("done");
-    try { navigator.vibrate?.([50, 50, 100]); } catch {}
   };
 
   const handlePause = () => { elapsedAtPauseRef.current = elapsed; startTimeRef.current = null; setPhase("paused"); };
