@@ -3,7 +3,7 @@ import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
 import { NavIcons, Toast, ForgeLogo, ForgeTitle } from "./components/Primitives";
 import storage from "./utils/storage";
-import { startGymWatch, stopGymWatch, getLocationSettings, getGymArrivalMessage, sendNotification } from "./utils/notifications";
+// Notifications engine available for mainframe integration
 import DAYS from "./data/workouts";
 
 import WorkoutPlayer from "./components/WorkoutPlayer";
@@ -49,28 +49,6 @@ export default function App() {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
   }, []);
-
-  // Gym arrival detection — auto-launch workout on arrival
-  useEffect(() => {
-    if (screen !== "app") return;
-    const onGymArrival = () => {
-      const msg = getGymArrivalMessage();
-      sendNotification(msg.title, msg.body, { tag: "gym-arrival" });
-      showToast("Welcome to the gym");
-      // Auto-navigate to today's workout if enabled
-      const locSettings = getLocationSettings();
-      if (locSettings.autoLaunchWorkout) {
-        const currentDay = storage.get("cd", 1);
-        const dayData = DAYS[currentDay - 1];
-        if (dayData && !dayData.rest) {
-          setTab("today");
-          setView("main");
-        }
-      }
-    };
-    startGymWatch(onGymArrival);
-    return () => stopGymWatch();
-  }, [screen]);
 
   // Splash screen — tighter timing + fade-out instead of hard unmount
   useEffect(() => {

@@ -208,23 +208,6 @@ export default function CheckIn({ C, onBack, initialTab }) {
       {/* ═══════════════════════════════════════════════════════════ */}
       {activeTab === "log" && (
         <>
-          {/* Trend Sparklines */}
-          {checkIns.length >= 3 && (
-            <Card C={C} style={{ padding: 16, marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
-                {[
-                  { label: "SLEEP", data: sleepTrend, color: C.accent },
-                  { label: "ENERGY", data: energyTrend, color: C.secondary },
-                ].map(({ label, data: d, color }) => (
-                  <div key={label} style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 8, color, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{label} TREND</div>
-                    <MiniSparkline data={d} C={C} width={80} height={24} />
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
-
           {/* Photo Upload */}
           <Label C={C}>Progress Photo</Label>
           <Card C={C} style={{ padding: 16, marginBottom: 6 }}>

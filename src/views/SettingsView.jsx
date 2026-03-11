@@ -3,11 +3,7 @@ import { Card, Label, Button, SectionDivider, Modal } from "../components/Primit
 import { computeStats } from "../utils/analytics";
 import { ACCENTS, SURFACES } from "../data/themes";
 import storage from "../utils/storage";
-import {
-  getNotificationPermission, requestNotificationPermission,
-  isGeolocationSupported, getLocationSettings, setLocationSettings,
-  getGymLocation, saveCurrentAsGym, clearGymLocation,
-} from "../utils/notifications";
+import { getNotificationPermission, requestNotificationPermission } from "../utils/notifications";
 
 const TIME_ZONES = Intl.supportedValuesOf?.("timeZone") || [];
 
@@ -57,10 +53,6 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
   const [tzSearch, setTzSearch] = useState("");
   const [showTraining, setShowTraining] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
-  const [locSettings, setLocSettings] = useState(getLocationSettings);
-  const [gymLoc, setGymLoc] = useState(getGymLocation);
-  const [notifPerm, setNotifPerm] = useState(getNotificationPermission);
-  const [savingGym, setSavingGym] = useState(false);
   const [showCoachVoice, setShowCoachVoice] = useState(false);
   const [coachVoice, setCoachVoice] = useState(() => storage.get("coach_voice", "default"));
   const [ttsEnabled, setTtsEnabled] = useState(() => storage.get("tts_enabled", false));
@@ -721,31 +713,6 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         </div>
       </Card>
 
-      {/* ─── HEALTH INTEGRATIONS (collapsed — all coming soon) ─── */}
-      <Card C={C} style={{ padding: "14px 16px", marginBottom: 16, opacity: 0.7 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-            background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-            </svg>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, color: C.text2 }}>Health Integrations</div>
-            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Apple Health, Google Fit, Oura, WHOOP, Garmin</div>
-          </div>
-          <div style={{
-            padding: "4px 10px", borderRadius: 6,
-            background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
-          }}>
-            <div style={{ fontSize: 8, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".08em", color: C.text4 }}>COMING SOON</div>
-          </div>
-        </div>
-      </Card>
-
       <SectionDivider C={C} />
 
       {/* ─── COACH INTELLIGENCE ─── */}
@@ -837,183 +804,35 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
 
       <SectionDivider C={C} />
 
-      {/* ─── LOCATION SERVICES ─── */}
-      <Label C={C}>LOCATION SERVICES</Label>
-      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
-        {/* Master toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-          <div>
-            <div style={{ fontSize: 13, color: C.text2 }}>Location Services</div>
-            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
-              {!isGeolocationSupported() ? "Not supported on this device" : "Enable for gym arrival detection"}
+      {/* ─── NOTIFICATIONS ─── */}
+      <Label C={C}>NOTIFICATIONS</Label>
+      <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" />
+            </svg>
+            <div>
+              <div style={{ fontSize: 13, color: C.text2 }}>Push Notifications</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Workouts, meals, check-in reminders</div>
             </div>
           </div>
           <div onClick={() => {
-            if (!isGeolocationSupported()) return;
-            const next = { ...locSettings, enabled: !locSettings.enabled };
-            setLocSettings(next); setLocationSettings(next);
+            const allOn = notifications.a;
+            const next = { a: !allOn, b: !allOn, c: !allOn, d: !allOn, e: !allOn };
+            setNotifications(next); storage.set("nf", next);
+            if (!allOn && getNotificationPermission() !== "granted") {
+              requestNotificationPermission().then(r => showToast?.(r === "granted" ? "Notifications enabled" : "Notifications blocked"));
+            }
           }} style={{
-            width: 40, height: 22, borderRadius: 11, cursor: isGeolocationSupported() ? "pointer" : "default",
-            background: locSettings.enabled ? C.accent : C.accent010, opacity: isGeolocationSupported() ? 1 : 0.4,
-            position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-            boxShadow: locSettings.enabled ? `0 0 8px ${C.accent020}` : "none",
+            width: 40, height: 22, borderRadius: 11, cursor: "pointer",
+            background: notifications.a ? C.accent : C.accent010,
+            position: "relative", transition: "background 0.2s",
+            boxShadow: notifications.a ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12,
           }}>
-            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.enabled ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
+            <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: notifications.a ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
           </div>
         </div>
-
-        {/* Gym Detection */}
-        {locSettings.enabled && (
-          <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-              <div>
-                <div style={{ fontSize: 13, color: C.text2 }}>Gym Arrival Detection</div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Notify when you arrive at your gym</div>
-              </div>
-              <div onClick={() => {
-                const next = { ...locSettings, gymDetection: !locSettings.gymDetection };
-                setLocSettings(next); setLocationSettings(next);
-              }} style={{
-                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-                background: locSettings.gymDetection ? C.secondary : C.accent010,
-                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-                boxShadow: locSettings.gymDetection ? `0 0 8px ${C.secondary020}` : "none",
-              }}>
-                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.gymDetection ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-              </div>
-            </div>
-
-            {/* Home gym flag */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-              <div>
-                <div style={{ fontSize: 13, color: C.text2 }}>I Train at Home</div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Skip geo-fence — coach adapts to home training</div>
-              </div>
-              <div onClick={() => {
-                const next = { ...locSettings, homeGym: !locSettings.homeGym };
-                setLocSettings(next); setLocationSettings(next);
-              }} style={{
-                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-                background: locSettings.homeGym ? C.secondary : C.accent010,
-                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-              }}>
-                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.homeGym ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-              </div>
-            </div>
-
-            {/* Auto-launch workout */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${C.structBorder}` }}>
-              <div>
-                <div style={{ fontSize: 13, color: C.text2 }}>Auto-Launch Workout</div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Open workout screen on gym arrival</div>
-              </div>
-              <div onClick={() => {
-                const next = { ...locSettings, autoLaunchWorkout: !locSettings.autoLaunchWorkout };
-                setLocSettings(next); setLocationSettings(next);
-              }} style={{
-                width: 40, height: 22, borderRadius: 11, cursor: "pointer",
-                background: locSettings.autoLaunchWorkout ? C.accent : C.accent010,
-                position: "relative", transition: "background 0.2s", flexShrink: 0, marginLeft: 12,
-              }}>
-                <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: locSettings.autoLaunchWorkout ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-              </div>
-            </div>
-
-            {/* Save / Clear Gym Location */}
-            <div style={{ padding: "14px 0" }}>
-              {gymLoc ? (
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-                    </svg>
-                    <div>
-                      <div style={{ fontSize: 12, color: C.text2, fontWeight: 600 }}>{gymLoc.name || "Saved Gym"}</div>
-                      <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>
-                        {gymLoc.lat.toFixed(4)}, {gymLoc.lng.toFixed(4)}
-                      </div>
-                    </div>
-                  </div>
-                  <button onClick={() => { clearGymLocation(); setGymLoc(null); showToast?.("Gym location cleared"); }} style={{
-                    padding: "8px 14px", background: "transparent",
-                    border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
-                    color: C.text4, fontSize: 9, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".06em",
-                  }}>CLEAR GYM LOCATION</button>
-                </div>
-              ) : (
-                <button onClick={async () => {
-                  setSavingGym(true);
-                  try {
-                    const pos = await saveCurrentAsGym(profile.gymName || "My Gym");
-                    setGymLoc({ lat: pos.lat, lng: pos.lng, name: profile.gymName || "My Gym" });
-                    showToast?.("Gym location saved");
-                  } catch {
-                    showToast?.("Location access denied");
-                  }
-                  setSavingGym(false);
-                }} disabled={savingGym} style={{
-                  width: "100%", padding: "12px 16px",
-                  background: C.structGlass, border: `1.5px solid ${C.secondary}`,
-                  borderRadius: 10, color: C.secondary, fontSize: 11, fontWeight: 700,
-                  fontFamily: "var(--m)", cursor: savingGym ? "default" : "pointer",
-                  letterSpacing: ".08em", display: "flex", alignItems: "center",
-                  justifyContent: "center", gap: 8, minHeight: 44,
-                  opacity: savingGym ? 0.6 : 1, transition: "opacity 0.2s",
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
-                  </svg>
-                  {savingGym ? "LOCATING..." : "SAVE CURRENT LOCATION AS GYM"}
-                </button>
-              )}
-            </div>
-          </>
-        )}
-      </Card>
-
-      <SectionDivider C={C} />
-
-      {/* ─── NOTIFICATIONS ─── */}
-      <Label C={C}>NOTIFICATIONS</Label>
-
-      {/* Notification Permission */}
-      {notifPerm !== "granted" && notifPerm !== "unsupported" && (
-        <button onClick={async () => {
-          const result = await requestNotificationPermission();
-          setNotifPerm(result);
-          showToast?.(result === "granted" ? "Notifications enabled" : "Notifications blocked");
-        }} style={{
-          width: "100%", padding: "14px 16px", marginBottom: 10,
-          background: C.accent008, border: `1.5px solid ${C.accent030}`,
-          borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700,
-          fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".08em",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 44,
-        }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-          ENABLE PUSH NOTIFICATIONS
-        </button>
-      )}
-
-      <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
-        {[
-          { k: "a", l: "Workouts", desc: "Daily training reminders" },
-          { k: "b", l: "Weight Reminders", desc: "Morning weigh-in" },
-          { k: "c", l: "Meal Tracking", desc: "Meal timing alerts" },
-          { k: "d", l: "Supplements", desc: "Daily supplement check" },
-          { k: "e", l: "Check-Ins", desc: "Weekly body check-in" },
-        ].map(({ k, l, desc }, i, arr) => (
-          <div key={k} onClick={() => toggleNotif(k)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none", cursor: "pointer" }}>
-            <div>
-              <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
-              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
-            </div>
-            <div style={{ width: 40, height: 22, borderRadius: 11, background: notifications[k] ? C.accent : C.accent010, position: "relative", transition: "background 0.2s", boxShadow: notifications[k] ? `0 0 8px ${C.accent020}` : "none", flexShrink: 0, marginLeft: 12 }}>
-              <div style={{ width: 18, height: 18, borderRadius: 9, background: C.text1, position: "absolute", top: 2, left: notifications[k] ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-            </div>
-          </div>
-        ))}
       </Card>
 
       <SectionDivider C={C} />
