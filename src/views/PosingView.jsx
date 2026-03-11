@@ -355,7 +355,7 @@ export default function PosingView({ C, onBack }) {
                           boxShadow: rated ? `0 0 10px ${C.accent010}` : "none",
                         }}>
                         <div style={{ fontSize: 16, fontWeight: 700, color: rated ? C.accent : C.text4, fontFamily: "var(--m)" }}>{level}</div>
-                        <div style={{ fontSize: 6, color: rated ? C.accent : C.text5, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>{labels[level - 1]}</div>
+                        <div style={{ fontSize: 8, color: rated ? C.accent : C.text5, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>{labels[level - 1]}</div>
                       </button>
                     );
                   })}
@@ -467,7 +467,7 @@ export default function PosingView({ C, onBack }) {
             border: `1.5px solid ${C.structBorderHover}`, boxShadow: C.cardShadow,
           }}>
             <div style={{ fontSize: 20, fontWeight: 600, fontFamily: "var(--m)", color: C.accent, textShadow: `0 0 16px ${C.accent020}` }}>{v}</div>
-            <div style={{ fontSize: 7, color: C.text4, letterSpacing: ".12em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
+            <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".12em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
           </div>
         ))}
       </div>
@@ -567,7 +567,7 @@ export default function PosingView({ C, onBack }) {
                           width: 16, height: 16, borderRadius: 4, flexShrink: 0,
                           background: C.accent008, border: `1px solid ${C.accent015}`,
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 7, fontWeight: 700, color: C.accent, fontFamily: "var(--m)",
+                          fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)",
                           marginTop: 2,
                         }}>
                           {si + 1}
@@ -638,7 +638,7 @@ export default function PosingView({ C, onBack }) {
                 </div>
                 <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{session.avgConfidence}</div>
-                  <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>AVG CONF</div>
+                  <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>AVG CONF</div>
                 </div>
               </div>
             </Card>

@@ -713,7 +713,7 @@ export default function ProgramPDF({ C, onClose }) {
             ].map(({ v, l }) => (
               <div key={l}>
                 <div style={{ fontSize: 20, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{v}</div>
-                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 2 }}>{l}</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 2 }}>{l}</div>
               </div>
             ))}
           </div>

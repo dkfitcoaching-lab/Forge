@@ -77,7 +77,8 @@ input:focus, textarea:focus, select:focus {
 
 input::placeholder, textarea::placeholder { color: ${C.text4}; }
 select option { background: ${C.card}; color: ${C.text1}; }
-button { font-family: var(--b); cursor: pointer; border: none; outline: none; transition: color .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease; }
+button { font-family: var(--b); cursor: pointer; border: none; outline: none; transition: color .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease, filter .18s ease; }
+button:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -86,7 +87,7 @@ input[type="number"] { -moz-appearance: textfield; }
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: rgba(255,255,255,.02); }
-::-webkit-scrollbar-thumb { background: ${C.structBorderStrong}; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: ${C.structBorderStrong}; border-radius: 4px; }
 ::selection { background: ${C.accent030}; color: ${C.text1}; }
 
 /* ─── ANIMATIONS ─── */
@@ -111,7 +112,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.85); opacity: 0; }
+  from { transform: scale(0.96); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
@@ -166,7 +167,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes glow {
@@ -241,8 +242,8 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: scale(0.92) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes backdropIn {
@@ -370,7 +371,8 @@ input[type="number"] { -moz-appearance: textfield; }
     transform: scale(0.99) translateZ(0);
   }
   button:hover {
-    opacity: 0.92;
+    filter: brightness(1.1);
+    transform: translateY(-1px);
   }
 }
 `;

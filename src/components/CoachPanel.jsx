@@ -234,7 +234,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
                 </div>
               )}
               {m.text && <div style={{ fontSize: 12.5, color: m.role === "assistant" ? C.text2 : C.text1, lineHeight: 1.75, whiteSpace: "pre-line" }}>{m.text}</div>}
-              <div style={{ fontSize: 7, color: C.text5, fontFamily: "var(--m)", marginTop: 6, display: "flex", alignItems: "center", justifyContent: m.role === "assistant" ? "space-between" : "flex-end" }}>
+              <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", marginTop: 6, display: "flex", alignItems: "center", justifyContent: m.role === "assistant" ? "space-between" : "flex-end" }}>
                 <span>{formatTime(m.time)}</span>
                 {m.role === "assistant" && typeof speechSynthesis !== "undefined" && (
                   <button onClick={(e) => { e.stopPropagation(); speakingId === i ? stopSpeaking() : speak(m.text, i); }} style={{

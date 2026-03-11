@@ -89,7 +89,7 @@ export default function BodyHeatMap({ muscleVolume, C }) {
               </div>
               <div
                 style={{
-                  fontSize: 7,
+                  fontSize: 8,
                   fontWeight: 700,
                   color: mc.fill,
                   fontFamily: "var(--m)",

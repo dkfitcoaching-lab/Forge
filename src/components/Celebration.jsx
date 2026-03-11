@@ -178,7 +178,7 @@ export function StreakFlame({ streak, C }) {
         <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 16px ${C.accent030}` }}>
           {streak}
         </div>
-        <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>STREAK</div>
+        <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>STREAK</div>
       </div>
     </div>
   );

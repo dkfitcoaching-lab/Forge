@@ -217,7 +217,7 @@ export default function CheckIn({ C, onBack, initialTab }) {
                   { label: "ENERGY", data: energyTrend, color: C.secondary },
                 ].map(({ label, data: d, color }) => (
                   <div key={label} style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 7, color, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{label} TREND</div>
+                    <div style={{ fontSize: 8, color, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{label} TREND</div>
                     <MiniSparkline data={d} C={C} width={80} height={24} />
                   </div>
                 ))}
@@ -573,7 +573,7 @@ export default function CheckIn({ C, onBack, initialTab }) {
                       { label: "ENERGY", data: energyTrend, color: C.secondary },
                     ].map(({ label, data: d, color }) => (
                       <div key={label} style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 7, color, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{label} TREND</div>
+                        <div style={{ fontSize: 8, color, fontFamily: "var(--m)", letterSpacing: ".1em", marginBottom: 6 }}>{label} TREND</div>
                         <MiniSparkline data={d} C={C} width={80} height={24} />
                       </div>
                     ))}

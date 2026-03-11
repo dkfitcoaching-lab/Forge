@@ -206,7 +206,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
             {[{ v: formatTime(elapsed), l: "DURATION" }, { v: exercises.length, l: "EXERCISES" }, { v: totalVolume > 0 ? Math.round(totalVolume).toLocaleString() : "—", l: "LBS MOVED" }].map(({ v, l }) => (
               <div key={l} style={{ textAlign: "center" }}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 20px ${C.accent030}` }}>{v}</div>
-                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".14em", marginTop: 4 }}>{l}</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".14em", marginTop: 4 }}>{l}</div>
               </div>
             ))}
           </div>

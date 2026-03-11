@@ -29,13 +29,11 @@ export function Card({ children, C, style, onClick, glow, accentGlow, edgeAccent
         background: C.cardGradient,
         border: `1px solid ${C.structBorder}`,
         borderRadius: 14,
-        padding: 16,
-        marginBottom: 10,
+        padding: 20,
+        marginBottom: 14,
         cursor: onClick ? "pointer" : "default",
         transition: "border-color .25s ease, box-shadow .25s ease, transform .15s ease",
         boxShadow: C.cardShadow,
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
         position: "relative",
         overflow: "hidden",
         ...(accentGlow ? { animation: "accentBreathe 5s ease-in-out infinite" } : {}),
@@ -56,7 +54,7 @@ export function Card({ children, C, style, onClick, glow, accentGlow, edgeAccent
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, height: 1,
         background: `linear-gradient(90deg, transparent, ${C.structBorderHover}, transparent)`,
-        opacity: 0.5,
+        opacity: 0.8,
       }} />
       {children}
     </div>
@@ -86,15 +84,15 @@ export function Button({ children, onClick, C, style, variant = "primary", disab
           : isGhost
             ? `1.5px solid ${C.structBorderHover}`
             : `1.5px solid ${C.accent030}`,
-        borderRadius: 8,
+        borderRadius: 10,
         color: isDanger ? C.danger : isGhost ? C.text2 : C.btnText,
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 700,
         fontFamily: "var(--m)",
         letterSpacing: ".12em",
         cursor: disabled ? "default" : "pointer",
         transition: "all 0.2s",
-        animation: isPrimary && !disabled ? "shimmerSlow 8s ease-in-out infinite" : "none",
+        animation: "none",
         boxShadow: isPrimary
           ? `0 0 16px ${C.accent020}, 0 0 40px ${C.accent008}, inset 0 1px 0 rgba(255,255,255,0.06)`
           : "none",
@@ -114,7 +112,7 @@ export function Label({ children, C, style }) {
   return (
     <div
       style={{
-        fontSize: 9,
+        fontSize: 10,
         fontWeight: 700,
         color: C.accent,
         letterSpacing: ".2em",
@@ -407,10 +405,9 @@ export function Modal({ title, message, actions, C, onClose }) {
         borderRadius: 16, padding: 28, maxWidth: 340, width: "100%",
         animation: "modalIn .25s ease",
         boxShadow: `0 20px 60px rgba(0,0,0,.5), ${C.neonShadow}`,
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
       }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 8 }}>{title}</div>
-        <div style={{ fontSize: 13, color: C.text3, fontFamily: "var(--b)", lineHeight: 1.6, marginBottom: 24 }}>{message}</div>
+        <div style={{ fontSize: 13, color: C.text2, fontFamily: "var(--b)", lineHeight: 1.6, marginBottom: 24 }}>{message}</div>
         <div style={{ display: "flex", gap: 10 }}>
           {actions.map((action, i) => (
             <Button key={i} C={C} onClick={action.onClick} variant={action.variant || "primary"} style={{ flex: 1 }}>

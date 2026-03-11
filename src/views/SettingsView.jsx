@@ -373,7 +373,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 }} />
               </div>
               <div style={{ fontSize: 8, fontWeight: 600, color: isActive ? C.accent : C.text3, fontFamily: "var(--m)", marginTop: 6 }}>{surface.name}</div>
-              <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", marginTop: 1, letterSpacing: ".04em" }}>{surface.desc}</div>
+              <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1, letterSpacing: ".04em" }}>{surface.desc}</div>
             </button>
           );
         })}
@@ -544,7 +544,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                       borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
                     }}>
                       <div style={{ fontSize: 11, color: profile.gymType === k ? C.accent : C.text2, fontWeight: profile.gymType === k ? 600 : 400 }}>{l}</div>
-                      <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
+                      <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
                     </button>
                   ))}
                 </div>
@@ -578,14 +578,14 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 borderRadius: 8, cursor: "pointer", transition: "all 0.2s",
               }}>
                 <div style={{ fontSize: 10, color: profile.trainingTime === k ? C.accent : C.text2, fontWeight: profile.trainingTime === k ? 600 : 400 }}>{l}</div>
-                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{t}</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{t}</div>
               </button>
             ))}
           </div>
         </div>
       </Card>
 
-      {/* ─── EMERGENCY CONTACT ─── */}
+      {/* ─── EMERGENCY CONTACT (inside TRAINING section) ─── */}
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
         <div style={{ padding: "14px 0" }}>
           <div onClick={() => setShowEmergency(!showEmergency)} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
@@ -636,69 +636,30 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         </div>
       </Card>
 
-      <SectionDivider C={C} />
-
-      {/* ─── HEALTH DATA ─── */}
-      <Label C={C}>HEALTH DATA</Label>
-      <Card C={C} style={{ padding: "2px 16px", marginBottom: 16 }}>
-        {[
-          { k: "apple_health", l: "Apple Health", desc: "Sync sleep, heart rate, steps, and activity rings", icon: (
+      {/* ─── HEALTH INTEGRATIONS (collapsed — all coming soon) ─── */}
+      <Card C={C} style={{ padding: "14px 16px", marginBottom: 16, opacity: 0.7 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+            background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
             </svg>
-          ), status: "coming_soon" },
-          { k: "google_fit", l: "Google Fit", desc: "Import workouts, sleep data, and daily metrics", icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-            </svg>
-          ), status: "coming_soon" },
-          { k: "oura", l: "Oura Ring", desc: "Sleep stages, readiness score, HRV data", icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
-              <circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="4" />
-            </svg>
-          ), status: "coming_soon" },
-          { k: "whoop", l: "WHOOP", desc: "Strain, recovery, and sleep performance", icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg>
-          ), status: "coming_soon" },
-          { k: "garmin", l: "Garmin", desc: "Training load, body battery, and VO2 max", icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          ), status: "coming_soon" },
-        ].map(({ k, l, desc, icon, status }, i, arr) => (
-          <div key={k} style={{
-            display: "flex", alignItems: "center", gap: 12, padding: "14px 0",
-            borderBottom: i < arr.length - 1 ? `1px solid ${C.structBorder}` : "none",
-          }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-              background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>{icon}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, color: C.text2 }}>{l}</div>
-              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{desc}</div>
-            </div>
-            <div style={{
-              padding: "4px 10px", borderRadius: 6,
-              background: status === "connected" ? C.secondary010 : C.structGlass,
-              border: `1px solid ${status === "connected" ? C.secondary : C.structBorderHover}`,
-            }}>
-              <div style={{
-                fontSize: 8, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".08em",
-                color: status === "connected" ? C.secondary : C.text4,
-              }}>
-                {status === "connected" ? "CONNECTED" : "COMING SOON"}
-              </div>
-            </div>
           </div>
-        ))}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, color: C.text2 }}>Health Integrations</div>
+            <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Apple Health, Google Fit, Oura, WHOOP, Garmin</div>
+          </div>
+          <div style={{
+            padding: "4px 10px", borderRadius: 6,
+            background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
+          }}>
+            <div style={{ fontSize: 8, fontWeight: 700, fontFamily: "var(--m)", letterSpacing: ".08em", color: C.text4 }}>COMING SOON</div>
+          </div>
+        </div>
       </Card>
-      <div style={{ fontSize: 9, color: C.text5, fontFamily: "var(--m)", marginBottom: 16, lineHeight: 1.6, padding: "0 4px" }}>
-        Health integrations feed real biometric data directly into your coach&apos;s intelligence engine — sleep quality, recovery state, heart rate variability, and daily strain become factors in your programming.
-      </div>
 
       <SectionDivider C={C} />
 
@@ -904,6 +865,11 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         )}
       </Card>
 
+      <SectionDivider C={C} />
+
+      {/* ─── NOTIFICATIONS ─── */}
+      <Label C={C}>NOTIFICATIONS</Label>
+
       {/* Notification Permission */}
       {notifPerm !== "granted" && notifPerm !== "unsupported" && (
         <button onClick={async () => {
@@ -911,7 +877,7 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           setNotifPerm(result);
           showToast?.(result === "granted" ? "Notifications enabled" : "Notifications blocked");
         }} style={{
-          width: "100%", padding: "14px 16px", marginBottom: 16,
+          width: "100%", padding: "14px 16px", marginBottom: 10,
           background: C.accent008, border: `1.5px solid ${C.accent030}`,
           borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700,
           fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".08em",
@@ -924,10 +890,6 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         </button>
       )}
 
-      <SectionDivider C={C} />
-
-      {/* ─── NOTIFICATIONS ─── */}
-      <Label C={C}>NOTIFICATIONS</Label>
       <Card C={C} style={{ padding: "2px 16px", marginBottom: 24 }}>
         {[
           { k: "a", l: "Workouts", desc: "Daily training reminders" },
