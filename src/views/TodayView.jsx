@@ -5,8 +5,10 @@ import { RadialProgress, MacroRing } from "../components/Charts";
 import { useStaggeredReveal } from "../utils/hooks";
 import { MEALS, MACRO_CAPS, SUPPLEMENTS } from "../data/nutrition";
 import { computeStats, computeReadinessScore, getProgressiveOverloadTargets } from "../utils/analytics";
+import { getProactiveIntelligence } from "../utils/notifications";
 import DAYS from "../data/workouts";
 import storage from "../utils/storage";
+import { tapLight, tapMedium, tapDouble } from "../utils/haptics";
 
 export default function TodayView({ C, onWork, onNav, showToast }) {
   const activeSessionCheck = storage.get("active_session", null);
@@ -33,6 +35,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const [mealPhotos, setMealPhotos] = useState(() => storage.get("mp_" + todayKey, {}));
   const mealFileRefs = useRef({});
   const toggleMeal = (i) => {
+    tapLight();
     const next = { ...mealsChecked, [i]: !mealsChecked[i] };
     setMealsChecked(next);
     storage.set("mc_" + todayKey, next);
@@ -56,12 +59,14 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
   const [suppChecked, setSuppChecked] = useState(() => storage.get("sp_" + todayKey, {}));
   const toggleSupp = (i) => {
+    tapLight();
     const next = { ...suppChecked, [i]: !suppChecked[i] };
     setSuppChecked(next);
     storage.set("sp_" + todayKey, next);
   };
 
   const changeDay = useCallback((dir) => {
+    tapDouble();
     const next = dir === "prev"
       ? (currentDay > 1 ? currentDay - 1 : 14)
       : (currentDay < 14 ? currentDay + 1 : 1);
@@ -80,6 +85,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const readiness = computeReadinessScore();
   const overloadTargets = getProgressiveOverloadTargets(currentDay);
   const overloadReady = overloadTargets ? overloadTargets.filter((t) => t.shouldIncrease) : [];
+  const intel = getProactiveIntelligence();
 
   // Sum actual macros from completed meals (not ratio-based)
   const completedMeals = MEALS.filter((_, i) => mealsChecked[i]);
@@ -87,6 +93,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const macroC = completedMeals.reduce((sum, m) => sum + m.c, 0);
   const macroF = completedMeals.reduce((sum, m) => sum + m.f, 0);
   const consumedCal = completedMeals.reduce((sum, m) => sum + m.cal, 0);
+  const totalCal = MACRO_CAPS.cal;
 
   const suppTotal = SUPPLEMENTS.length;
   const suppDone = Object.values(suppChecked).filter(Boolean).length;
@@ -125,6 +132,31 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               </div>
               {stats.streak > 0 && <StreakFlame streak={stats.streak} C={C} />}
             </div>
+            {/* ─── PROACTIVE INTELLIGENCE LINE ─── */}
+            {intel && (
+              <div style={{
+                marginTop: 18,
+                padding: "10px 14px",
+                background: C.structGlass,
+                border: `1px solid ${C.accent015}`,
+                borderRadius: 10,
+                display: "flex", alignItems: "center", gap: 10,
+                animation: "fadeIn 0.6s ease 0.4s both",
+              }}>
+                <div style={{
+                  width: 6, height: 6, borderRadius: 3, flexShrink: 0,
+                  background: intel.type === "gym_arrival" || intel.type === "overload" ? C.secondary : C.accent,
+                  boxShadow: `0 0 8px ${intel.type === "gym_arrival" ? C.secondary030 : C.accent020}`,
+                  animation: "pulse 3s ease-in-out infinite",
+                }} />
+                <div style={{
+                  fontSize: 10, color: C.text3, fontFamily: "var(--m)",
+                  letterSpacing: ".03em", lineHeight: 1.5,
+                }}>
+                  {intel.text}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </StaggerItem>
@@ -240,7 +272,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               <div style={{ fontSize: 24, fontWeight: 700, color: C.text2, fontFamily: "var(--d)" }}>Rest Day</div>
             </div>
             <div style={{ fontSize: 12, color: C.text4, fontFamily: "var(--m)", marginTop: 2, lineHeight: 1.7 }}>
-              Recovery is where growth happens. Light walking or stretching only.
+              Growth happens during recovery, not in the gym. Light walking or stretching only. Your body is building right now.
             </div>
           </Card>
         ) : (
@@ -329,6 +361,53 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               <MacroRing consumed={macroC} target={MACRO_CAPS.c} color={C.secondary} label="CARBS" C={C} size={52} />
               <MacroRing consumed={macroF} target={MACRO_CAPS.f} color={C.accentDeep} label="FAT" C={C} size={52} />
             </div>
+          </div>
+
+          {/* Meal Snap & Estimate */}
+          <div style={{ marginBottom: 16 }}>
+            <input ref={el => { if (el) mealFileRefs.current.snap = el; }} type="file" accept="image/*" capture="environment"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  // Store the snap for estimation (Claude Vision API placeholder)
+                  const snap = { photo: ev.target.result, time: Date.now(), status: "pending" };
+                  const snaps = storage.get("meal_snaps_" + todayKey, []);
+                  snaps.push(snap);
+                  storage.set("meal_snaps_" + todayKey, snaps);
+                  showToast?.("Photo captured — macro estimation ready when AI connects");
+                };
+                reader.readAsDataURL(file);
+                e.target.value = "";
+              }}
+              style={{ display: "none" }}
+            />
+            <button onClick={() => mealFileRefs.current.snap?.click()} style={{
+              width: "100%", padding: "12px 16px",
+              background: `linear-gradient(135deg, ${C.accent005}, ${C.secondary005})`,
+              border: `1.5px solid ${C.accent020}`,
+              borderRadius: 10, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              transition: "all 0.2s",
+            }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 8,
+                background: C.accent010, border: `1px solid ${C.accent020}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+                </svg>
+              </div>
+              <div style={{ textAlign: "left" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.text1, fontFamily: "var(--m)", letterSpacing: ".04em" }}>SNAP &amp; ESTIMATE</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Photo your meal for instant macro analysis</div>
+              </div>
+              <div style={{ marginLeft: "auto", padding: "3px 8px", borderRadius: 4, background: C.accent010, border: `1px solid ${C.accent015}` }}>
+                <div style={{ fontSize: 7, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".06em" }}>PRO</div>
+              </div>
+            </button>
           </div>
 
           {/* Meals List */}
@@ -498,7 +577,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
             }} />
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { const next = Math.min(waterCount + 1, 20); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
+            <button onClick={() => { tapMedium(); const next = Math.min(waterCount + 1, 20); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
               style={{
                 flex: 1, padding: "10px 16px", background: C.structGlass,
                 border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
@@ -574,9 +653,9 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
             </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 6 }}>Day One Energy</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 6 }}>Your System Is Ready</div>
             <div style={{ fontSize: 11, color: C.text3, fontFamily: "var(--m)", lineHeight: 1.7, maxWidth: 260, margin: "0 auto" }}>
-              Start your first workout to unlock stats, streaks, and progress tracking.
+              Complete your first workout. Every session from here compounds — stats, streaks, PR detection, and coaching intelligence all activate the moment you start.
             </div>
           </Card>
         )}

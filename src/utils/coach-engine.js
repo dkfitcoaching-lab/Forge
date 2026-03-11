@@ -221,10 +221,10 @@ function generateResponse(userMessage, state) {
     }
   }
 
-  return `I have ${state.stats.workoutCount} workouts and ${state.stats.checkInCount} check-ins in your training log. ${
+  return `I'm sitting on ${state.stats.workoutCount} workouts and ${state.stats.checkInCount} check-ins worth of your data. ${
     state.stats.workoutCount === 0
-      ? "Start your first workout and I'll begin tracking everything automatically. Ask me about nutrition, recovery, or your training program."
-      : "Ask me about your progress, nutrition, fatigue, sleep, or specific exercises and I'll give you data-driven recommendations."
+      ? "Start your first workout and I'll begin building your profile automatically. Ask me anything — nutrition, recovery, programming. I'm here."
+      : "Ask me about your progress, nutrition, fatigue, sleep, or specific exercises. I'll coach from what your data actually says — not generic advice."
   }`;
 }
 
@@ -236,24 +236,24 @@ export function getCoachResponse(userMessage) {
 export function getProactiveInsight() {
   const state = analyzeUserState();
   if (state.insights.length === 0) {
-    return "Welcome. Complete workouts and check-ins to unlock personalized coaching insights.";
+    return "I'm your coach. I read your training data, monitor your recovery, and adapt as you progress. Complete your first workout and check-in — the more data I have, the smarter I get.";
   }
 
   const insight = state.insights[0];
   switch (insight.type) {
     case "sleep_low":
-      return `Sleep quality low (${insight.avgSleep}/5). This is limiting recovery.`;
+      return `Your sleep data is flagging — averaging ${insight.avgSleep}/5 this week. That's your biggest limiter right now. Everything we build in the gym depends on what happens when you're asleep. Let's fix this first.`;
     case "stress_high":
-      return `Stress elevated (${insight.avgStress}/5). Consider adjusting volume.`;
+      return `Your stress levels are running high (${insight.avgStress}/5). I'm factoring this into your readiness. We may need to dial volume back this week — pushing through elevated cortisol costs more than it builds.`;
     case "overload_ready":
-      return `${insight.exercises.length} exercise(s) ready for progressive overload.`;
+      return `I've been tracking your lifts and ${insight.exercises.length} exercise${insight.exercises.length > 1 ? "s are" : " is"} ready for a weight increase. Your body has adapted — time to force new growth.`;
     case "fatigue_high":
-      return `Fatigue at ${insight.fatigue.fatigue}%. Deload may be beneficial.`;
+      return `Fatigue model reads ${insight.fatigue.fatigue}%. You've been putting in serious work — now your body needs to catch up. A strategic deload isn't weakness. It's how elite athletes peak.`;
     case "streak_strong":
-      return `${insight.streak}-session streak. Outstanding consistency.`;
+      return `${insight.streak} sessions without a miss. That kind of consistency is rare and it's exactly what separates people who transform from people who just talk about it. Keep this energy.`;
     case "no_checkins":
-      return "Submit your first check-in to unlock personalized insights.";
+      return "I need your daily check-in data to coach you properly — sleep, stress, energy, weight. The more signals I have, the better I can read your body. Submit your first check-in and watch me go to work.";
     default:
-      return `${state.stats.workoutCount} workouts logged. Keep building.`;
+      return `${state.stats.workoutCount} workouts in the system. I'm tracking every pattern. Keep showing up and I'll keep getting sharper.`;
   }
 }

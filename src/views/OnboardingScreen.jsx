@@ -13,7 +13,7 @@ import storage from "../utils/storage";
 const FLOW = [
   // 0 — Opening hook: establish the value gap immediately
   {
-    ai: "Welcome to Forge.\n\nThe coaching methodology behind this system produces elite-level results. The difference is access — what used to require a world-class coach and thousands per month now adapts to your body, your goals, and your data in real time.\n\nLet's build your profile.",
+    ai: "Welcome to Forge.\n\nWhat you're about to use was built from the same methodology that produces elite-level transformations. The kind of coaching intelligence that lives in your pocket, learns your patterns, reads your data, and adapts every single day. No waiting for appointments. No one-size-fits-all templates.\n\nLet's build your profile.",
     autoAdvance: true,
     delay: 3200,
   },
@@ -24,7 +24,11 @@ const FLOW = [
       { label: "Build Muscle", icon: "muscle" },
       { label: "Lose Fat", icon: "flame" },
       { label: "Get Stronger", icon: "barbell" },
+      { label: "Body Recomposition", icon: "recomp" },
+      { label: "Athletic Performance", icon: "athletic" },
       { label: "Improve Mobility", icon: "mobility" },
+      { label: "General Health", icon: "health" },
+      { label: "Compete / Stage Prep", icon: "compete" },
     ],
     multi: true,
     key: "goal",
@@ -37,12 +41,16 @@ const FLOW = [
         "Lose Fat": "A good coach keeps you in a deficit without sacrificing muscle. That means managing training load, nutrition, and recovery as one system — not three separate apps. Forge does exactly that. Your macros, your meals, your training — one place, adapted to your data.",
         "Get Stronger": "Strength coaches don't guess when to add weight. They track every lift, analyze progression curves, and time increases to your readiness. Forge does that automatically — PR detection, overload targets, fatigue modeling — the same analytical layer elite coaches use.",
         "Improve Mobility": "Smart coaches monitor recovery, stress, and readiness daily so you train at the edge of your capacity without crossing into injury. Forge tracks those same signals and adjusts your training intensity before your joints have to tell you.",
+        "Body Recomposition": "Recomp is the hardest goal to execute alone because you're chasing two competing objectives simultaneously. Elite coaches manage this by precisely balancing training stimulus, caloric intake, and recovery windows. Forge runs that same balancing act — tracking your macros, volume, and body composition signals in one integrated system.",
+        "Athletic Performance": "Performance coaching isn't about getting tired in the gym — it's about targeted adaptation. Power, speed, endurance, and strength all require different programming variables managed in concert. Forge tracks your training load, recovery, and progression across every movement pattern so you peak when it matters.",
+        "General Health": "The best coaches know that sustainable health isn't built on extreme protocols. It's built on consistency — showing up, tracking the basics, and making small improvements over time. Forge gives you that structure: training, nutrition, hydration, sleep, and recovery — all in one system that adapts to your life.",
+        "Compete / Stage Prep": "Contest prep is the most demanding phase of training — every variable matters and the margin for error shrinks by the week. Elite coaches manage nutrition periodization, training volume, recovery, and body composition with surgical precision. Forge gives you that same level of systematic tracking and intelligent load management.",
       };
       const goals = Array.isArray(d.goal) ? d.goal : [d.goal];
       const parts = goals.map(g => r[g]).filter(Boolean);
       return parts.length > 0 ? parts.join("\n\n") : "Forge delivers coaching-grade programming intelligence that adapts to your data — the same methodology that drives elite results.";
     },
-    followUp: "Now tell me — what's actually holding you back? Select everything that applies.",
+    followUp: "Now tell me honestly — what's actually been standing in your way? Select everything that applies.",
     options: [
       { label: "Can't stay consistent" },
       { label: "No real program" },
@@ -56,29 +64,29 @@ const FLOW = [
     multi: true,
     key: "struggles",
   },
-  // 3 — Mirror their pain back with authority + ask experience
+  // 3 — Mirror their pain back with authority + Forge is BUILDING the solution NOW
   {
     genAi: (d) => {
       const s = d.struggles || [];
       const parts = [];
 
       if (s.includes("Can't stay consistent") || s.includes("No one holding me accountable"))
-        parts.push("A coach solves consistency by removing decisions. You show up, they tell you exactly what to do. Forge works the same way — open the app, see today's workout, meals, and check-in. No planning. No decision fatigue. You just execute.");
+        parts.push("Consistency. That's the one variable that separates results from intentions.\n\nHere's what I'm building for you: every morning, your entire day is already laid out — workout, meals, supplements, check-in. No decisions. No guesswork. You open the app and execute. Streak tracking holds you accountable without judgment. And unlike a human coach who clocks out at 5 PM, this system is waiting for you at 5 AM.");
       if (s.includes("No real program"))
-        parts.push("A real coach would never let you walk into a gym without a structured program. Forge gives you a complete 14-day periodized split — the same progressive overload methodology that produces real results — not random workouts pulled from Instagram.");
+        parts.push("No program means no progression. And no progression means wasted effort.\n\nI'm loading a 14-day periodized split into your profile right now — targeted muscle groups, intelligent volume progression, form cues on every movement. This isn't a static PDF. The system tracks your lifts and tells you when it's time to add weight. Your program evolves as you do.");
       if (s.includes("Nutrition is a mess"))
-        parts.push("Good coaches make nutrition simple: here's what to eat, here's when, here are your macros. Done. Forge does the same — your meals, your macros, your hydration, tracked through conversation in seconds. Not hours of manual logging like MyFitnessPal.");
+        parts.push("Nutrition without structure is the number one reason people train hard and see nothing.\n\nI'm setting up your meal framework now — 5 structured meals with macro targets calibrated to your goals. One-tap logging. Hydration tracking. Snap a photo of your plate and get instant macro estimates. The days of guessing what to eat are over.");
       if (s.includes("Progress has stalled"))
-        parts.push("When a client plateaus, an elite coach digs into the data — volume trends, overload curves, recovery patterns — and finds exactly what needs to change. Forge runs that same analysis automatically and tells you precisely which exercises are ready for an increase.");
+        parts.push("Plateaus happen when the intelligence layer is missing. You're training on feel instead of data.\n\nForge is already building your analytics engine — progressive overload detection across every exercise, volume trend analysis, fatigue modeling. The system will tell you exactly which lifts are ready for an increase and which need more time. That's the difference between hoping and knowing.");
       if (s.includes("Too much conflicting info"))
-        parts.push("A coach cuts through the noise. They don't give you ten options — they give you the one thing that works for your situation right now. Forge operates the same way. One system, built on methodology that actually produces results. No conflicting advice.");
+        parts.push("Information overload is the modern fitness epidemic. A thousand voices, zero clarity.\n\nForge eliminates that noise. One system. One methodology. One source of truth built on your actual data — not someone else's opinion. When you ask the coach a question, it answers from what it sees in your training, your nutrition, your recovery. Not from a content library.");
       if (s.includes("Recovery or injury concerns"))
-        parts.push("Smart coaches monitor fatigue, sleep, and stress so they can dial training back before injury happens. Forge tracks those same signals daily and adjusts your readiness score in real time. The intelligence that protects your longevity.");
+        parts.push("Training through warning signs is how careers end early.\n\nI'm activating daily readiness monitoring — sleep quality, stress levels, energy, accumulated fatigue. The system builds a recovery profile that flags risk before your body has to. When fatigue index spikes, your training intensity auto-adjusts. Protection built into every session.");
       if (s.includes("Can't find the time"))
-        parts.push("A good coach makes sessions efficient — no wandering, no wasted sets. Forge does the same. Every set is programmed, every rest period is timed. You train with purpose and leave. Most people waste 30-40% of their gym time figuring out what to do next.");
+        parts.push("Time isn't the problem — wasted time is. Most people spend 30-40% of their gym time figuring out what to do next.\n\nForge eliminates that entirely. Walk in, press start. Every set is programmed. Every rest period is timed. The guided workout player keeps you moving with purpose. You'll get more done in 45 minutes than most people do in 90.");
 
       if (parts.length === 0)
-        parts.push("These are solvable problems — every single one of them. And they all trace back to the same root cause: no system. A system doesn't rely on motivation. It doesn't need willpower. It runs on structure. That's what Forge is.");
+        parts.push("Every one of these problems traces back to the same root cause: no system. Motivation fades. Willpower runs out. But a system built on real data and intelligent programming? That compounds.\n\nI'm building that system for you right now. It never takes a day off, and it gets smarter every session.");
 
       return parts.slice(0, 2).join("\n\n");
     },
@@ -124,20 +132,20 @@ const FLOW = [
       const parts = [];
 
       if (t.includes("Hired a personal trainer"))
-        parts.push("Great trainers change lives. The challenge is access — the best ones cost thousands a month, and the coaching stops the moment you leave the session. No system running between appointments. No data accumulating over time. Forge delivers that caliber of coaching intelligence around the clock, and it remembers every rep you've ever logged.");
+        parts.push("That wasn't a failure — that was the right instinct. You wanted a system, not just information. The limitation is that even the best trainer can only be in one place at a time. The coaching stopped when the session ended.\n\nForge doesn't stop. It's tracking between sessions, accumulating data, learning your patterns. Every rep you've ever logged lives in the system. Your trainer had office hours. This has none.");
       if (t.includes("Bought an online program"))
-        parts.push("Online programs are a solid starting point — but they're static. They can't see your data, adapt to your progress, or tell you when to push harder. Forge is a living system. It reads your actual training data and evolves with you, session to session.");
+        parts.push("Online programs gave you structure — but they were frozen in time. They couldn't see your data, couldn't tell you when to push harder, couldn't pull back when you were overtrained.\n\nWhat I'm building for you adapts. Your program evolves session to session based on what the data actually shows. Not a static plan — a living system that gets smarter the longer you use it.");
       if (t.includes("Used a fitness app"))
-        parts.push("There's a difference between tracking and coaching. Tracking records what you did. Coaching knows what you should do next. Forge analyzes your data, detects patterns, identifies when you're ready to progress, and monitors fatigue. It's not a log book — it's an intelligence layer.");
+        parts.push("Most fitness apps are glorified spreadsheets. They record what happened — they don't know what should happen next.\n\nForge is fundamentally different. It's analyzing your data right now — detecting patterns, identifying when you're ready to progress, monitoring fatigue in real time. The intelligence layer that every other app was missing. This isn't a log book. It's the brain.");
       if (t.includes("Followed YouTube / social media"))
-        parts.push("Content creators are great for inspiration — but inspiration isn't a program. Forge is built on methodology refined through real clients getting real results. Not what looks good on camera. What actually works when you show up consistently and train with structure.");
+        parts.push("Content creators give you information. Forge gives you a system. There's a massive difference.\n\nInformation without structure is entertainment. What I'm building for you is methodology — proven, structured, personalized to your data. Not what looks good on camera. What actually works when you show up consistently and train with purpose.");
       if (t.includes("Group fitness classes"))
-        parts.push("Group classes build habits and community — that matters. But they can't individualize. They can't track your progression or adapt to your recovery. Forge gives you that layer of specificity on top of whatever else you're doing — programming that's actually built around you.");
+        parts.push("Group classes built the habit — that matters. But they can't individualize. They don't know your volume tolerance, your fatigue state, or which muscles are undertrained.\n\nForge adds that intelligence layer. Your training is now built around your body, your data, your recovery state. Every session calibrated to where you actually are.");
 
       if (parts.length === 0 && t.includes("This is my first step"))
-        parts.push("Smart first move. Starting with the right system means every session compounds from day one. Forge gives you coaching-grade intelligence and structure from the start — the same methodology that produces results at the highest level.");
+        parts.push("Smart first move. Most people waste their first two years bouncing between random programs and conflicting advice.\n\nYou're starting with the system. Every session from day one compounds toward a real result. Coaching-grade intelligence and structure from the start — the same methodology that produces results at the highest level.");
       else if (parts.length === 0)
-        parts.push("What most approaches are missing is continuity — no intelligence working between sessions, no data accumulating, no system adapting to your progress. That's the gap Forge fills.");
+        parts.push("Here's what was missing from all of those: continuity. No intelligence working between sessions. No data accumulating. No system adapting to your progress.\n\nThat's exactly what I'm building for you right now.");
 
       return parts.slice(0, 2).join("\n\n");
     },
@@ -154,29 +162,29 @@ const FLOW = [
     multi: true,
     key: "priorities",
   },
-  // 6 — Deliver their personalized value stack + ask schedule
+  // 6 — Live system configuration readout + ask schedule
   {
     genAi: (d) => {
       const p = d.priorities || [];
       const val = [];
 
       if (p.includes("A real training program"))
-        val.push("→ 14-day periodized split with targeted exercise selection, volume progression, and form cues built into every session");
+        val.push("TRAINING ENGINE — 14-day periodized split, intelligent volume progression, form cues on every movement");
       if (p.includes("Nutrition that makes sense"))
-        val.push("→ Complete meal framework with macro targets, snap logging, hydration tracking, and supplement management");
+        val.push("NUTRITION SYSTEM — Structured meals, precision macros, photo estimation, hydration + supplement tracking");
       if (p.includes("Tracking my progress"))
-        val.push("→ Automatic PR detection, volume trends, weight curves, body measurements, and progress photo timeline with side-by-side comparison");
+        val.push("PROGRESS TRACKING — PR detection, volume trends, weight curves, progress photos with side-by-side timeline");
       if (p.includes("Accountability system"))
-        val.push("→ Daily check-ins, training streaks, readiness scoring, and a coach that notices when patterns shift");
+        val.push("ACCOUNTABILITY — Daily check-ins, streak tracking, readiness scoring, pattern-shift alerts");
       if (p.includes("Access to coaching intelligence"))
-        val.push("→ AI coach available 24/7 that reads your actual data — sleep, training, nutrition, fatigue — and coaches from what it sees");
+        val.push("AI COACH — 24/7, reads your actual data — sleep, training, nutrition, fatigue — coaches from what it sees");
       if (p.includes("Analytics and data"))
-        val.push("→ Fatigue modeling, progressive overload targets, muscle volume heatmap, and trend analysis across every metric you track");
+        val.push("ANALYTICS — Fatigue modeling, overload detection, muscle volume heatmap, trend analysis");
       if (p.includes("Simple and fast to use"))
-        val.push("→ One-tap set logging, guided workout player with built-in rest timers, and everything in one place — training, nutrition, analytics, coaching");
+        val.push("SPEED — One-tap logging, guided workout player, built-in rest timers, everything in one place");
 
-      const list = val.length > 0 ? val.join("\n") : "→ Everything you need — structured training, precision nutrition, real-time analytics, and intelligent coaching — in one system that gets smarter the more you use it";
-      return `Based on what you've told me, here's exactly what Forge gives you:\n\n${list}`;
+      const list = val.length > 0 ? val.map(v => `  ${v}`).join("\n") : "  FULL SYSTEM — Training, nutrition, analytics, and coaching intelligence — all active";
+      return `Your system is being configured. Here's what's loading:\n\n${list}\n\nAll of this runs from day one.`;
     },
     followUp: "How many days per week can you realistically train?",
     options: [
@@ -235,22 +243,22 @@ const FLOW = [
     },
     showSurfacePicker: true,
   },
-  // 11 — Personalized recap + tier selection
+  // 11 — System build complete + tier selection
   {
     genAi: (d) => {
       const name = d.name || "Athlete";
       const goals = Array.isArray(d.goal) ? d.goal.join(", ") : (d.goal || "your goals");
       const freq = d.frequency || "your schedule";
       const exp = d.experience || "your level";
-      return `${name}, your Forge profile is ready.\n\n` +
-        `Goal — ${goals}\n` +
-        `Training — ${freq} per week\n` +
-        `Experience — ${exp}\n` +
-        `Program — Periodized and adaptive, built from your data\n` +
-        `Nutrition — Macro tracking, meal framework, hydration\n` +
-        `Analytics — Fatigue model, PR detection, overload targets\n` +
-        `Coaching — 24/7 intelligence that reads your actual data\n\n` +
-        `This level of coaching used to require thousands per month and a waiting list. Choose your plan:`;
+      return `${name}, your system is built.\n\n` +
+        `GOAL — ${goals}\n` +
+        `FREQUENCY — ${freq} per week\n` +
+        `EXPERIENCE — ${exp}\n` +
+        `PROGRAM — Periodized. Adaptive. Built from your data.\n` +
+        `NUTRITION — Precision macros. Structured meals. Hydration.\n` +
+        `ANALYTICS — Fatigue model. PR detection. Overload engine.\n` +
+        `COACH — Lives in your pocket. Learns your patterns. Never sleeps.\n\n` +
+        `Everything is loaded. The intelligence starts working the moment you begin. Choose your plan:`;
     },
     showTiers: true,
   },
@@ -260,39 +268,39 @@ const FLOW = [
 const TIERS = [
   {
     name: "FORGE",
-    tagline: "Self-Guided Training System",
+    tagline: "Structured Training System",
     price: "$14.99",
     period: "/mo",
     yearlyPrice: "$9.99",
     yearlyPeriod: "/mo billed annually",
     features: [
-      "14-day periodized training program",
-      "Guided workout player with rest timers",
-      "Full nutrition tracking + macro targets",
-      "Hydration and supplement tracking",
-      "Daily check-ins with readiness scoring",
-      "Progress photos and body measurements",
-      "Volume logging with PR detection",
+      "14-day periodized program that adapts to you",
+      "Guided workout player with intelligent rest timers",
+      "Precision nutrition — macros, meals, hydration",
+      "Supplement protocol with daily tracking",
+      "Readiness scoring from real biometric data",
+      "Progress photos with side-by-side timeline",
+      "PR detection engine — never miss a record",
     ],
     accent: false,
     cta: "START FREE TRIAL",
   },
   {
     name: "FORGE PRO",
-    tagline: "Intelligent Coaching System",
+    tagline: "AI Coaching Intelligence — 24/7 in Your Pocket",
     price: "$29.99",
     period: "/mo",
     yearlyPrice: "$19.99",
     yearlyPeriod: "/mo billed annually",
     features: [
       "Everything in Forge, plus:",
-      "24/7 AI Coach — unlimited access",
-      "Advanced analytics dashboard",
-      "Fatigue model + readiness intelligence",
-      "Progressive overload detection engine",
-      "Muscle volume distribution heatmap",
-      "Exercise substitution library",
-      "Weekly performance reports",
+      "Unlimited AI Coach — always on, always learning",
+      "Voice input and text-to-speech coaching",
+      "Fatigue model that knows when to push or pull back",
+      "Progressive overload engine — auto-detects readiness",
+      "Muscle volume heatmap and training balance analysis",
+      "Weekly performance reports delivered automatically",
+      "Photo uploads in coach chat for form feedback",
     ],
     accent: true,
     cta: "START FREE TRIAL",
@@ -300,19 +308,20 @@ const TIERS = [
   },
   {
     name: "FORGE ELITE",
-    tagline: "World-Class Human + AI Coaching",
+    tagline: "Human + AI — The Full Coaching Experience",
     price: "$49.99",
     period: "/mo",
     yearlyPrice: "$34.99",
     yearlyPeriod: "/mo billed annually",
     features: [
       "Everything in Pro, plus:",
-      "Direct access to a human coach",
-      "Fully custom program design",
-      "Video form review and feedback",
-      "Priority response under 1 hour",
-      "Quarterly program architecture reviews",
-      "Early access to new platform features",
+      "Direct access to a certified human coach",
+      "Fully custom program architecture",
+      "Video analysis — form review, pose detection",
+      "Multi-photo and video uploads for check-ins",
+      "Priority response — under 1 hour guaranteed",
+      "Quarterly program redesigns based on your data",
+      "Global leaderboard access with verified badge",
     ],
     accent: false,
     cta: "START FREE TRIAL",
@@ -438,6 +447,33 @@ function GoalIcon({ name, color, size = 15 }) {
       <path d="M16 13l3 5" />
       <path d="M10 18l-1 4" />
       <path d="M14 18l1 4" />
+    </svg>
+  );
+  if (name === "recomp") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M8 20V10" /><path d="M12 20V4" /><path d="M16 20V14" />
+      <path d="M4 16l4-6 4 4 4-10 4 6" strokeOpacity="0.5" />
+    </svg>
+  );
+  if (name === "athletic") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <circle cx="12" cy="4" r="2" />
+      <path d="M7 11l5-3 5 3" />
+      <path d="M12 8v6" />
+      <path d="M8 20l4-6 4 6" />
+      <path d="M5 16h14" strokeOpacity="0.4" strokeDasharray="2 2" />
+    </svg>
+  );
+  if (name === "health") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  );
+  if (name === "compete") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M6 9a6 6 0 0 1 12 0c0 3-2 5-6 8-4-3-6-5-6-8z" />
+      <circle cx="12" cy="9" r="2" />
+      <path d="M9 19h6" /><path d="M10 22h4" />
     </svg>
   );
   return null;
@@ -583,6 +619,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
           setMessages(prev => [...prev, { role: "ai", text: FLOW[1].ai }]);
           setTyping(false);
           setShowOpts(true);
+          setShowMultiConfirm(true);
         }, 900);
       }, s0.delay || 1200);
     }, 800);

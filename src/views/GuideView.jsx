@@ -26,7 +26,7 @@ export default function GuideView({ C, onBack }) {
         Program Guide
       </div>
       <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", marginBottom: 20 }}>
-        Everything you need to know about the Forge system
+        The methodology, the science, and the system behind your results
       </div>
 
       {/* Category Tabs */}

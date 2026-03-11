@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { getCoachResponse, getProactiveInsight } from "../utils/coach-engine";
 import { ForgeLogo } from "./Primitives";
+import storage from "../utils/storage";
 
 // Floating coach button for use in WorkoutPlayer and other views
 export function CoachFAB({ C, onClick }) {
@@ -39,8 +40,66 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
   const [typing, setTyping] = useState(false);
   const [showPrompts, setShowPrompts] = useState(true);
   const [pendingPhoto, setPendingPhoto] = useState(null);
+  const [listening, setListening] = useState(false);
+  const [speakingId, setSpeakingId] = useState(null);
   const scrollRef = useRef();
   const photoRef = useRef();
+  const recognitionRef = useRef(null);
+
+  // TTS — speak a coach message
+  const speak = (text, msgIndex) => {
+    if (typeof speechSynthesis === "undefined") return;
+    const ttsEnabled = storage.get("tts_enabled", false);
+    if (!ttsEnabled && msgIndex !== undefined) return; // auto-play only if enabled
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const voiceId = storage.get("coach_voice", "default");
+    if (voiceId !== "default") {
+      const found = speechSynthesis.getVoices().find((v) => v.name === voiceId);
+      if (found) u.voice = found;
+    }
+    u.rate = 0.95;
+    u.pitch = 1.0;
+    setSpeakingId(msgIndex ?? -1);
+    u.onend = () => setSpeakingId(null);
+    u.onerror = () => setSpeakingId(null);
+    speechSynthesis.speak(u);
+  };
+
+  const stopSpeaking = () => {
+    if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
+    setSpeakingId(null);
+  };
+
+  // Voice input — speech recognition
+  const hasSpeechRecognition = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  const startListening = () => {
+    if (!hasSpeechRecognition || listening) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    recognition.onresult = (event) => {
+      const transcript = event.results[0]?.[0]?.transcript;
+      if (transcript) setInput(transcript);
+      setListening(false);
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setListening(false);
+  };
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -71,20 +130,24 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
         : getCoachResponse(userMsg);
       setMessages((prev) => [...prev, { role: "assistant", text: response, time: Date.now() }]);
       setTyping(false);
+      // Auto-speak if TTS enabled
+      if (storage.get("tts_enabled", false)) speak(response);
     }, thinkTime);
   };
 
   const quickPrompts = isWorkout
-    ? ["Form check tips", "Adjust my rest time", "How's my volume today?", "Motivation boost"]
-    : ["How am I progressing?", "Analyze my fatigue", "Nutrition check", "Sleep quality"];
+    ? ["Form check tips", "Adjust my rest time", "How's my volume today?", "Push me harder"]
+    : ["Where do I stand?", "Read my fatigue", "Nutrition check", "Am I recovering?"];
 
   const sendQuick = (prompt) => {
     setShowPrompts(false);
     setMessages((prev) => [...prev, { role: "user", text: prompt, time: Date.now() }]);
     setTyping(true);
     setTimeout(() => {
-      setMessages((prev) => [...prev, { role: "assistant", text: getCoachResponse(prompt), time: Date.now() }]);
+      const response = getCoachResponse(prompt);
+      setMessages((prev) => [...prev, { role: "assistant", text: response, time: Date.now() }]);
       setTyping(false);
+      if (storage.get("tts_enabled", false)) speak(response);
     }, 800);
   };
 
@@ -130,7 +193,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Coach</div>
           <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>
-            {isWorkout ? "WORKOUT MODE" : "fitnessforge.ai"}
+            {isWorkout ? "LIVE SESSION INTEL" : "ALWAYS ON · ALWAYS LEARNING"}
           </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
@@ -170,7 +233,24 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
                 </div>
               )}
               {m.text && <div style={{ fontSize: 12.5, color: m.role === "assistant" ? C.text2 : C.text1, lineHeight: 1.75, whiteSpace: "pre-line" }}>{m.text}</div>}
-              <div style={{ fontSize: 7, color: C.text5, fontFamily: "var(--m)", marginTop: 6, textAlign: m.role === "assistant" ? "left" : "right" }}>{formatTime(m.time)}</div>
+              <div style={{ fontSize: 7, color: C.text5, fontFamily: "var(--m)", marginTop: 6, display: "flex", alignItems: "center", justifyContent: m.role === "assistant" ? "space-between" : "flex-end" }}>
+                <span>{formatTime(m.time)}</span>
+                {m.role === "assistant" && typeof speechSynthesis !== "undefined" && (
+                  <button onClick={(e) => { e.stopPropagation(); speakingId === i ? stopSpeaking() : speak(m.text, i); }} style={{
+                    background: "none", border: "none", cursor: "pointer", padding: 2,
+                    color: speakingId === i ? C.accent : C.text5, transition: "color 0.2s",
+                    display: "flex", alignItems: "center",
+                  }}>
+                    {speakingId === i ? (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                    ) : (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 010 7.07" /><path d="M19.07 4.93a10 10 0 010 14.14" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -258,19 +338,34 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
       <div style={{ padding: isOverlay ? "12px 20px max(12px, env(safe-area-inset-bottom))" : "12px 0 4px", borderTop: `1px solid ${C.structBorderHover}`, display: "flex", gap: 8, flexShrink: 0 }}>
         <button onClick={() => photoRef.current?.click()} style={{
           background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`,
-          borderRadius: 12, width: 48, height: 48, cursor: "pointer",
+          borderRadius: 12, width: 44, height: 48, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
-          color: pendingPhoto ? C.accent : C.text4, transition: "color 0.2s",
+          color: pendingPhoto ? C.accent : C.text4, transition: "color 0.2s", flexShrink: 0,
         }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
           </svg>
         </button>
+        {hasSpeechRecognition && (
+          <button onClick={listening ? stopListening : startListening} style={{
+            background: listening ? C.accent015 : C.structGlass,
+            border: `1.5px solid ${listening ? C.accent : C.structBorderHover}`,
+            borderRadius: 12, width: 44, height: 48, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: listening ? C.accent : C.text4, transition: "all 0.2s", flexShrink: 0,
+            animation: listening ? "pulse 1.5s ease-in-out infinite" : "none",
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+              <path d="M19 10v2a7 7 0 01-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
+            </svg>
+          </button>
+        )}
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={isWorkout ? "Ask about your current workout..." : "Ask about your training data..."}
+          placeholder={isWorkout ? "Ask your coach anything..." : "Talk to your coach..."}
           style={{
             flex: 1, padding: "12px 16px",
             background: C.structGlass,

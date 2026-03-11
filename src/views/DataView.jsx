@@ -26,9 +26,9 @@ export default function DataView({ C, onNav }) {
     <div>
       {/* ─── HEADER ─── */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 4 }}>Performance</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 4 }}>Performance Intelligence</div>
         <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>
-          {stats.workoutCount > 0 ? `${stats.workoutCount} workouts · ${stats.cyclesCompleted || 0} cycles completed` : "Start training to see your data"}
+          {stats.workoutCount > 0 ? `${stats.workoutCount} workouts analyzed · ${stats.cyclesCompleted || 0} cycles completed` : "Your analytics engine activates after your first session"}
         </div>
       </div>
 
@@ -78,9 +78,9 @@ export default function DataView({ C, onNav }) {
               <polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" />
             </svg>
           </div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: C.text2, marginBottom: 6 }}>No data yet</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.text2, marginBottom: 6 }}>Your Data Engine Is Waiting</div>
           <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", lineHeight: 1.6 }}>
-            Complete your first workout to unlock performance analytics, fatigue modeling, and progressive overload tracking.
+            Complete your first workout and this entire dashboard comes alive — fatigue modeling, progressive overload detection, volume distribution, PR tracking. The intelligence builds with every session.
           </div>
         </Card>
       )}
@@ -177,17 +177,17 @@ export default function DataView({ C, onNav }) {
       {/* ─── TOOLS ─── */}
       <Label C={C}>Tools</Label>
       {[
-        { l: "Program Guide", d: "Full breakdown of the Forge system", v: "gd", icon: (
+        { l: "Program Guide", d: "The methodology behind your results", v: "gd", icon: (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
           </svg>
         )},
-        { l: "Volume Log", d: "Track training volume over time", v: "vl", icon: (
+        { l: "Volume Log", d: "Training tonnage and progression curves", v: "vl", icon: (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
             <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
           </svg>
         )},
-        { l: "Daily Check-In", d: "Body tracking, photos, and recovery metrics", v: "ci", icon: (
+        { l: "Daily Check-In", d: "The data your coach reads every morning", v: "ci", icon: (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.secondary} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
           </svg>
