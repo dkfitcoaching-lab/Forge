@@ -58,6 +58,8 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
   const [ttsEnabled, setTtsEnabled] = useState(() => storage.get("tts_enabled", false));
   const photoInputRef = useRef();
   const stats = computeStats();
+  const obData = storage.get("ob_data", {});
+  const userGoals = Array.isArray(obData.goal) ? obData.goal : obData.goal ? [obData.goal] : [];
 
   const saveProfile = (key, value, silent) => {
     const next = { ...profile, [key]: value };
@@ -260,31 +262,88 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         </div>
       </Card>
 
-      {/* Stats */}
+      {/* Stats — goal-specific metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 24 }}>
-        {[
-          { v: stats.workoutCount, l: "WORKOUTS" },
-          { v: stats.streak, l: "STREAK" },
-          { v: stats.consistency ? `${stats.consistency}%` : "—", l: "CONSISTENCY" },
-          { v: stats.avgReadiness || "—", l: "READINESS", sub: stats.avgReadiness ? "/10" : null },
-          { v: stats.top1RM ? `${stats.top1RM}` : "—", l: `EST 1RM ${units === "metric" ? "KG" : "LBS"}`, sub: stats.top1RMExercise ? stats.top1RMExercise.split(" ").slice(0, 2).join(" ") : null },
-          { v: stats.cyclesCompleted, l: "CYCLES DONE" },
-        ].map(({ v, l, sub }) => (
-          <div key={l} style={{
-            padding: "18px 8px 14px", textAlign: "center",
-            background: C.cardGradient, borderRadius: 14,
-            border: `1.5px solid ${C.accent015}`, boxShadow: `${C.cardShadow}, 0 0 20px ${C.accent008}`,
-            position: "relative", overflow: "hidden",
-          }}>
-            <div style={{
-              position: "absolute", top: 0, left: "20%", right: "20%", height: 1,
-              background: C.dividerGrad, opacity: 0.5,
-            }} />
-            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--m)", color: C.accent, textShadow: `0 0 20px ${C.accent}50` }}>{v}</div>
-            {sub && <div style={{ fontSize: 7, color: C.text3, fontFamily: "var(--m)", marginTop: 1 }}>{sub}</div>}
-            <div style={{ fontSize: 7, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: sub ? 2 : 5 }}>{l}</div>
-          </div>
-        ))}
+        {(() => {
+          const u = units === "metric" ? "KG" : "LBS";
+          const g = userGoals;
+          const has = (s) => g.some(x => x.includes(s));
+
+          // Universal row: workouts + streak always shown
+          const metrics = [
+            { v: stats.workoutCount, l: "WORKOUTS" },
+            { v: stats.streak, l: "STREAK" },
+          ];
+
+          // Third slot: consistency for most goals, check-ins for health/mobility
+          if (has("Health") || has("Mobility")) {
+            metrics.push({ v: stats.checkInCount, l: "CHECK-INS" });
+          } else {
+            metrics.push({ v: stats.consistency ? `${stats.consistency}%` : "—", l: "CONSISTENCY" });
+          }
+
+          // Goal-specific row 2 (slots 4-6)
+          if (has("Stronger")) {
+            // Strength: 1RM, PRs hit, cycles
+            metrics.push(
+              { v: stats.top1RM || "—", l: `EST 1RM ${u}`, sub: stats.top1RMExercise ? stats.top1RMExercise.split(" ").slice(0, 2).join(" ") : null },
+              { v: stats.prCount || 0, l: "PRs HIT" },
+              { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+            );
+          } else if (has("Lose Fat")) {
+            // Fat loss: weight delta, consistency, weekly vol
+            metrics.push(
+              { v: stats.weightDelta !== null ? `${stats.weightDelta > 0 ? "+" : ""}${stats.weightDelta}` : "—", l: `${u} CHANGE`, sub: stats.weightDelta !== null ? "since start" : null },
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "ADHERENCE" },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+            );
+          } else if (has("Muscle") || has("Hypertrophy")) {
+            // Hypertrophy: weekly volume, muscle balance, cycles
+            metrics.push(
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+              { v: stats.muscleBalance ? `${stats.muscleBalance}%` : "—", l: "BALANCE", sub: "muscle distribution" },
+              { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+            );
+          } else if (has("Recomp")) {
+            // Recomp: weight delta, weekly volume, consistency
+            metrics.push(
+              { v: stats.weightDelta !== null ? `${stats.weightDelta > 0 ? "+" : ""}${stats.weightDelta}` : "—", l: `${u} CHANGE`, sub: stats.weightDelta !== null ? "since start" : null },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "ADHERENCE" },
+            );
+          } else if (has("Athletic") || has("Compete")) {
+            // Performance/competition: 1RM, weekly volume, consistency
+            metrics.push(
+              { v: stats.top1RM || "—", l: `EST 1RM ${u}`, sub: stats.top1RMExercise ? stats.top1RMExercise.split(" ").slice(0, 2).join(" ") : null },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "ADHERENCE" },
+            );
+          } else {
+            // Default / General Health / Mobility / no goal set
+            metrics.push(
+              { v: stats.consistency ? `${stats.consistency}%` : "—", l: "CONSISTENCY" },
+              { v: stats.cyclesCompleted, l: "CYCLES DONE" },
+              { v: stats.weeklyAvgVolume ? stats.weeklyAvgVolume.toLocaleString() : "—", l: `WEEKLY ${u}` },
+            );
+          }
+
+          return metrics.map(({ v, l, sub }) => (
+            <div key={l} style={{
+              padding: "18px 8px 14px", textAlign: "center",
+              background: C.cardGradient, borderRadius: 14,
+              border: `1.5px solid ${C.accent015}`, boxShadow: `${C.cardShadow}, 0 0 20px ${C.accent008}`,
+              position: "relative", overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", top: 0, left: "20%", right: "20%", height: 1,
+                background: C.dividerGrad, opacity: 0.5,
+              }} />
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "var(--m)", color: C.accent, textShadow: `0 0 20px ${C.accent}50` }}>{v}</div>
+              {sub && <div style={{ fontSize: 7, color: C.text3, fontFamily: "var(--m)", marginTop: 1 }}>{sub}</div>}
+              <div style={{ fontSize: 7, color: C.text4, letterSpacing: ".14em", fontFamily: "var(--m)", marginTop: sub ? 2 : 5 }}>{l}</div>
+            </div>
+          ));
+        })()}
       </div>
 
       {/* Quick Links to other views */}
