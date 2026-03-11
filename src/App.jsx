@@ -179,11 +179,11 @@ export default function App() {
     }
   };
 
-  // 4 tabs only
+  // 4 tabs — Coach is #2 (core differentiator)
   const tabs = [
     { k: "today", l: "Today" },
-    { k: "program", l: "Program" },
     { k: "coach", l: "Coach" },
+    { k: "program", l: "Program" },
     { k: "data", l: "Data" },
   ];
 
@@ -260,8 +260,12 @@ export default function App() {
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              <line x1="4" y1="7" x2="20" y2="7" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="17" x2="20" y2="17" />
+              <circle cx="8" cy="7" r="2" fill="currentColor" />
+              <circle cx="16" cy="12" r="2" fill="currentColor" />
+              <circle cx="11" cy="17" r="2" fill="currentColor" />
             </svg>
           </button>
         </div>
@@ -282,12 +286,8 @@ export default function App() {
         {/* ─── COACH OVERLAY ─── */}
         {coachOpen && <CoachPanel C={C} isOverlay onClose={() => setCoachOpen(false)} />}
 
-        {/* ─── COACH FAB (shown on non-coach tabs, not during sub-views) ─── */}
-        {tab !== "coach" && view === "main" && !coachOpen && (
-          <div style={{ animation: "coachFabIn 0.3s ease" }}>
-            <CoachFAB C={C} onClick={() => setCoachOpen(true)} />
-          </div>
-        )}
+        {/* CoachFAB removed from main views — Coach tab is in the nav bar.
+           FAB only appears during WorkoutPlayer where nav is hidden. */}
 
         {/* ─── TOAST ─── */}
         {toast && <Toast message={toast} C={C} />}
