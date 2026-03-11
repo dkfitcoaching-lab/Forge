@@ -62,19 +62,22 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Card hover/active feedback */
+.forge-card-interactive {
+  will-change: transform, box-shadow;
+}
 .forge-card-interactive:hover {
   border-color: ${C.structBorderHover} !important;
   box-shadow: ${C.cardShadowHover} !important;
 }
 .forge-card-interactive:active {
-  transform: scale(0.985);
+  transform: scale(0.985) translateZ(0);
   border-color: ${C.accent020} !important;
   box-shadow: ${C.cardShadow}, 0 0 12px ${C.accent008} !important;
 }
 
 input::placeholder, textarea::placeholder { color: ${C.text4}; }
 select option { background: ${C.card}; color: ${C.text1}; }
-button { font-family: var(--b); cursor: pointer; border: none; outline: none; transition: all .18s ease; }
+button { font-family: var(--b); cursor: pointer; border: none; outline: none; transition: color .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease; }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -178,13 +181,13 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes orbFloat {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: .08; }
-  50% { transform: translate(-50%, -50%) scale(1.15); opacity: .14; }
+  0%, 100% { transform: translate3d(-50%, -50%, 0) scale(1); opacity: .08; }
+  50% { transform: translate3d(-50%, -50%, 0) scale(1.15); opacity: .14; }
 }
 
 @keyframes orbFloat2 {
-  0%, 100% { transform: translate(-50%, -50%) scale(1.1); opacity: .04; }
-  50% { transform: translate(-50%, -50%) scale(.9); opacity: .10; }
+  0%, 100% { transform: translate3d(-50%, -50%, 0) scale(1.1); opacity: .04; }
+  50% { transform: translate3d(-50%, -50%, 0) scale(.9); opacity: .10; }
 }
 
 @keyframes logoGlowRise {
@@ -246,6 +249,21 @@ input[type="number"] { -moz-appearance: textfield; }
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+@keyframes splashFadeOut {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.02); filter: blur(4px); }
+}
+
+@keyframes coachFabIn {
+  from { opacity: 0; transform: scale(0.8) translateZ(0); }
+  to { opacity: 1; transform: scale(1) translateZ(0); }
+}
+
+/* GPU promotion for animated elements */
+.forge-orb { will-change: transform, opacity; }
+.forge-header-blur { will-change: backdrop-filter; }
+.forge-nav-blur { will-change: backdrop-filter; }
 
 /* Responsive desktop layout */
 @media (min-width: 900px) {

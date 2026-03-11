@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a7868"/>
+      <stop offset="35%" stop-color="#40b8a8"/>
+      <stop offset="65%" stop-color="#7EFFF0"/>
+      <stop offset="100%" stop-color="#40b8a8"/>
+    </linearGradient>
+    <linearGradient id="border" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(180,195,210,0.15)"/>
+      <stop offset="50%" stop-color="rgba(180,195,210,0.35)"/>
+      <stop offset="100%" stop-color="rgba(180,195,210,0.15)"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="outerGlow">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="50%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <linearGradient id="topEdge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="25%" stop-color="rgba(180,195,210,0.3)"/>
+      <stop offset="75%" stop-color="rgba(180,195,210,0.3)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <radialGradient id="atmosphereOrb" cx="50%" cy="35%" r="45%">
+      <stop offset="0%" stop-color="rgba(92,224,208,0.06)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#020202"/>
+
+  <!-- Atmosphere orb -->
+  <circle cx="256" cy="200" r="220" fill="url(#atmosphereOrb)"/>
+
+  <!-- Outer card border -->
+  <rect x="76" y="76" width="360" height="360" rx="56" fill="none" stroke="url(#border)" stroke-width="2.5"/>
+
+  <!-- Card glass fill -->
+  <rect x="76" y="76" width="360" height="360" rx="56" fill="rgba(170,185,200,0.04)"/>
+
+  <!-- Glass highlight -->
+  <rect x="78" y="78" width="356" height="180" rx="54" fill="url(#glass)"/>
+
+  <!-- Top edge highlight -->
+  <rect x="126" y="76" width="260" height="1.5" fill="url(#topEdge)"/>
+
+  <!-- Atomic number (26) -->
+  <text x="110" y="132" fill="rgba(180,195,210,0.5)" font-family="'IBM Plex Mono', 'JetBrains Mono', monospace" font-size="36" font-weight="500">26</text>
+
+  <!-- Fe symbol with glow -->
+  <text x="256" y="296" text-anchor="middle" fill="url(#accent)" font-family="'Cinzel', Georgia, serif" font-size="148" font-weight="800" filter="url(#glow)">Fe</text>
+
+  <!-- FORGE label -->
+  <text x="256" y="370" text-anchor="middle" fill="rgba(180,195,210,0.55)" font-family="'IBM Plex Mono', 'JetBrains Mono', monospace" font-size="30" font-weight="600" letter-spacing="5">FORGE</text>
+</svg>

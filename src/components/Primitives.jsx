@@ -10,8 +10,9 @@ export function StaggerItem({ children, index, visible }) {
     <div
       style={{
         opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0)" : "translateY(18px)",
-        transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        transform: shown ? "translateY(0) translateZ(0)" : "translateY(18px) translateZ(0)",
+        transition: "opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        willChange: shown ? "auto" : "opacity, transform",
       }}
     >
       {children}
@@ -31,7 +32,7 @@ export function Card({ children, C, style, onClick, glow, accentGlow, edgeAccent
         padding: 16,
         marginBottom: 10,
         cursor: onClick ? "pointer" : "default",
-        transition: "border-color .25s, box-shadow .25s, transform .15s",
+        transition: "border-color .25s ease, box-shadow .25s ease, transform .15s ease",
         boxShadow: C.cardShadow,
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
@@ -252,11 +253,13 @@ export function NavIcons() {
     ),
     coach: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" />
-        <path d="M12 2c2.5 3 4 6.5 4 10s-1.5 7-4 10" />
-        <path d="M12 2c-2.5 3-4 6.5-4 10s1.5 7 4 10" />
-        <path d="M2 12h20" />
-        <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+        {/* Neural/AI brain icon — matches CoachFAB */}
+        <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6l-.8.6V18h-6v-2.4l-.8-.6A7 7 0 0 1 12 2z" />
+        <line x1="9" y1="18" x2="15" y2="18" />
+        <line x1="10" y1="21" x2="14" y2="21" />
+        <circle cx="10" cy="9" r="0.8" fill="currentColor" stroke="none" />
+        <circle cx="14" cy="9" r="0.8" fill="currentColor" stroke="none" />
+        <path d="M10 9l2 2 2-2" strokeWidth="1" />
       </svg>
     ),
     data: (
@@ -276,43 +279,77 @@ export function NavIcons() {
 }
 
 // ─── PERIODIC TABLE LOGO ─────────────────────────────────────
-export function ForgeLogo({ C, size = "md" }) {
-  const s = size === "lg" ? { box: 72, fe: 28, num: 8, name: 6, pad: "6px 10px" }
-    : size === "sm" ? { box: 36, fe: 14, num: 5, name: 4, pad: "2px 5px" }
-    : { box: 48, fe: 18, num: 6, name: 5, pad: "3px 7px" };
+// Supports dynamic client initials via `clientInitial` prop
+// Default shows "Fe" (Iron = Forge). Pass clientInitial="D" for a client named "Derek", etc.
+export function ForgeLogo({ C, size = "md", clientInitial, clientName }) {
+  const s = size === "lg" ? { box: 72, fe: 28, num: 8, name: 6, pad: "6px 10px", radius: 14 }
+    : size === "sm" ? { box: 36, fe: 14, num: 5, name: 4, pad: "2px 5px", radius: 6 }
+    : { box: 48, fe: 18, num: 6, name: 5, pad: "3px 7px", radius: 10 };
+
+  const symbol = clientInitial || "Fe";
+  const label = clientName || "FORGE";
+  const atomicNum = clientInitial ? "" : "26";
 
   return (
     <div style={{
       width: s.box, height: s.box,
-      border: `1px solid ${C.structBorderStrong}`,
-      borderRadius: 6,
-      background: C.structGlass,
+      border: `1.5px solid ${C.structBorderStrong}`,
+      borderRadius: s.radius,
+      background: `linear-gradient(145deg, ${C.structGlass}, rgba(180,195,210,0.06))`,
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       position: "relative",
-      boxShadow: `0 0 20px ${C.accent015}, 0 0 40px ${C.accent005}, ${C.cardShadow}`,
+      boxShadow: `0 0 24px ${C.accent020}, 0 0 48px ${C.accent008}, ${C.cardShadow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
       padding: s.pad,
+      overflow: "hidden",
     }}>
+      {/* Inner glass highlight */}
       <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: "50%",
+        background: "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%)",
+        borderRadius: `${s.radius}px ${s.radius}px 0 0`,
+        pointerEvents: "none",
+      }} />
+      {atomicNum && <div style={{
         position: "absolute", top: 3, left: 5,
-        fontSize: s.num, color: C.text4,
-        fontFamily: "var(--m)", fontWeight: 400, lineHeight: 1,
-      }}>26</div>
+        fontSize: s.num, color: C.text3,
+        fontFamily: "var(--m)", fontWeight: 500, lineHeight: 1,
+      }}>{atomicNum}</div>}
       <div style={{
         fontSize: s.fe, fontWeight: 800, fontFamily: "var(--d)",
         background: C.gradient, backgroundSize: "300% 100%",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
         animation: "goldShimmer 10s ease-in-out infinite",
-        filter: `drop-shadow(0 0 12px ${C.accent020})`,
+        filter: `drop-shadow(0 0 16px ${C.accent030})`,
         lineHeight: 1.1, marginTop: size === "lg" ? 4 : 2,
-      }}>Fe</div>
+      }}>{symbol}</div>
       <div style={{
-        fontSize: s.name, color: C.text4,
+        fontSize: s.name, color: C.text3,
         fontFamily: "var(--m)", fontWeight: 600,
         letterSpacing: ".12em", lineHeight: 1,
         marginTop: 1,
-      }}>FORGE</div>
+      }}>{label}</div>
     </div>
+  );
+}
+
+// ─── FORGE WORDMARK ─────────────────────────────────────────
+// "FORGE" with the F and E subtly highlighted in accent gradient
+// Fe = Iron (atomic number 26) — the periodic table connection made visible
+export function ForgeTitle({ C, size = 18 }) {
+  const accentLetter = {
+    background: C.gradient, backgroundSize: "300% 100%",
+    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+    animation: "goldShimmer 10s ease-in-out infinite",
+    filter: `drop-shadow(0 0 12px ${C.accent020})`,
+  };
+  return (
+    <span style={{ fontSize: size, fontWeight: 800, fontFamily: "var(--d)", letterSpacing: ".1em", lineHeight: 1 }}>
+      <span style={accentLetter}>F</span>
+      <span style={{ color: C.text1, textShadow: `0 0 20px ${C.accent008}` }}>OR</span>
+      <span style={{ color: C.text2, textShadow: `0 0 20px ${C.accent008}` }}>G</span>
+      <span style={accentLetter}>E</span>
+    </span>
   );
 }
 

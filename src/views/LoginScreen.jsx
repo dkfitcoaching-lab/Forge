@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, ForgeLogo } from "../components/Primitives";
+import { Button, ForgeLogo, ForgeTitle } from "../components/Primitives";
 import storage from "../utils/storage";
 
 export default function LoginScreen({ C, onLogin }) {
@@ -31,7 +31,7 @@ export default function LoginScreen({ C, onLogin }) {
       {/* ─── BACKGROUND LAYERS ─── */}
 
       {/* Primary atmosphere orb — large, slow */}
-      <div style={{
+      <div className="forge-orb" style={{
         position: "absolute", top: "5%", left: "50%", width: 800, height: 800, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.accent008} 0%, ${C.accent005} 30%, transparent 60%)`,
         animation: "orbFloat 10s ease-in-out infinite", pointerEvents: "none",
@@ -40,7 +40,7 @@ export default function LoginScreen({ C, onLogin }) {
       }} />
 
       {/* Secondary orb — offset, secondary color */}
-      <div style={{
+      <div className="forge-orb" style={{
         position: "absolute", top: "50%", left: "20%", width: 500, height: 500, borderRadius: "50%",
         background: `radial-gradient(circle, ${C.secondary005} 0%, transparent 60%)`,
         animation: "orbFloat2 12s ease-in-out infinite", pointerEvents: "none",
@@ -95,20 +95,15 @@ export default function LoginScreen({ C, onLogin }) {
           <ForgeLogo C={C} size="lg" />
         </div>
 
-        {/* Title — gradient shimmer */}
+        {/* Title — ForgeTitle with Fe highlight */}
         <div style={{
-          fontSize: 42, fontWeight: 900, fontFamily: "var(--d)",
-          letterSpacing: ".16em",
-          background: C.gradient, backgroundSize: "300% 100%",
-          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-          animation: stage >= 3 ? "goldShimmer 10s ease-in-out infinite" : "none",
-          filter: `drop-shadow(0 0 30px ${C.accent015})`,
           opacity: stage >= 3 ? 1 : 0,
           transform: stage >= 3 ? "translateY(0)" : "translateY(16px)",
           transition: "opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1s cubic-bezier(0.16,1,0.3,1)",
           marginBottom: 8, lineHeight: 1.1,
+          letterSpacing: ".16em",
         }}>
-          FORGE
+          <ForgeTitle C={C} size={42} />
         </div>
 
         {/* Accent divider */}

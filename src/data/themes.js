@@ -98,33 +98,33 @@ const ACCENTS = {
 // ─── 5 BACKGROUND SURFACES ──────────────────────────────────
 const SURFACES = {
   void: {
-    id: 'void', name: 'Void',
+    id: 'void', name: 'Void', desc: 'Pure black',
     bg: '#020202', bg2: '#050506', card: '#0a0a0c', cardHover: '#111114',
     text1: '#E8ECF0', text2: '#C8CDD2', text3: '#788090', text4: '#4A5568', text5: '#2D3748',
     isLight: false,
   },
   carbon: {
-    id: 'carbon', name: 'Carbon',
+    id: 'carbon', name: 'Carbon', desc: 'Deep blue-black',
     bg: '#060610', bg2: '#0a0a18', card: '#0e0e1a', cardHover: '#141422',
     text1: '#E8ECF4', text2: '#B8C0D0', text3: '#707890', text4: '#445068', text5: '#2A3448',
     isLight: false,
   },
   obsidian: {
-    id: 'obsidian', name: 'Obsidian',
+    id: 'obsidian', name: 'Obsidian', desc: 'Polished dark',
     bg: '#0a0a0e', bg2: '#0e0e14', card: '#121218', cardHover: '#18181f',
     text1: '#F0F0F5', text2: '#C0C0CC', text3: '#808098', text4: '#50506a', text5: '#30304a',
     isLight: false,
   },
   slate: {
-    id: 'slate', name: 'Slate',
+    id: 'slate', name: 'Slate', desc: 'Elevated grey',
     bg: '#14141c', bg2: '#1a1a24', card: '#1e1e28', cardHover: '#252530',
     text1: '#ECEEF2', text2: '#B8BCC8', text3: '#7A7E90', text4: '#505468', text5: '#363A4E',
     isLight: false,
   },
   ivory: {
-    id: 'ivory', name: 'Ivory',
-    bg: '#F2F2F6', bg2: '#E8E8EE', card: '#FFFFFF', cardHover: '#F8F8FC',
-    text1: '#1a1a2e', text2: '#2d2d44', text3: '#5a5a78', text4: '#8888a0', text5: '#b0b0c4',
+    id: 'ivory', name: 'Ivory', desc: 'Warm light',
+    bg: '#F0EFF4', bg2: '#E6E5EC', card: '#FAF9FE', cardHover: '#F4F3FA',
+    text1: '#16162A', text2: '#2A2A42', text3: '#555570', text4: '#84849C', text5: '#ADADC0',
     isLight: true,
   },
 };
@@ -136,13 +136,13 @@ export function getThemeColors(accentId, surfaceId) {
   // ─── STRUCTURAL COLORS (Princess-style: FIXED cool neutral, not accent-tinted) ───
   // These NEVER change with accent — they provide consistent cool sophistication
   const struct = s.isLight ? {
-    structBorder: 'rgba(40,50,70,0.10)',
-    structBorderHover: 'rgba(40,50,70,0.18)',
-    structBorderStrong: 'rgba(40,50,70,0.28)',
-    structGlass: 'rgba(40,50,70,0.04)',
-    structGlassHover: 'rgba(40,50,70,0.07)',
-    structInset: 'rgba(255,255,255,0.5)',
-    structShadowTint: 'rgba(40,50,70,0.02)',
+    structBorder: 'rgba(30,35,60,0.12)',
+    structBorderHover: 'rgba(30,35,60,0.20)',
+    structBorderStrong: 'rgba(30,35,60,0.30)',
+    structGlass: 'rgba(30,35,60,0.05)',
+    structGlassHover: 'rgba(30,35,60,0.08)',
+    structInset: 'rgba(255,255,255,0.7)',
+    structShadowTint: 'rgba(30,35,60,0.04)',
   } : {
     structBorder: 'rgba(180,195,210,0.08)',
     structBorderHover: 'rgba(180,195,210,0.14)',
@@ -157,16 +157,16 @@ export function getThemeColors(accentId, surfaceId) {
   const cR = hexToRgb(s.card);
   const bR = hexToRgb(s.bg);
   const cardGradient = s.isLight
-    ? `linear-gradient(160deg, ${s.card}, ${s.bg2})`
+    ? `linear-gradient(160deg, ${s.card}, ${s.cardHover})`
     : `linear-gradient(160deg, rgba(${cR.r + 4},${cR.g + 4},${cR.b + 6},0.99), rgba(${bR.r + 4},${bR.g + 4},${bR.b + 6},0.99))`;
 
   // Multi-layer shadow system (Princess-grade depth)
   const cardShadow = s.isLight
-    ? '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6)'
+    ? '0 1px 3px rgba(20,20,40,0.06), 0 4px 16px rgba(20,20,40,0.04), 0 12px 32px rgba(20,20,40,0.02), inset 0 1px 0 rgba(255,255,255,0.8)'
     : `0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 ${struct.structInset}`;
 
   const cardShadowHover = s.isLight
-    ? '0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)'
+    ? '0 2px 8px rgba(20,20,40,0.08), 0 8px 28px rgba(20,20,40,0.06), 0 16px 40px rgba(20,20,40,0.03), inset 0 1px 0 rgba(255,255,255,0.8)'
     : `0 2px 12px rgba(0,0,0,0.5), 0 12px 40px rgba(0,0,0,0.2), 0 0 20px ${rgba(a.accent, 0.06)}, inset 0 1px 0 ${struct.structInset}`;
 
   // Neon breathing shadow (Princess multi-layer)
