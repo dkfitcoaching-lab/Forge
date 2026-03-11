@@ -34,11 +34,11 @@ export function BarChart({ data, C, height = 140, label }) {
           return (
             <g key={i}>
               <rect x={x} y={y} width={barWidth} height={barH} rx={4} fill="url(#forgeBarGrad)" style={{ filter: `drop-shadow(0 0 4px ${C.accent020})` }} />
-              <text x={x + barWidth / 2} y={height - 3} textAnchor="middle" fontSize="5" fill={C.text4} fontFamily="var(--m)">
+              <text x={x + barWidth / 2} y={height - 3} textAnchor="middle" fontSize="7" fill={C.text4} fontFamily="var(--m)">
                 {d.label}
               </text>
               {d.value > 0 && (
-                <text x={x + barWidth / 2} y={y - 3} textAnchor="middle" fontSize="4.5" fill={C.text3} fontFamily="var(--m)" fontWeight="600">
+                <text x={x + barWidth / 2} y={y - 3} textAnchor="middle" fontSize="6" fill={C.text3} fontFamily="var(--m)" fontWeight="600">
                   {d.value >= 1000 ? `${Math.round(d.value / 1000)}k` : d.value}
                 </text>
               )}
@@ -89,7 +89,7 @@ export function LineChart({ data, C, height = 120, label, unit = "" }) {
           return (
             <g key={pct}>
               <line x1="8" y1={y} x2="98" y2={y} stroke={C.accent008} strokeWidth="0.3" />
-              <text x="4" y={y + 1.5} fontSize="3.5" fill={C.text5} fontFamily="var(--m)" textAnchor="end">
+              <text x="4" y={y + 1.5} fontSize="5.5" fill={C.text5} fontFamily="var(--m)" textAnchor="end">
                 {val}
               </text>
             </g>
@@ -104,7 +104,7 @@ export function LineChart({ data, C, height = 120, label, unit = "" }) {
           <g key={i}>
             <circle cx={p.x} cy={p.y} r="2.5" fill={C.bg} stroke={C.accent} strokeWidth="0.8" />
             {(i === 0 || i === points.length - 1) && (
-              <text x={p.x} y={p.y - 4} textAnchor="middle" fontSize="4" fill={C.accent} fontFamily="var(--m)" fontWeight="600">
+              <text x={p.x} y={p.y - 4} textAnchor="middle" fontSize="6" fill={C.accent} fontFamily="var(--m)" fontWeight="600">
                 {p.value}{unit}
               </text>
             )}
@@ -136,7 +136,7 @@ export function RadialProgress({ value, max, C, size = 80, label, sublabel }) {
         <text x="40" y="37" textAnchor="middle" fontSize="16" fontWeight="700" fill={C.accent} fontFamily="var(--m)">
           {Math.round(pct * 100)}
         </text>
-        <text x="40" y="47" textAnchor="middle" fontSize="5" fill={C.text4} fontFamily="var(--m)" letterSpacing="0.1em">
+        <text x="40" y="47" textAnchor="middle" fontSize="6.5" fill={C.text4} fontFamily="var(--m)" letterSpacing="0.1em">
           {sublabel || "%"}
         </text>
       </svg>
@@ -190,7 +190,7 @@ export function MacroRing({ consumed, target, color, label, C, size = 56 }) {
           {consumed}
         </text>
       </svg>
-      <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em", marginTop: 2 }}>
+      <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em", marginTop: 2 }}>
         {label}
       </div>
     </div>

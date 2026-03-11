@@ -4,7 +4,7 @@ import BodyHeatMap from "../components/BodyHeatMap";
 import { computeStats, computeFatigueScore, getWorkoutHistory, getAllPersonalRecords } from "../utils/analytics";
 import DAYS from "../data/workouts";
 
-export default function DataView({ C, onNav }) {
+export default function DataView({ C, onNav, onBack }) {
   const stats = computeStats();
   const fatigue = computeFatigueScore();
   const history = getWorkoutHistory();
@@ -24,6 +24,16 @@ export default function DataView({ C, onNav }) {
 
   return (
     <div>
+      {onBack && (
+        <button onClick={onBack} style={{
+          display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
+          color: C.accent, fontSize: 11, fontFamily: "var(--m)", fontWeight: 600,
+          letterSpacing: ".06em", cursor: "pointer", padding: "0 0 16px", marginTop: -4,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+          BACK
+        </button>
+      )}
       {/* ─── HEADER ─── */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 22, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 4 }}>Performance Intelligence</div>
@@ -41,7 +51,7 @@ export default function DataView({ C, onNav }) {
         ].map(({ v, l, color }) => (
           <Card key={l} C={C} style={{ textAlign: "center", padding: "18px 12px" }}>
             <div style={{ fontSize: 24, fontWeight: 700, color, fontFamily: "var(--m)", textShadow: `0 0 16px ${color}40` }}>{v}</div>
-            <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 6 }}>{l}</div>
+            <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 6 }}>{l}</div>
           </Card>
         ))}
       </div>
@@ -57,7 +67,7 @@ export default function DataView({ C, onNav }) {
               borderLeft: day.rest ? `2px solid ${C.text4}` : completed ? `2px solid ${C.secondary}` : `2px solid ${C.accent}`,
             }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: completed ? C.secondary : C.accent, fontFamily: "var(--m)" }}>{day.d}</div>
-              <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>
+              <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>
                 {day.rest ? "REST" : day.t.split(" ")[0]}
               </div>
               {completed && (
@@ -100,11 +110,11 @@ export default function DataView({ C, onNav }) {
             <div style={{ display: "flex", gap: 10 }}>
               <div style={{ flex: 1, padding: "12px 10px", background: C.structGlass, borderRadius: 10, textAlign: "center", border: `1px solid ${C.structBorder}` }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", textShadow: `0 0 12px ${C.accent030}` }}>{fatigue.density}</div>
-                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em", marginTop: 4 }}>SESS / WEEK</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em", marginTop: 4 }}>SESS / WEEK</div>
               </div>
               <div style={{ flex: 1, padding: "12px 10px", background: C.structGlass, borderRadius: 10, textAlign: "center", border: `1px solid ${C.structBorder}` }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color: C.secondary, fontFamily: "var(--m)", textShadow: `0 0 12px ${C.secondary030}` }}>{fatigue.volumeTrend}%</div>
-                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em", marginTop: 4 }}>VOL TREND</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em", marginTop: 4 }}>VOL TREND</div>
               </div>
             </div>
           </Card>

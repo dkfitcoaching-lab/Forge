@@ -23,7 +23,11 @@ import ProgramPDF from "./views/ProgramPDF";
 
 export default function App() {
   const [accentId, setAccentId] = useState(() => storage.get("accent", "forge"));
-  const [surfaceId, setSurfaceId] = useState(() => storage.get("surface", "void"));
+  const [surfaceId, setSurfaceId] = useState(() => {
+    const s = storage.get("surface", "void");
+    if (s === "slate") { storage.set("surface", "titanium"); return "titanium"; }
+    return s;
+  });
   const C = getThemeColors(accentId, surfaceId);
   const css = makeStyles(C);
 
@@ -87,7 +91,7 @@ export default function App() {
   // Scroll to top on any navigation change
   const scrollRef = useRef(null);
   const scrollToTop = useCallback(() => {
-    (scrollRef.current || window).scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }, []);
 
   const startWorkout = (day) => { setWorkoutDay(day); setView("wp"); };
@@ -186,6 +190,7 @@ export default function App() {
     if (view === "pp") return <CheckIn C={C} onBack={goMain} initialTab="photos" />;
     if (view === "posing") return <PosingView C={C} onBack={goMain} />;
     if (view === "pdf") return <ProgramPDF C={C} onClose={goMain} />;
+    if (view === "data") return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} onBack={goMain} />;
     if (view === "settings") return (
       <SettingsView
         C={C}
@@ -200,17 +205,25 @@ export default function App() {
       case "today": return <TodayView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} showToast={showToast} />;
       case "program": return <ProgramView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} />;
       case "coach": return <CoachPanel C={C} isOverlay={false} />;
-      case "data": return <DataView C={C} onNav={(v) => { setView(v); scrollToTop(); }} />;
+      case "profile": return (
+        <SettingsView
+          C={C}
+          accentId={accentId} surfaceId={surfaceId}
+          changeAccent={changeAccent} changeSurface={changeSurface}
+          showToast={showToast}
+          onNav={(v) => { setView(v); scrollToTop(); }}
+        />
+      );
       default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
     }
   };
 
-  // 4 tabs — Coach is #2 (core differentiator)
+  // 4 tabs — Coach is #2 (core differentiator), Profile replaces Data
   const tabs = [
     { k: "today", l: "Today" },
     { k: "coach", l: "Coach" },
     { k: "program", l: "Program" },
-    { k: "data", l: "Data" },
+    { k: "profile", l: "Profile" },
   ];
 
   return (
@@ -270,30 +283,8 @@ export default function App() {
               </div>
             </div>
           </div>
-          {/* Settings gear icon */}
-          <button
-            onClick={() => setView(view === "settings" ? "main" : "settings")}
-            style={{
-              background: view === "settings" ? C.accent008 : "transparent",
-              border: view === "settings" ? `1px solid ${C.accent020}` : `1px solid transparent`,
-              borderRadius: 10,
-              color: view === "settings" ? C.accent : C.text4,
-              cursor: "pointer",
-              padding: 8,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.2s",
-              width: 40, height: 40,
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="7" x2="20" y2="7" />
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="17" x2="20" y2="17" />
-              <circle cx="8" cy="7" r="2" fill="currentColor" />
-              <circle cx="16" cy="12" r="2" fill="currentColor" />
-              <circle cx="11" cy="17" r="2" fill="currentColor" />
-            </svg>
-          </button>
+          {/* Spacer — settings lives in Profile tab */}
+          <div style={{ width: 40, height: 40 }} />
         </div>
 
         {/* ─── MAIN CONTENT ─── */}
@@ -349,6 +340,7 @@ export default function App() {
             return (
               <div
                 key={t.k}
+                className={active ? "forge-nav-active" : undefined}
                 onClick={() => { setTab(t.k); setView("main"); scrollToTop(); }}
                 style={{
                   display: "flex",
@@ -364,40 +356,30 @@ export default function App() {
                   letterSpacing: ".04em",
                   position: "relative",
                   userSelect: "none",
-                  transition: "color 0.2s",
+                  transition: "color 0.2s, background 0.2s",
                   minWidth: 52,
                   minHeight: 44,
                   justifyContent: "center",
                 }}
               >
                 {active && (
-                  <>
-                    {/* Radial glow halo behind icon */}
-                    <div style={{
-                      position: "absolute", top: "50%", left: "50%",
-                      transform: "translate(-50%, -55%)",
-                      width: 48, height: 48, borderRadius: "50%",
-                      background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)`,
-                      pointerEvents: "none",
-                    }} />
-                    {/* Top accent line */}
-                    <div style={{
-                      position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
-                      width: 32, height: 2, borderRadius: 1,
-                      background: C.gradient, backgroundSize: "300% 100%",
-                      boxShadow: `0 0 14px ${C.accent030}, 0 0 28px ${C.accent010}`,
-                    }} />
-                  </>
+                  <div style={{
+                    position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
+                    width: 24, height: 2, borderRadius: 1,
+                    background: C.accent,
+                    boxShadow: `0 0 6px ${C.accent030}`,
+                  }} />
                 )}
                 <div style={{
-                  animation: active ? "iconGlow 2.5s ease-in-out infinite" : "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
+                  filter: active ? `drop-shadow(0 0 3px ${C.accent030})` : "none",
+                  transition: "filter 0.2s",
                 }}>
                   {icons[t.k]}
                 </div>
                 <span style={{
                   marginTop: 1,
-                  textShadow: active ? `0 0 12px ${C.accent040}` : "none",
+                  textShadow: active ? `0 0 6px ${C.accent020}` : "none",
                 }}>{t.l}</span>
               </div>
             );

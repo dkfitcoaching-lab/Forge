@@ -56,7 +56,7 @@ export default function VolumeLog({ C, onBack }) {
               <div key={d.day} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                 <div
                   style={{
-                    fontSize: 7,
+                    fontSize: 8,
                     color: C.text4,
                     fontFamily: "var(--m)",
                   }}

@@ -27,22 +27,16 @@ const STEPS = [
     position: "bottom",
   },
   {
-    title: "ANALYTICS",
-    desc: "Deep performance analytics. Volume trends, fatigue model, muscle heat maps, PR tracking, and more.",
-    target: "data",
+    title: "YOUR PROFILE",
+    desc: "Themes, stats, notifications, training preferences, and data management. Analytics are one tap away from the dashboard.",
+    target: "profile",
     position: "bottom",
   },
   {
     title: "QUICK ACTIONS",
-    desc: "Daily check-ins, volume logs, and your training guide — all one tap away. Check in daily for best results.",
+    desc: "Daily check-ins, volume logs, analytics, and your training guide — all one tap away from the dashboard.",
     target: "actions",
     position: "top",
-  },
-  {
-    title: "COACH ANYWHERE",
-    desc: "See that floating button? Tap it anytime — even mid-workout — to pull up your AI coach instantly.",
-    target: "fab",
-    position: "left",
   },
 ];
 
@@ -165,22 +159,15 @@ export default function Walkthrough({ C, onComplete }) {
                 <path d="M2 12h20" />
                 <circle cx="12" cy="12" r="2" fill={C.accent} stroke="none" />
               </svg>
-            ) : current.target === "fab" ? (
+            ) : current.target === "profile" ? (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="10" r="1.5" fill={C.accent} stroke="none" />
-                <circle cx="8" cy="10" r="1.5" fill={C.accent} stroke="none" />
-                <circle cx="16" cy="10" r="1.5" fill={C.accent} stroke="none" />
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
               </svg>
             ) : current.target === "program" ? (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6.5 6.5a3.5 3.5 0 1 1 0 7h11a3.5 3.5 0 1 1 0-7" />
                 <line x1="6.5" y1="10" x2="17.5" y2="10" />
                 <line x1="4" y1="4" x2="4" y2="16" /><line x1="20" y1="4" x2="20" y2="16" />
-              </svg>
-            ) : current.target === "data" ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">
-                <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             ) : current.target === "actions" ? (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round">

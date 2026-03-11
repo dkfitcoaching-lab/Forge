@@ -98,31 +98,31 @@ const ACCENTS = {
 // ─── 5 BACKGROUND SURFACES ──────────────────────────────────
 const SURFACES = {
   void: {
-    id: 'void', name: 'Void', desc: 'Pure black',
-    bg: '#020202', bg2: '#050506', card: '#0a0a0c', cardHover: '#111114',
+    id: 'void', name: 'Void', desc: 'Absolute black',
+    bg: '#020202', bg2: '#050506', card: '#111116', cardHover: '#18181e',
     text1: '#E8ECF0', text2: '#C8CDD2', text3: '#788090', text4: '#4A5568', text5: '#2D3748',
     isLight: false,
   },
   carbon: {
-    id: 'carbon', name: 'Carbon', desc: 'Deep blue-black',
-    bg: '#060610', bg2: '#0a0a18', card: '#0e0e1a', cardHover: '#141422',
-    text1: '#E8ECF4', text2: '#B8C0D0', text3: '#707890', text4: '#445068', text5: '#2A3448',
+    id: 'carbon', name: 'Carbon', desc: 'Industrial fiber',
+    bg: '#0a0b0e', bg2: '#0e1012', card: '#1a1c22', cardHover: '#22252c',
+    text1: '#E4E8EC', text2: '#B0B8C4', text3: '#6E7888', text4: '#454F5E', text5: '#2C3440',
     isLight: false,
   },
   obsidian: {
-    id: 'obsidian', name: 'Obsidian', desc: 'Polished dark',
-    bg: '#0a0a0e', bg2: '#0e0e14', card: '#121218', cardHover: '#18181f',
+    id: 'obsidian', name: 'Obsidian', desc: 'Polished stone',
+    bg: '#08080c', bg2: '#0c0c12', card: '#18181f', cardHover: '#1f1f28',
     text1: '#F0F0F5', text2: '#C0C0CC', text3: '#808098', text4: '#50506a', text5: '#30304a',
     isLight: false,
   },
-  slate: {
-    id: 'slate', name: 'Slate', desc: 'Elevated grey',
-    bg: '#14141c', bg2: '#1a1a24', card: '#1e1e28', cardHover: '#252530',
-    text1: '#ECEEF2', text2: '#B8BCC8', text3: '#7A7E90', text4: '#505468', text5: '#363A4E',
+  titanium: {
+    id: 'titanium', name: 'Titanium', desc: 'Brushed metal',
+    bg: '#121418', bg2: '#181a1f', card: '#1e2026', cardHover: '#25272e',
+    text1: '#EAECF0', text2: '#B4BAC4', text3: '#7C8492', text4: '#525A68', text5: '#3A4050',
     isLight: false,
   },
   ivory: {
-    id: 'ivory', name: 'Ivory', desc: 'Warm light',
+    id: 'ivory', name: 'Ivory', desc: 'Clean light',
     bg: '#F0EFF4', bg2: '#E6E5EC', card: '#FAF9FE', cardHover: '#F4F3FA',
     text1: '#16162A', text2: '#2A2A42', text3: '#555570', text4: '#84849C', text5: '#ADADC0',
     isLight: true,
@@ -139,18 +139,18 @@ export function getThemeColors(accentId, surfaceId) {
     structBorder: 'rgba(30,35,60,0.12)',
     structBorderHover: 'rgba(30,35,60,0.20)',
     structBorderStrong: 'rgba(30,35,60,0.30)',
-    structGlass: 'rgba(30,35,60,0.05)',
-    structGlassHover: 'rgba(30,35,60,0.08)',
+    structGlass: 'rgba(30,35,60,0.08)',
+    structGlassHover: 'rgba(30,35,60,0.12)',
     structInset: 'rgba(255,255,255,0.7)',
     structShadowTint: 'rgba(30,35,60,0.04)',
   } : {
     structBorder: 'rgba(180,195,210,0.08)',
     structBorderHover: 'rgba(180,195,210,0.14)',
     structBorderStrong: 'rgba(180,195,210,0.28)',
-    structGlass: 'rgba(170,185,200,0.04)',
-    structGlassHover: 'rgba(170,185,200,0.08)',
-    structInset: 'rgba(170,185,200,0.03)',
-    structShadowTint: 'rgba(170,185,200,0.02)',
+    structGlass: 'rgba(170,185,200,0.07)',
+    structGlassHover: 'rgba(170,185,200,0.11)',
+    structInset: 'rgba(170,185,200,0.07)',
+    structShadowTint: 'rgba(170,185,200,0.05)',
   };
 
   // Card gradient: lift card visibly above background
@@ -158,12 +158,12 @@ export function getThemeColors(accentId, surfaceId) {
   const bR = hexToRgb(s.bg);
   const cardGradient = s.isLight
     ? `linear-gradient(160deg, ${s.card}, ${s.cardHover})`
-    : `linear-gradient(160deg, rgba(${cR.r + 4},${cR.g + 4},${cR.b + 6},0.99), rgba(${bR.r + 4},${bR.g + 4},${bR.b + 6},0.99))`;
+    : `linear-gradient(160deg, rgba(${cR.r + 4},${cR.g + 4},${cR.b + 6},0.97), rgba(${bR.r + 8},${bR.g + 8},${bR.b + 12},0.97))`;
 
   // Multi-layer shadow system (Princess-grade depth)
   const cardShadow = s.isLight
     ? '0 1px 3px rgba(20,20,40,0.06), 0 4px 16px rgba(20,20,40,0.04), 0 12px 32px rgba(20,20,40,0.02), inset 0 1px 0 rgba(255,255,255,0.8)'
-    : `0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 ${struct.structInset}`;
+    : `0 2px 8px rgba(0,0,0,0.20), 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 ${struct.structInset}`;
 
   const cardShadowHover = s.isLight
     ? '0 2px 8px rgba(20,20,40,0.08), 0 8px 28px rgba(20,20,40,0.06), 0 16px 40px rgba(20,20,40,0.03), inset 0 1px 0 rgba(255,255,255,0.8)'

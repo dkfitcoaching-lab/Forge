@@ -546,7 +546,7 @@ function TierCard({ tier, C, onSelect, yearly }) {
           background: tier.badge === "MOST POPULAR" ? C.gradientBtn : C.structGlass,
           backgroundSize: "300% 100%",
           padding: "4px 14px", borderRadius: 12,
-          fontSize: 7, fontWeight: 700, fontFamily: "var(--m)",
+          fontSize: 8, fontWeight: 700, fontFamily: "var(--m)",
           letterSpacing: ".14em",
           color: tier.badge === "MOST POPULAR" ? C.btnText : C.text3,
           border: tier.badge === "MOST POPULAR" ? "none" : `1px solid ${C.structBorderHover}`,
@@ -777,11 +777,11 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
         <ForgeLogo C={C} size="sm" />
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", letterSpacing: ".06em" }}>FORGE</div>
-          <div style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em", textShadow: `0 0 12px ${C.accent030}` }}>fitnessforge.ai</div>
+          <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em", textShadow: `0 0 12px ${C.accent030}` }}>fitnessforge.ai</div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
           <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.ok, boxShadow: `0 0 8px ${C.ok}40`, animation: "pulse 2s ease-in-out infinite" }} />
-          <span style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>ONLINE</span>
+          <span style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>ONLINE</span>
         </div>
       </div>
 
@@ -932,7 +932,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
                     border: `2px solid ${acc.accent}50`,
                   }} />
                   <div style={{
-                    fontSize: 7, color: C.text3, fontFamily: "var(--m)",
+                    fontSize: 8, color: C.text3, fontFamily: "var(--m)",
                     letterSpacing: ".08em", fontWeight: 600,
                   }}>{acc.name.toUpperCase()}</div>
                 </button>
@@ -965,7 +965,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
                     boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
                   }} />
                   <div style={{
-                    fontSize: 7, color: surf.isLight ? "#1a1a2e" : "#C8CDD2", fontFamily: "var(--m)",
+                    fontSize: 8, color: surf.isLight ? "#1a1a2e" : "#C8CDD2", fontFamily: "var(--m)",
                     letterSpacing: ".06em", fontWeight: 600,
                   }}>{surf.name.toUpperCase()}</div>
                   <div style={{
@@ -1034,7 +1034,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
               ))}
             </div>
             <div style={{
-              fontSize: 7, color: C.text5, fontFamily: "var(--m)",
+              fontSize: 8, color: C.text5, fontFamily: "var(--m)",
               letterSpacing: ".1em", textAlign: "center", marginTop: 20, lineHeight: 2,
             }}>
               14-DAY FREE TRIAL ON ALL PLANS · CANCEL ANYTIME

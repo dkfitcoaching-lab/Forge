@@ -13,7 +13,7 @@ import { tapLight, tapMedium, tapDouble } from "../utils/haptics";
 export default function TodayView({ C, onWork, onNav, showToast }) {
   const activeSessionCheck = storage.get("active_session", null);
   const hasRecovery = activeSessionCheck && activeSessionCheck.dayNum && Date.now() - activeSessionCheck.timestamp < 86400000;
-  const visible = useStaggeredReveal(hasRecovery ? 13 : 12, 55);
+  const visible = useStaggeredReveal(hasRecovery ? 15 : 14, 55);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
@@ -25,7 +25,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
   const [currentDay, setCurrentDay] = useState(() => storage.get("cd", 1));
   const dayData = DAYS[currentDay - 1] || DAYS[0];
-  const isRest = dayData.t === "REST + RECOVERY";
+  const isRest = !!dayData.rest;
 
   const [mealsChecked, setMealsChecked] = useState(() => storage.get("mc_" + todayKey, {}));
   const mealsCompleted = Object.values(mealsChecked).filter(Boolean).length;
@@ -104,12 +104,12 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       {/* ─── HERO ─── */}
       <StaggerItem index={0} visible={visible}>
         <div style={{
-          margin: "-18px -16px 0", padding: "40px 24px 36px",
-          background: `linear-gradient(180deg, ${C.accent008} 0%, transparent 100%)`,
+          margin: "-18px -16px 0", padding: "28px 24px 24px",
+          background: `linear-gradient(180deg, ${C.accent005} 0%, transparent 100%)`,
           position: "relative", overflow: "hidden",
         }}>
-          <div style={{ position: "absolute", top: -140, right: -120, width: 360, height: 360, borderRadius: "50%", background: `radial-gradient(circle, ${C.accent010} 0%, transparent 70%)` }} />
-          <div style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: "50%", background: `radial-gradient(circle, ${C.secondary008} 0%, transparent 70%)` }} />
+          <div style={{ position: "absolute", top: -140, right: -120, width: 360, height: 360, borderRadius: "50%", background: `radial-gradient(circle, ${C.accent005} 0%, transparent 70%)` }} />
+          <div style={{ position: "absolute", bottom: -80, left: -60, width: 240, height: 240, borderRadius: "50%", background: `radial-gradient(circle, ${C.secondary005} 0%, transparent 70%)` }} />
           {/* Bottom edge line */}
           <div style={{ position: "absolute", bottom: 0, left: "5%", right: "5%", height: 1, background: C.dividerGrad, opacity: 0.3 }} />
           <div style={{ position: "relative" }}>
@@ -118,11 +118,11 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".22em", marginBottom: 16, opacity: 0.7 }}>
                   {dateStr}
                 </div>
-                <div style={{ fontSize: 32, fontWeight: 800, color: C.text1, lineHeight: 1.1, fontFamily: "var(--d)" }}>
+                <div style={{ fontSize: 26, fontWeight: 800, color: C.text1, lineHeight: 1.1, fontFamily: "var(--d)" }}>
                   {greeting},
                 </div>
                 <div style={{
-                  fontSize: 34, fontWeight: 800, lineHeight: 1.15, fontFamily: "var(--d)", marginTop: 4,
+                  fontSize: 28, fontWeight: 800, lineHeight: 1.15, fontFamily: "var(--d)", marginTop: 4,
                   background: C.gradient, backgroundSize: "300% 100%",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                   animation: "goldShimmer 12s ease-in-out infinite",
@@ -138,7 +138,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 marginTop: 18,
                 padding: "10px 14px",
                 background: C.structGlass,
-                border: `1px solid ${C.accent015}`,
+                border: `1px solid ${C.accent010}`,
                 borderRadius: 10,
                 display: "flex", alignItems: "center", gap: 10,
                 animation: "fadeIn 0.6s ease 0.4s both",
@@ -161,74 +161,9 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         </div>
       </StaggerItem>
 
-      {/* ─── DAILY SNAPSHOT ─── */}
-      <StaggerItem index={1} visible={visible}>
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr",
-          gap: 6, margin: "16px 0",
-        }}>
-          {[
-            { v: `${mealsCompleted}/${MEALS.length}`, l: "MEALS", pct: mealsCompleted / MEALS.length, color: C.accent, glow: C.accent020 },
-            { v: `${waterCount}/${waterGoal}`, l: "WATER", pct: waterCount / waterGoal, color: C.secondary, glow: C.secondary020 },
-            { v: `${suppDone}/${suppTotal}`, l: "SUPPS", pct: suppDone / suppTotal, color: C.secondary, glow: C.secondary020 },
-            { v: readiness ? readiness.score : "—", l: "READY", pct: readiness ? readiness.score / 100 : 0, color: readiness?.color || C.text4, glow: C.accent020 },
-          ].map(({ v, l, pct, color, glow }) => (
-            <div key={l} style={{
-              padding: "16px 6px 14px", textAlign: "center",
-              background: C.cardGradient, borderRadius: 12,
-              border: `1px solid ${C.structBorder}`,
-              boxShadow: C.cardShadow,
-              position: "relative", overflow: "hidden",
-            }}>
-              {/* Top edge highlight */}
-              <div style={{
-                position: "absolute", top: 0, left: 0, right: 0, height: 1,
-                background: `linear-gradient(90deg, transparent, ${C.structBorderHover}, transparent)`,
-                opacity: 0.5,
-              }} />
-              {/* Bottom progress bar */}
-              <div style={{
-                position: "absolute", bottom: 0, left: 0,
-                width: `${Math.min(pct * 100, 100)}%`, height: 2,
-                background: `linear-gradient(90deg, ${color}80, ${color})`,
-                borderRadius: 1,
-                transition: "width 0.4s ease",
-                boxShadow: pct > 0 ? `0 0 8px ${glow}` : "none",
-              }} />
-              <div style={{ fontSize: 17, fontWeight: 700, color: pct >= 1 ? color : C.text1, fontFamily: "var(--m)", transition: "color 0.3s", textShadow: pct >= 1 ? `0 0 12px ${glow}` : "none" }}>{v}</div>
-              <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".14em", marginTop: 4 }}>{l}</div>
-            </div>
-          ))}
-        </div>
-      </StaggerItem>
-
-      {/* ─── DAY SELECTOR ─── */}
-      <StaggerItem index={2} visible={visible}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "8px 0 14px" }}>
-          <button onClick={() => changeDay("prev")} style={{
-            background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
-            color: C.text3, width: 44, height: 44, cursor: "pointer", fontSize: 16,
-            display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s",
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
-          </button>
-          <div style={{ textAlign: "center", minWidth: 200 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Day {currentDay}</div>
-            <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)" }}>{dayData.t}</div>
-          </div>
-          <button onClick={() => changeDay("next")} style={{
-            background: C.structGlass, border: `1px solid ${C.structBorderHover}`, borderRadius: 8,
-            color: C.text3, width: 44, height: 44, cursor: "pointer", fontSize: 16,
-            display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s",
-          }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
-          </button>
-        </div>
-      </StaggerItem>
-
-      {/* ─── SESSION RECOVERY ─── */}
+      {/* ─── SESSION RECOVERY (urgent — always first after hero) ─── */}
       {activeSession && (
-        <StaggerItem index={3} visible={visible}>
+        <StaggerItem index={1} visible={visible}>
           <Card C={C} style={{ borderLeft: `3px solid ${C.warn}`, padding: "16px 20px", marginBottom: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.warn} strokeWidth="2" strokeLinecap="round">
@@ -260,6 +195,36 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
           </Card>
         </StaggerItem>
       )}
+
+      {/* ─── DAY SELECTOR ─── */}
+      <StaggerItem index={2 + so} visible={visible}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "6px 0 10px" }}>
+          <button onClick={() => changeDay("prev")} style={{
+            width: 44, height: 44, borderRadius: 12, background: C.structGlass,
+            border: `1.5px solid ${C.structBorderHover}`, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", color: C.text3,
+            transition: "all 0.2s",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <div style={{ textAlign: "center", minWidth: 120 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".16em" }}>
+              DAY {currentDay} OF 14
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.text1, fontFamily: "var(--d)", marginTop: 2 }}>
+              {isRest ? "Rest & Recovery" : dayData.t}
+            </div>
+          </div>
+          <button onClick={() => changeDay("next")} style={{
+            width: 44, height: 44, borderRadius: 12, background: C.structGlass,
+            border: `1.5px solid ${C.structBorderHover}`, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", color: C.text3,
+            transition: "all 0.2s",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+          </button>
+        </div>
+      </StaggerItem>
 
       {/* ─── WORKOUT CARD ─── */}
       <StaggerItem index={3 + so} visible={visible}>
@@ -299,8 +264,28 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
         )}
       </StaggerItem>
 
-      {/* ─── QUICK ACTIONS (above nutrition — immediately accessible) ─── */}
+      {/* ─── DAILY SNAPSHOT ─── */}
       <StaggerItem index={4 + so} visible={visible}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "10px 0" }}>
+          {[
+            { label: "READINESS", value: readiness ? `${readiness.score}%` : "—", color: readiness ? (C[readiness.color] || C.accent) : C.text4 },
+            { label: "MEALS", value: `${mealsCompleted}/${MEALS.length}`, color: mealsCompleted >= MEALS.length ? C.secondary : C.text1 },
+            { label: "SUPPS", value: `${suppDone}/${suppTotal}`, color: suppDone >= suppTotal ? C.secondary : C.text1 },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{
+              textAlign: "center", padding: "12px 8px",
+              background: C.cardGradient, border: `1px solid ${C.structBorder}`,
+              borderRadius: 10, boxShadow: C.cardShadow,
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color, fontFamily: "var(--m)" }}>{value}</div>
+              <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 3 }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </StaggerItem>
+
+      {/* ─── QUICK ACTIONS (above nutrition — immediately accessible) ─── */}
+      <StaggerItem index={5 + so} visible={visible}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, margin: "14px 0" }}>
           {[
             { l: "Check-In", d: "Body tracking", v: "ci", tone: C.secondary, icon: (
@@ -313,9 +298,9 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             )},
-            { l: "Posing", d: "Mandatory poses", v: "posing", tone: C.accent, icon: (
+            { l: "Analytics", d: "Track progress", v: "data", tone: C.accent, icon: (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="5" r="3" /><path d="M12 8v4" /><path d="M9 12l-2 8h2l3-4 3 4h2l-2-8" /><path d="M8 14h8" />
+                <polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" />
               </svg>
             )},
             { l: "Guide", d: "Training info", v: "gd", tone: C.accent, icon: (
@@ -340,7 +325,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               </div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 600, color: C.text1 }}>{l}</div>
-                <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{d}</div>
+                <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{d}</div>
               </div>
             </Card>
           ))}
@@ -350,7 +335,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       <SectionDivider C={C} />
 
       {/* ─── NUTRITION ─── */}
-      <StaggerItem index={5 + so} visible={visible}>
+      <StaggerItem index={6 + so} visible={visible}>
         <Label C={C}>Nutrition</Label>
         <Card C={C} style={{ padding: 20 }}>
           {/* Calorie Ring + Macros */}
@@ -405,7 +390,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Photo your meal for instant macro analysis</div>
               </div>
               <div style={{ marginLeft: "auto", padding: "3px 8px", borderRadius: 4, background: C.accent010, border: `1px solid ${C.accent015}` }}>
-                <div style={{ fontSize: 7, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".06em" }}>PRO</div>
+                <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".06em" }}>PRO</div>
               </div>
             </button>
           </div>
@@ -447,7 +432,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                     ].map(({ l, v, color }) => (
                       <div key={l} style={{ flex: 1, textAlign: "center", padding: "6px 4px", background: C.structGlass, borderRadius: 6, border: `1px solid ${C.structBorder}` }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color, fontFamily: "var(--m)" }}>{v}</div>
-                        <div style={{ fontSize: 6, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 2 }}>{l}</div>
+                        <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 2 }}>{l}</div>
                       </div>
                     ))}
                   </div>
@@ -555,7 +540,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       </StaggerItem>
 
       {/* ─── HYDRATION ─── */}
-      <StaggerItem index={6 + so} visible={visible}>
+      <StaggerItem index={7 + so} visible={visible}>
         <Card C={C} style={{ padding: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
             <Label C={C} style={{ marginBottom: 0 }}>Hydration</Label>
@@ -589,7 +574,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               ADD GLASS
             </button>
             {waterCount > 0 && (
-              <button onClick={() => { const next = Math.max(waterCount - 1, 0); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
+              <button onClick={() => { tapLight(); const next = Math.max(waterCount - 1, 0); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
                 style={{
                   padding: "10px 14px", background: C.structGlass,
                   border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
@@ -605,7 +590,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       </StaggerItem>
 
       {/* ─── SUPPLEMENTS ─── */}
-      <StaggerItem index={7 + so} visible={visible}>
+      <StaggerItem index={8 + so} visible={visible}>
         <Label C={C}>Supplements</Label>
         <Card C={C} style={{ padding: "2px 16px" }}>
           {SUPPLEMENTS.map((supp, i) => (
@@ -624,7 +609,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
       <SectionDivider C={C} />
 
       {/* ─── LIFETIME STATS or WELCOME ─── */}
-      <StaggerItem index={8 + so} visible={visible}>
+      <StaggerItem index={9 + so} visible={visible}>
         {stats.workoutCount > 0 ? (
           <Card C={C} style={{ padding: "18px 20px", borderTop: `2px solid ${C.accent020}` }}>
             <div style={{ display: "flex", justifyContent: "space-around" }}>
@@ -636,7 +621,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               ].map(({ v, l, color }) => (
                 <div key={l} style={{ textAlign: "center" }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color, fontFamily: "var(--m)", textShadow: `0 0 16px ${color}40` }}>{v}</div>
-                  <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 3 }}>{l}</div>
+                  <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em", marginTop: 3 }}>{l}</div>
                 </div>
               ))}
             </div>

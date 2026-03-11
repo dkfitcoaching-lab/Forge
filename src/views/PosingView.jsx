@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Card, Label, SectionDivider, Button } from "../components/Primitives";
 import { useStaggeredReveal } from "../utils/hooks";
-import DIVISIONS from "../data/posing";
+import DIVISIONS, { PRO_WISDOM } from "../data/posing";
 import storage from "../utils/storage";
 
 // ══════════════════════════════════════════════════════════════
-// POSING PRACTICE — NPC/IFBB Division-Specific Mandatory Poses
-// Auto-assigns poses based on selected competition division
+// POSING PRACTICE — Elite NPC/IFBB Division-Specific Coaching
+// Full step-by-step instructions, common mistakes, pro tips
 // ══════════════════════════════════════════════════════════════
 
 export default function PosingView({ C, onBack }) {
-  const visible = useStaggeredReveal(12, 40);
+  const visible = useStaggeredReveal(16, 40);
   const [divisionId, setDivisionId] = useState(() => storage.get("posing_div", null));
   const [sessionLog, setSessionLog] = useState(() => storage.get("posing_log", []));
   const [activePose, setActivePose] = useState(null);
@@ -19,6 +19,9 @@ export default function PosingView({ C, onBack }) {
   const [timer, setTimer] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [expandedPose, setExpandedPose] = useState(null);
+  const [activeTab, setActiveTab] = useState("steps"); // steps | mistakes | tips
+  const [wisdomIdx, setWisdomIdx] = useState(() => Math.floor(Math.random() * PRO_WISDOM.length));
 
   const division = DIVISIONS.find(d => d.id === divisionId);
 
@@ -35,16 +38,19 @@ export default function PosingView({ C, onBack }) {
     setConfidence({});
     setActivePose(null);
     setSessionStarted(false);
+    setExpandedPose(null);
   };
 
   const startSession = () => {
     setSessionStarted(true);
     setConfidence({});
     setActivePose(null);
+    setExpandedPose(null);
   };
 
   const ratePose = (poseId, rating) => {
     setConfidence(prev => ({ ...prev, [poseId]: rating }));
+    if (navigator.vibrate) navigator.vibrate(15);
   };
 
   const finishSession = () => {
@@ -64,20 +70,39 @@ export default function PosingView({ C, onBack }) {
     setActivePose(null);
     setTimer(0);
     setTimerRunning(false);
+    if (navigator.vibrate) navigator.vibrate([20, 60, 20]);
   };
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   const totalPoses = division?.poses.length || 0;
   const completedPoses = Object.keys(confidence).length;
-  const avgConf = completedPoses > 0
-    ? (Object.values(confidence).reduce((a, b) => a + b, 0) / completedPoses).toFixed(1)
-    : "—";
 
   // Stats from history
   const divHistory = sessionLog.filter(s => s.division === divisionId);
   const totalSessions = divHistory.length;
   const lastSession = divHistory[0];
+
+  // ─── Small Pill Tab Component ──────────────────────────────
+  const PillTabs = ({ tabs, active, onChange }) => (
+    <div style={{ display: "flex", gap: 4, marginBottom: 14 }}>
+      {tabs.map(t => {
+        const isActive = active === t.k;
+        return (
+          <button key={t.k} onClick={() => onChange(t.k)} style={{
+            flex: 1, padding: "7px 6px", borderRadius: 8,
+            background: isActive ? C.accent010 : "transparent",
+            border: `1.5px solid ${isActive ? C.accent025 : C.structBorderHover}`,
+            color: isActive ? C.accent : C.text4,
+            fontSize: 8, fontFamily: "var(--m)", fontWeight: 700,
+            letterSpacing: ".1em", cursor: "pointer", transition: "all 0.2s",
+          }}>
+            {t.l}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   // ─── DIVISION SELECTOR ──────────────────────────────────────
   if (!divisionId) {
@@ -111,13 +136,23 @@ export default function PosingView({ C, onBack }) {
           <div style={{ fontSize: 20, fontWeight: 800, fontFamily: "var(--d)", color: C.text1, letterSpacing: ".08em", marginBottom: 6 }}>
             POSING PRACTICE
           </div>
-          <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".06em" }}>
-            Select your competition division
+          <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".04em", lineHeight: 1.6, maxWidth: 300, margin: "0 auto" }}>
+            Elite coaching for every NPC/IFBB division — step-by-step instructions from pro sources
           </div>
         </div>
 
-        <Label C={C}>NPC / IFBB DIVISIONS</Label>
-        {DIVISIONS.map((div, i) => (
+        {/* Pro Wisdom Quote */}
+        <Card C={C} style={{ marginBottom: 16, padding: "14px 16px", borderColor: C.accent015 }}>
+          <div style={{ fontSize: 11, color: C.text2, fontStyle: "italic", lineHeight: 1.7, fontFamily: "var(--m)" }}>
+            "{PRO_WISDOM[wisdomIdx].quote}"
+          </div>
+          <div style={{ fontSize: 9, color: C.accent, fontFamily: "var(--m)", marginTop: 8, letterSpacing: ".06em", fontWeight: 600 }}>
+            — {PRO_WISDOM[wisdomIdx].source.toUpperCase()}
+          </div>
+        </Card>
+
+        <Label C={C}>SELECT YOUR DIVISION</Label>
+        {DIVISIONS.map((div) => (
           <Card key={div.id} C={C} onClick={() => selectDivision(div.id)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
             <div style={{
               width: 40, height: 40, borderRadius: 10,
@@ -132,7 +167,7 @@ export default function PosingView({ C, onBack }) {
               <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
                 {div.poses.length} mandatory poses · {div.org}
               </div>
-              <div style={{ fontSize: 9, color: C.text4, marginTop: 2 }}>{div.desc}</div>
+              <div style={{ fontSize: 9, color: C.text3, marginTop: 2, lineHeight: 1.4 }}>{div.desc}</div>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
           </Card>
@@ -213,18 +248,94 @@ export default function PosingView({ C, onBack }) {
 
               <div style={{
                 fontSize: 22, fontWeight: 700, fontFamily: "var(--d)",
-                color: C.text1, marginBottom: 14,
+                color: C.text1, marginBottom: 6,
               }}>
                 {pose.name}
               </div>
 
+              {/* Muscle targets */}
+              {pose.muscles && (
+                <div style={{ fontSize: 9, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".04em", marginBottom: 16, lineHeight: 1.6 }}>
+                  {pose.muscles}
+                </div>
+              )}
+
+              {/* Tabbed content: Steps / Mistakes / Tips */}
+              <PillTabs
+                tabs={[
+                  { k: "steps", l: "STEP-BY-STEP" },
+                  { k: "mistakes", l: "AVOID" },
+                  { k: "tips", l: "PRO TIPS" },
+                ]}
+                active={activeTab}
+                onChange={setActiveTab}
+              />
+
               <div style={{
                 padding: "12px 14px", borderRadius: 10,
                 background: C.structGlass, border: `1px solid ${C.structBorder}`,
-                marginBottom: 18,
+                marginBottom: 18, maxHeight: 260, overflowY: "auto",
               }}>
-                <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".12em", marginBottom: 6, fontWeight: 700 }}>COACHING CUES</div>
-                <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.8, fontFamily: "var(--m)" }}>{pose.cues}</div>
+                {activeTab === "steps" && pose.steps && (
+                  <div>
+                    {pose.steps.map((step, i) => (
+                      <div key={i} style={{
+                        display: "flex", gap: 10, marginBottom: i < pose.steps.length - 1 ? 10 : 0,
+                        alignItems: "flex-start",
+                      }}>
+                        <div style={{
+                          width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                          background: C.accent008, border: `1px solid ${C.accent020}`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)",
+                          marginTop: 1,
+                        }}>
+                          {i + 1}
+                        </div>
+                        <div style={{ fontSize: 11, color: C.text2, lineHeight: 1.6, fontFamily: "var(--m)" }}>
+                          {step}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {activeTab === "steps" && !pose.steps && (
+                  <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.8, fontFamily: "var(--m)" }}>{pose.cues}</div>
+                )}
+
+                {activeTab === "mistakes" && pose.mistakes && (
+                  <div>
+                    {pose.mistakes.map((m, i) => (
+                      <div key={i} style={{
+                        display: "flex", gap: 10, marginBottom: i < pose.mistakes.length - 1 ? 10 : 0,
+                        alignItems: "flex-start",
+                      }}>
+                        <div style={{ color: "#ef5350", fontSize: 12, flexShrink: 0, marginTop: 1 }}>✕</div>
+                        <div style={{ fontSize: 11, color: C.text2, lineHeight: 1.6, fontFamily: "var(--m)" }}>{m}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {activeTab === "mistakes" && !pose.mistakes && (
+                  <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>No specific mistakes documented for this pose.</div>
+                )}
+
+                {activeTab === "tips" && pose.proTips && (
+                  <div>
+                    {pose.proTips.map((tip, i) => (
+                      <div key={i} style={{
+                        display: "flex", gap: 10, marginBottom: i < pose.proTips.length - 1 ? 10 : 0,
+                        alignItems: "flex-start",
+                      }}>
+                        <div style={{ color: C.accent, fontSize: 10, flexShrink: 0, marginTop: 2 }}>◆</div>
+                        <div style={{ fontSize: 11, color: C.text2, lineHeight: 1.6, fontFamily: "var(--m)", fontStyle: "italic" }}>{tip}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {activeTab === "tips" && !pose.proTips && (
+                  <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)" }}>No additional pro tips for this pose.</div>
+                )}
               </div>
 
               {/* Confidence Rating */}
@@ -244,7 +355,7 @@ export default function PosingView({ C, onBack }) {
                           boxShadow: rated ? `0 0 10px ${C.accent010}` : "none",
                         }}>
                         <div style={{ fontSize: 16, fontWeight: 700, color: rated ? C.accent : C.text4, fontFamily: "var(--m)" }}>{level}</div>
-                        <div style={{ fontSize: 6, color: rated ? C.accent : C.text5, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>{labels[level - 1]}</div>
+                        <div style={{ fontSize: 8, color: rated ? C.accent : C.text5, fontFamily: "var(--m)", letterSpacing: ".06em", marginTop: 2 }}>{labels[level - 1]}</div>
                       </button>
                     );
                   })}
@@ -261,7 +372,7 @@ export default function PosingView({ C, onBack }) {
           const rated = confidence[pose.id];
           return (
             <Card key={pose.id} C={C}
-              onClick={() => { setActivePose(i); setTimer(0); setTimerRunning(false); }}
+              onClick={() => { setActivePose(i); setTimer(0); setTimerRunning(false); setActiveTab("steps"); }}
               style={{
                 cursor: "pointer", display: "flex", alignItems: "center", gap: 12,
                 borderColor: isActive ? C.accent030 : undefined,
@@ -332,7 +443,7 @@ export default function PosingView({ C, onBack }) {
               {division.poses.length} MANDATORY POSES · {division.org}
             </div>
           </div>
-          <button onClick={() => { setDivisionId(null); setConfidence({}); setActivePose(null); }} style={{
+          <button onClick={() => { setDivisionId(null); setConfidence({}); setActivePose(null); setExpandedPose(null); }} style={{
             background: C.structGlass, border: `1px solid ${C.structBorderHover}`,
             borderRadius: 8, color: C.text4, fontSize: 8, fontFamily: "var(--m)",
             padding: "6px 12px", cursor: "pointer", letterSpacing: ".08em", fontWeight: 600,
@@ -356,7 +467,7 @@ export default function PosingView({ C, onBack }) {
             border: `1.5px solid ${C.structBorderHover}`, boxShadow: C.cardShadow,
           }}>
             <div style={{ fontSize: 20, fontWeight: 600, fontFamily: "var(--m)", color: C.accent, textShadow: `0 0 16px ${C.accent020}` }}>{v}</div>
-            <div style={{ fontSize: 7, color: C.text4, letterSpacing: ".12em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
+            <div style={{ fontSize: 8, color: C.text4, letterSpacing: ".12em", fontFamily: "var(--m)", marginTop: 4 }}>{l}</div>
           </div>
         ))}
       </div>
@@ -366,19 +477,38 @@ export default function PosingView({ C, onBack }) {
         START POSING SESSION
       </Button>
 
+      {/* Pro Wisdom */}
+      <Card C={C} onClick={() => setWisdomIdx((wisdomIdx + 1) % PRO_WISDOM.length)} style={{ cursor: "pointer", padding: "14px 16px", marginBottom: 8, borderColor: C.accent010 }}>
+        <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".12em", marginBottom: 6, fontWeight: 700 }}>PRO WISDOM</div>
+        <div style={{ fontSize: 11, color: C.text2, fontStyle: "italic", lineHeight: 1.7, fontFamily: "var(--m)" }}>
+          "{PRO_WISDOM[wisdomIdx].quote}"
+        </div>
+        <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 8, letterSpacing: ".04em" }}>
+          — {PRO_WISDOM[wisdomIdx].source} <span style={{ opacity: 0.4, marginLeft: 4 }}>tap for more</span>
+        </div>
+      </Card>
+
       <SectionDivider C={C} />
 
-      {/* Pose Reference */}
+      {/* Pose Reference — expandable with full details */}
       <Label C={C}>POSE REFERENCE</Label>
       {division.poses.map((pose, i) => {
         const bestRating = divHistory.reduce((best, session) => {
           const r = session.ratings[pose.id];
           return r > best ? r : best;
         }, 0);
+        const isExpanded = expandedPose === pose.id;
 
         return (
-          <Card key={pose.id} C={C} style={{ padding: "14px 16px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Card key={pose.id} C={C} style={{ padding: 0, overflow: "hidden" }}>
+            {/* Pose Header — always visible */}
+            <div
+              onClick={() => setExpandedPose(isExpanded ? null : pose.id)}
+              style={{
+                display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
+                cursor: "pointer",
+              }}
+            >
               <div style={{
                 width: 32, height: 32, borderRadius: 8,
                 background: bestRating > 0 ? C.accent010 : C.structGlass,
@@ -391,14 +521,98 @@ export default function PosingView({ C, onBack }) {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{pose.name}</div>
-                <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 3, lineHeight: 1.5 }}>{pose.cues}</div>
+                {pose.muscles && (
+                  <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 3, lineHeight: 1.4, letterSpacing: ".02em" }}>
+                    {pose.muscles}
+                  </div>
+                )}
                 {bestRating > 0 && (
-                  <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", marginTop: 4, letterSpacing: ".08em" }}>
+                  <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", marginTop: 3, letterSpacing: ".08em" }}>
                     BEST: {["", "WEAK", "SHAKY", "DECENT", "STRONG", "NAILED"][bestRating]}
                   </div>
                 )}
               </div>
+              <div style={{
+                color: C.text4, fontSize: 12,
+                transform: isExpanded ? "rotate(180deg)" : "rotate(0)",
+                transition: "transform 0.2s", flexShrink: 0,
+              }}>▾</div>
             </div>
+
+            {/* Expanded Detail */}
+            {isExpanded && (
+              <div style={{
+                padding: "0 16px 16px",
+                borderTop: `1px solid ${C.structBorder}`,
+                animation: "fadeIn 0.2s ease",
+              }}>
+                {/* Quick cue */}
+                <div style={{
+                  padding: "10px 12px", borderRadius: 8, marginTop: 12, marginBottom: 14,
+                  background: C.accent005, border: `1px solid ${C.accent015}`,
+                }}>
+                  <div style={{ fontSize: 10, color: C.text2, lineHeight: 1.6, fontFamily: "var(--m)" }}>{pose.cues}</div>
+                </div>
+
+                {/* Step-by-step */}
+                {pose.steps && (
+                  <>
+                    <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".12em", marginBottom: 8, fontWeight: 700 }}>STEP-BY-STEP</div>
+                    {pose.steps.map((step, si) => (
+                      <div key={si} style={{
+                        display: "flex", gap: 10, marginBottom: 8,
+                        alignItems: "flex-start",
+                      }}>
+                        <div style={{
+                          width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                          background: C.accent008, border: `1px solid ${C.accent015}`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 8, fontWeight: 700, color: C.accent, fontFamily: "var(--m)",
+                          marginTop: 2,
+                        }}>
+                          {si + 1}
+                        </div>
+                        <div style={{ fontSize: 10, color: C.text3, lineHeight: 1.6, fontFamily: "var(--m)" }}>
+                          {step}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {/* Common Mistakes */}
+                {pose.mistakes && pose.mistakes.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 8, color: "#ef5350", fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 14, marginBottom: 8, fontWeight: 700 }}>COMMON MISTAKES</div>
+                    {pose.mistakes.map((m, mi) => (
+                      <div key={mi} style={{
+                        display: "flex", gap: 8, marginBottom: 6,
+                        alignItems: "flex-start",
+                      }}>
+                        <div style={{ color: "#ef5350", fontSize: 9, flexShrink: 0, marginTop: 2 }}>✕</div>
+                        <div style={{ fontSize: 10, color: C.text3, lineHeight: 1.5, fontFamily: "var(--m)" }}>{m}</div>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {/* Pro Tips */}
+                {pose.proTips && pose.proTips.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".12em", marginTop: 14, marginBottom: 8, fontWeight: 700 }}>PRO TIPS</div>
+                    {pose.proTips.map((tip, ti) => (
+                      <div key={ti} style={{
+                        display: "flex", gap: 8, marginBottom: 6,
+                        alignItems: "flex-start",
+                      }}>
+                        <div style={{ color: C.accent, fontSize: 8, flexShrink: 0, marginTop: 3 }}>◆</div>
+                        <div style={{ fontSize: 10, color: C.text3, lineHeight: 1.5, fontFamily: "var(--m)", fontStyle: "italic" }}>{tip}</div>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
           </Card>
         );
       })}
@@ -411,7 +625,7 @@ export default function PosingView({ C, onBack }) {
             <Label C={C} style={{ marginBottom: 0 }}>SESSION HISTORY</Label>
             <div style={{ color: C.text4, fontSize: 14, transform: showHistory ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>▾</div>
           </div>
-          {showHistory && divHistory.slice(0, 10).map((session, i) => (
+          {showHistory && divHistory.slice(0, 10).map((session) => (
             <Card key={session.ts} C={C} style={{ padding: "12px 16px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
@@ -424,7 +638,7 @@ export default function PosingView({ C, onBack }) {
                 </div>
                 <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 18, fontWeight: 700, color: C.accent, fontFamily: "var(--m)" }}>{session.avgConfidence}</div>
-                  <div style={{ fontSize: 7, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>AVG CONF</div>
+                  <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".08em" }}>AVG CONF</div>
                 </div>
               </div>
             </Card>

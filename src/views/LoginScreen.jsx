@@ -227,7 +227,7 @@ export default function LoginScreen({ C, onLogin }) {
             boxShadow: `0 0 8px ${C.accent015}`,
           }} />
           <div style={{
-            fontSize: 7, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".25em",
+            fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".25em",
           }}>
             fitnessforge.ai
           </div>

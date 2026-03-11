@@ -77,7 +77,8 @@ input:focus, textarea:focus, select:focus {
 
 input::placeholder, textarea::placeholder { color: ${C.text4}; }
 select option { background: ${C.card}; color: ${C.text1}; }
-button { font-family: var(--b); cursor: pointer; border: none; outline: none; transition: color .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease; }
+button { font-family: var(--b); cursor: pointer; border: none; outline: none; transition: color .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease, filter .18s ease; }
+button:focus-visible { outline: 2px solid ${C.accent}; outline-offset: 2px; }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -86,7 +87,7 @@ input[type="number"] { -moz-appearance: textfield; }
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: rgba(255,255,255,.02); }
-::-webkit-scrollbar-thumb { background: ${C.structBorderStrong}; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: ${C.structBorderStrong}; border-radius: 4px; }
 ::selection { background: ${C.accent030}; color: ${C.text1}; }
 
 /* ─── ANIMATIONS ─── */
@@ -111,7 +112,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.85); opacity: 0; }
+  from { transform: scale(0.96); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
@@ -166,7 +167,7 @@ input[type="number"] { -moz-appearance: textfield; }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.5; }
 }
 
 @keyframes glow {
@@ -241,8 +242,8 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: scale(0.92) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes backdropIn {
@@ -265,29 +266,113 @@ input[type="number"] { -moz-appearance: textfield; }
 .forge-header-blur { will-change: backdrop-filter; }
 .forge-nav-blur { will-change: backdrop-filter; }
 
-/* Responsive desktop layout */
+/* ═══ DESKTOP LAYOUT ═══ */
 @media (min-width: 900px) {
+  /* Side navigation — vertical sidebar */
   .forge-nav {
     position: fixed !important;
     left: 0 !important;
     top: 0 !important;
     bottom: 0 !important;
-    width: 260px !important;
-    max-width: 260px !important;
+    width: 240px !important;
+    max-width: 240px !important;
     flex-direction: column !important;
     justify-content: flex-start !important;
-    padding: 0 !important;
+    padding: 32px 16px 24px !important;
+    gap: 4px !important;
     border-top: none !important;
     border-right: 1px solid ${C.structBorder} !important;
     transform: none !important;
+    z-index: 40 !important;
   }
+  .forge-nav > div:first-child {
+    display: none !important;
+  }
+  /* Nav items — horizontal icon + label layout */
+  .forge-nav > div:not(:first-child) {
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    min-width: unset !important;
+    width: 100% !important;
+    gap: 12px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.06em !important;
+    transition: background 0.2s, color 0.2s !important;
+    border-left: 2px solid transparent !important;
+  }
+  .forge-nav > div:not(:first-child):hover {
+    background: ${C.structGlassHover} !important;
+  }
+  /* Active nav item on desktop — left accent bar + tinted bg */
+  .forge-nav .forge-nav-active {
+    background: ${C.accent008} !important;
+    border-left: 2px solid ${C.accent} !important;
+    border-radius: 0 10px 10px 0 !important;
+  }
+  /* Hide mobile top-bar active indicator on desktop */
+  .forge-nav > div:not(:first-child) > div:first-child {
+    display: none !important;
+  }
+
+  /* Header — shift right of sidebar */
+  .forge-header {
+    margin-left: 240px !important;
+    max-width: calc(100% - 240px) !important;
+  }
+
+  /* Content — centered with comfortable reading width */
   .forge-content {
-    margin-left: 260px !important;
-    padding: 44px 60px 60px !important;
-    max-width: 1100px !important;
+    margin-left: 240px !important;
+    padding: 32px 48px 60px !important;
+    max-width: 860px !important;
+  }
+}
+
+/* ═══ WIDE DESKTOP (1200px+) ═══ */
+@media (min-width: 1200px) {
+  .forge-content {
+    padding: 36px 64px 60px !important;
+    max-width: 920px !important;
+  }
+}
+
+/* ═══ ULTRAWIDE (1600px+) ═══ */
+@media (min-width: 1600px) {
+  .forge-nav {
+    width: 280px !important;
+    max-width: 280px !important;
+    padding: 40px 20px 32px !important;
+  }
+  .forge-nav > div:not(:first-child) {
+    padding: 14px 20px !important;
+    font-size: 13px !important;
   }
   .forge-header {
-    margin-left: 260px !important;
+    margin-left: 280px !important;
+    max-width: calc(100% - 280px) !important;
+  }
+  .forge-content {
+    margin-left: 280px !important;
+    padding: 40px 80px 60px !important;
+    max-width: 1000px !important;
+  }
+}
+
+/* ═══ DESKTOP HOVER ENHANCEMENTS ═══ */
+@media (hover: hover) {
+  .forge-card-interactive:hover {
+    transform: translateY(-1px) translateZ(0);
+    border-color: ${C.structBorderHover} !important;
+    box-shadow: ${C.cardShadowHover} !important;
+  }
+  .forge-card-interactive:active {
+    transform: scale(0.99) translateZ(0);
+  }
+  button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
   }
 }
 `;
