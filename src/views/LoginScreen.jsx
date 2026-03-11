@@ -5,21 +5,22 @@ import storage from "../utils/storage";
 export default function LoginScreen({ C, onLogin }) {
   const [stage, setStage] = useState(0);
   useEffect(() => {
+    // Tighter timing — no visible layout shifts
     const t = [
-      setTimeout(() => setStage(1), 150),
-      setTimeout(() => setStage(2), 500),
-      setTimeout(() => setStage(3), 1000),
-      setTimeout(() => setStage(4), 1600),
-      setTimeout(() => setStage(5), 2200),
-      setTimeout(() => setStage(6), 2800),
+      setTimeout(() => setStage(1), 100),
+      setTimeout(() => setStage(2), 400),
+      setTimeout(() => setStage(3), 800),
+      setTimeout(() => setStage(4), 1200),
+      setTimeout(() => setStage(5), 1600),
+      setTimeout(() => setStage(6), 2000),
     ];
     return () => t.forEach(clearTimeout);
   }, []);
 
   const features = [
-    { label: "TRACK", desc: "Precision logging" },
-    { label: "COACH", desc: "AI intelligence" },
-    { label: "PERFORM", desc: "Elite results" },
+    { label: "TRAIN", desc: "Periodized systems" },
+    { label: "TRACK", desc: "Precision analytics" },
+    { label: "TRANSFORM", desc: "Visible results" },
   ];
 
   return (
@@ -69,8 +70,7 @@ export default function LoginScreen({ C, onLogin }) {
         {/* Version badge */}
         <div style={{
           opacity: stage >= 2 ? 1 : 0,
-          transform: stage >= 2 ? "translateY(0)" : "translateY(8px)",
-          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
+          transition: "opacity 0.8s cubic-bezier(0.16,1,0.3,1)",
           marginBottom: 28,
         }}>
           <div style={{
@@ -88,8 +88,8 @@ export default function LoginScreen({ C, onLogin }) {
         {/* Periodic Table Logo */}
         <div style={{
           opacity: stage >= 2 ? 1 : 0,
-          transform: stage >= 2 ? "translateY(0) scale(1)" : "translateY(24px) scale(0.85)",
-          transition: "all 1.2s cubic-bezier(0.16,1,0.3,1)",
+          transform: stage >= 2 ? "scale(1)" : "scale(0.92)",
+          transition: "opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1s cubic-bezier(0.16,1,0.3,1)",
           display: "flex", justifyContent: "center", marginBottom: 36,
         }}>
           <ForgeLogo C={C} size="lg" />
@@ -98,8 +98,7 @@ export default function LoginScreen({ C, onLogin }) {
         {/* Title — ForgeTitle with Fe highlight */}
         <div style={{
           opacity: stage >= 3 ? 1 : 0,
-          transform: stage >= 3 ? "translateY(0)" : "translateY(16px)",
-          transition: "opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1s cubic-bezier(0.16,1,0.3,1)",
+          transition: "opacity 1s cubic-bezier(0.16,1,0.3,1)",
           marginBottom: 8, lineHeight: 1.1,
           letterSpacing: ".16em",
         }}>
@@ -122,8 +121,7 @@ export default function LoginScreen({ C, onLogin }) {
           fontWeight: 700, textTransform: "uppercase",
           textShadow: `0 0 20px ${C.accent030}`,
           opacity: stage >= 4 ? 1 : 0,
-          transform: stage >= 4 ? "translateY(0)" : "translateY(8px)",
-          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)", marginBottom: 40,
+          transition: "opacity 0.8s cubic-bezier(0.16,1,0.3,1)", marginBottom: 40,
         }}>
           fitnessforge.ai
         </div>
@@ -133,8 +131,7 @@ export default function LoginScreen({ C, onLogin }) {
           display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12,
           marginBottom: 44,
           opacity: stage >= 4 ? 1 : 0,
-          transform: stage >= 4 ? "translateY(0)" : "translateY(12px)",
-          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s",
+          transition: "opacity 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s",
         }}>
           {features.map(({ label, desc }, i) => (
             <div key={label} style={{
@@ -145,8 +142,7 @@ export default function LoginScreen({ C, onLogin }) {
               position: "relative", overflow: "hidden",
               backdropFilter: "blur(8px)",
               opacity: stage >= 5 ? 1 : 0,
-              transform: stage >= 5 ? "translateY(0)" : "translateY(8px)",
-              transition: `all 0.6s cubic-bezier(0.16,1,0.3,1) ${0.1 * i}s`,
+              transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1) ${0.1 * i}s`,
             }}>
               {/* Top edge accent */}
               <div style={{
@@ -169,18 +165,17 @@ export default function LoginScreen({ C, onLogin }) {
         <div style={{
           fontSize: 13, color: C.text3, lineHeight: 2, fontFamily: "var(--b)",
           opacity: stage >= 5 ? 1 : 0,
-          transform: stage >= 5 ? "translateY(0)" : "translateY(8px)",
-          transition: "all 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s", marginBottom: 40,
+          transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s", marginBottom: 40,
           maxWidth: 300, margin: "0 auto 40px",
         }}>
-          Intelligent coaching, precision tracking, and data-driven programming — engineered for those who train with purpose.
+          Periodized programming, precision tracking, and data-driven progression — engineered for those who train with purpose.
         </div>
 
         {/* CTA Button */}
         <div style={{
           opacity: stage >= 6 ? 1 : 0,
-          transform: stage >= 6 ? "translateY(0) scale(1)" : "translateY(16px) scale(0.97)",
-          transition: "all 0.7s cubic-bezier(0.16,1,0.3,1)",
+          transform: stage >= 6 ? "scale(1)" : "scale(0.97)",
+          transition: "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
         }}>
           <Button C={C} onClick={() => { storage.set("lg", true); onLogin(); }}>
             ENTER FORGE

@@ -17,27 +17,30 @@ const FLOW = [
     autoAdvance: true,
     delay: 2800,
   },
-  // 1 — Primary goal: simple, clear, fast first action
+  // 1 — Primary goal: multi-select, custom SVG icons (no emojis)
   {
-    ai: "What's driving you right now?",
+    ai: "What's driving you right now? Select all that apply.",
     options: [
-      { label: "Build Muscle", icon: "💪" },
-      { label: "Lose Fat", icon: "🔥" },
-      { label: "Get Stronger", icon: "🏋️" },
-      { label: "Improve Performance", icon: "⚡" },
+      { label: "Build Muscle", icon: "muscle" },
+      { label: "Lose Fat", icon: "flame" },
+      { label: "Get Stronger", icon: "barbell" },
+      { label: "Improve Mobility", icon: "mobility" },
     ],
+    multi: true,
     key: "goal",
   },
   // 2 — Validate goal + open the pain (MULTI-SELECT)
   {
     genAi: (d) => {
       const r = {
-        "Build Muscle": "Muscle growth is a science — not a guessing game. Forge runs a 14-day periodized split designed around progressive overload, volume accumulation, and recovery timing. The system tells you exactly when to push harder and when to pull back.",
-        "Lose Fat": "Real fat loss means keeping every pound of muscle you've earned while stripping what you don't need. Forge manages your nutrition, training load, and recovery in one system — so you stay in a deficit without sacrificing strength.",
-        "Get Stronger": "Strength isn't built on motivation. It's built on structured progression. Forge tracks every lift, detects PRs automatically, and tells you precisely when you're ready to add weight. No guesswork.",
-        "Improve Performance": "Performance is the sum of a hundred variables done right. Training density, recovery quality, nutrition timing, fatigue management — Forge tracks all of it and turns the data into decisions.",
+        "Build Muscle": "Muscle growth is a science — not a guessing game. Forge runs a 14-day periodized split designed around progressive overload, volume accumulation, and recovery timing.",
+        "Lose Fat": "Real fat loss means keeping every pound of muscle while stripping what you don't need. Forge manages your nutrition, training load, and recovery in one system.",
+        "Get Stronger": "Strength is built on structured progression. Forge tracks every lift, detects PRs automatically, and tells you when you're ready to add weight.",
+        "Improve Mobility": "Mobility is the foundation of performance longevity. Forge monitors your recovery, readiness, and movement capacity to keep you training pain-free.",
       };
-      return r[d.goal] || "Forge is engineered for serious results.";
+      const goals = Array.isArray(d.goal) ? d.goal : [d.goal];
+      const parts = goals.map(g => r[g]).filter(Boolean);
+      return parts.length > 0 ? parts.join("\n\n") : "Forge is engineered for serious results.";
     },
     followUp: "Now tell me — what's actually holding you back? Select everything that applies.",
     options: [
@@ -236,11 +239,11 @@ const FLOW = [
   {
     genAi: (d) => {
       const name = d.name || "Athlete";
-      const goal = d.goal || "your goals";
+      const goals = Array.isArray(d.goal) ? d.goal.join(", ") : (d.goal || "your goals");
       const freq = d.frequency || "your schedule";
       const exp = d.experience || "your level";
       return `${name}, your Forge profile is ready.\n\n` +
-        `Goal — ${goal}\n` +
+        `Goal — ${goals}\n` +
         `Training — ${freq} per week\n` +
         `Experience — ${exp}\n` +
         `Program — AI-periodized, adapts to your data every session\n` +
@@ -402,6 +405,44 @@ function UserMsg({ text, C }) {
   );
 }
 
+// ─── CUSTOM SVG ICONS (no emojis) ────────────────────────────
+function GoalIcon({ name, color, size = 15 }) {
+  const s = { width: size, height: size, flexShrink: 0 };
+  const p = { fill: "none", stroke: color, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
+  if (name === "muscle") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M5 18c0-2 1-3 3-4l2-1c1-.5 1.5-1.5 1-3-.3-1-1.5-2.5-.5-5 .8-2 3-3 5-2s3 3 3 5c0 1.5-.5 2.5-1.5 3.5L15 13.5c-1 1-1 2-.5 3.5.3 1 .5 2-.5 3" />
+      <path d="M8 14c-2 .5-4 2-4 4" strokeOpacity="0.5" />
+    </svg>
+  );
+  if (name === "flame") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <path d="M12 22c-4.4 0-7-3.2-7-7 0-3 1.5-5.2 3-7 .8-1 1.5-2.2 1.8-3.5.1-.5.8-.6 1-.1C12 7 14 9 14.5 10.5c.1.3.5.3.6 0 .2-.8.4-1.8.4-2.5 0-.4.5-.6.8-.3C18 9.5 19 12 19 15c0 3.8-2.6 7-7 7z" />
+      <path d="M12 22c-1.7 0-3-1.5-3-3.5 0-1.5.8-2.8 1.5-3.5.3-.3.8-.1.8.3 0 .5.3 1 .7 1 .4 0 .7-.5.7-1 0-.3.4-.5.6-.3.8.8 1.7 2 1.7 3.5 0 2-1.3 3.5-3 3.5z" />
+    </svg>
+  );
+  if (name === "barbell") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <rect x="4" y="8" width="3" height="8" rx="1" />
+      <rect x="17" y="8" width="3" height="8" rx="1" />
+      <rect x="1" y="10" width="2" height="4" rx="0.5" />
+      <rect x="21" y="10" width="2" height="4" rx="0.5" />
+    </svg>
+  );
+  if (name === "mobility") return (
+    <svg viewBox="0 0 24 24" style={s} {...p}>
+      <circle cx="12" cy="4" r="2" />
+      <path d="M9 8h6l-1 5-2 1-2-1-1-5z" />
+      <path d="M8 13l-3 5" />
+      <path d="M16 13l3 5" />
+      <path d="M10 18l-1 4" />
+      <path d="M14 18l1 4" />
+    </svg>
+  );
+  return null;
+}
+
 // ─── OPTION CHIP ─────────────────────────────────────────────
 function OptionChip({ opt, selected, onToggle, C }) {
   const label = typeof opt === "string" ? opt : opt.label;
@@ -427,7 +468,7 @@ function OptionChip({ opt, selected, onToggle, C }) {
       transform: active ? "scale(1.03)" : "scale(1)",
       backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
     }}>
-      {icon && <span style={{ fontSize: 15 }}>{icon}</span>}
+      {icon && <GoalIcon name={icon} color={active ? C.accent : C.text3} size={15} />}
       {label}
       {active && (
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="3" strokeLinecap="round">
