@@ -75,8 +75,8 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
   };
 
   const quickPrompts = isWorkout
-    ? ["Form check tips", "Adjust my rest time", "How's my volume today?", "Motivation boost"]
-    : ["How am I progressing?", "Analyze my fatigue", "Nutrition check", "Sleep quality"];
+    ? ["Form check tips", "Adjust my rest time", "How's my volume today?", "Push me harder"]
+    : ["Where do I stand?", "Read my fatigue", "Nutrition check", "Am I recovering?"];
 
   const sendQuick = (prompt) => {
     setShowPrompts(false);
@@ -130,7 +130,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)" }}>Forge Coach</div>
           <div style={{ fontSize: 8, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".1em" }}>
-            {isWorkout ? "WORKOUT MODE" : "fitnessforge.ai"}
+            {isWorkout ? "LIVE SESSION INTEL" : "ALWAYS ON · ALWAYS LEARNING"}
           </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
@@ -270,7 +270,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={isWorkout ? "Ask about your current workout..." : "Ask about your training data..."}
+          placeholder={isWorkout ? "Ask your coach anything..." : "Talk to your coach..."}
           style={{
             flex: 1, padding: "12px 16px",
             background: C.structGlass,

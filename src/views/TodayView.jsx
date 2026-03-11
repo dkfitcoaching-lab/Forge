@@ -241,7 +241,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               <div style={{ fontSize: 24, fontWeight: 700, color: C.text2, fontFamily: "var(--d)" }}>Rest Day</div>
             </div>
             <div style={{ fontSize: 12, color: C.text4, fontFamily: "var(--m)", marginTop: 2, lineHeight: 1.7 }}>
-              Recovery is where growth happens. Light walking or stretching only.
+              Growth happens during recovery, not in the gym. Light walking or stretching only. Your body is building right now.
             </div>
           </Card>
         ) : (
@@ -575,9 +575,9 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
             </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 6 }}>Day One Energy</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 6 }}>Your System Is Ready</div>
             <div style={{ fontSize: 11, color: C.text3, fontFamily: "var(--m)", lineHeight: 1.7, maxWidth: 260, margin: "0 auto" }}>
-              Start your first workout to unlock stats, streaks, and progress tracking.
+              Complete your first workout. Every session from here compounds — stats, streaks, PR detection, and coaching intelligence all activate the moment you start.
             </div>
           </Card>
         )}
