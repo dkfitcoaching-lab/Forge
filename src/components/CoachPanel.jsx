@@ -83,7 +83,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
     recognition.interimResults = false;
     recognition.lang = "en-US";
     recognition.onresult = (event) => {
-      const transcript = event.results[0]?.[0]?.transcript;
+      const transcript = event.results[0]?.[0]?.transcript?.trim();
       if (transcript) setInput(transcript);
       setListening(false);
     };
@@ -103,7 +103,9 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
   };
 
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    requestAnimationFrame(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    });
   }, [messages, typing]);
 
   const handlePhotoSelect = (e) => {
@@ -119,7 +121,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
     if ((!input.trim() && !pendingPhoto) || typing) return;
     const userMsg = input.trim();
     const photo = pendingPhoto;
-    setMessages((prev) => [...prev, { role: "user", text: userMsg || (photo ? "📷 Photo attached" : ""), time: Date.now(), photo }]);
+    setMessages((prev) => [...prev, { role: "user", text: userMsg || (photo ? "Photo attached" : ""), time: Date.now(), photo }]);
     setInput("");
     setPendingPhoto(null);
     setTyping(true);
@@ -378,7 +380,7 @@ export default function CoachPanel({ C, isOverlay, onClose, isWorkout }) {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           placeholder={isWorkout ? "Ask your coach anything..." : "Talk to your coach..."}
           style={{
             flex: 1, padding: "12px 16px",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import { getThemeColors, ACCENTS, SURFACES } from "./data/themes";
 import { makeStyles } from "./utils/css";
 import { NavIcons, Toast, ForgeLogo, ForgeTitle } from "./components/Primitives";
@@ -77,8 +77,8 @@ export default function App() {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, []);
 
-  // Auto-scroll to top when view or tab changes
-  useEffect(() => { scrollToTop(); }, [view, tab]);
+  // Auto-scroll to top when view or tab changes (useLayoutEffect to run before paint)
+  useLayoutEffect(() => { scrollToTop(); }, [view, tab]);
 
   const startWorkout = (day) => { setWorkoutDay(day); setView("wp"); };
   const exitWorkout = () => { setWorkoutDay(null); setView("main"); setTab("today"); scrollToTop(); };
@@ -203,7 +203,7 @@ export default function App() {
           onNav={(v) => { setView(v); scrollToTop(); }}
         />
       );
-      default: return <TodayView C={C} onWork={startWorkout} onNav={setView} showToast={showToast} />;
+      default: return <TodayView C={C} onWork={startWorkout} onNav={(v) => { setView(v); scrollToTop(); }} showToast={showToast} />;
     }
   };
 

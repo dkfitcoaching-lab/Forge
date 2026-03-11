@@ -211,7 +211,7 @@ export default function LoginScreen({ C, onLogin }) {
           transform: stage >= 6 ? "scale(1) translateY(0)" : "scale(0.96) translateY(8px)",
           transition: "opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)",
         }}>
-          <Button C={C} onClick={() => { storage.set("lg", true); onLogin(); }}>
+          <Button C={C} onClick={() => { try { storage.set("lg", true); onLogin(); } catch (e) { console.error("Storage error:", e); } }}>
             ENTER FORGE
           </Button>
         </div>

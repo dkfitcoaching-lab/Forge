@@ -663,7 +663,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
     setFlowIdx(ni);
     setTyping(true);
 
-    const aiText = next.genAi ? next.genAi(newData) : next.ai;
+    const aiText = next.genAi ? (next.genAi(newData) || next.ai || "") : (next.ai || "");
     const full = next.followUp ? `${aiText}\n\n${next.followUp}` : aiText;
 
     setTimeout(() => {
@@ -704,7 +704,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
   const confirmMulti = () => {
     const step = FLOW[flowIdx];
-    const selected = multiSelections.length > 0 ? multiSelections : ["None selected"];
+    const selected = multiSelections.length > 0 ? multiSelections : [];
     const newData = { ...userData, [step.key]: selected };
     setUserData(newData);
     clearInteractive();
@@ -730,7 +730,7 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
 
   const confirmTheme = () => {
     if (!pendingTheme) return;
-    const names = { forge: "Forge Teal", platinum: "Platinum", obsidian: "Obsidian Violet", ember: "Ember", arctic: "Arctic Blue", crimson: "Crimson", gold: "Gold", rose: "Rose" };
+    const names = Object.fromEntries(Object.entries(ACCENTS).map(([id, a]) => [id, a.name]));
     const newData = { ...userData, theme: pendingTheme };
     setUserData(newData);
     clearInteractive();
@@ -756,17 +756,21 @@ export default function OnboardingScreen({ C, onComplete, changeAccent, changeSu
   };
 
   const selectTier = (tier) => {
-    const newData = {
-      ...userData,
-      tier: tier.name,
-      tierPrice: yearlyBilling ? tier.yearlyPrice : tier.price,
-      billing: yearlyBilling ? "yearly" : "monthly",
-    };
-    storage.set("ob", true);
-    storage.set("ob_data", newData);
-    storage.set("user_name", newData.name || "");
-    storage.set("user_tier", tier.name);
-    onComplete();
+    try {
+      const newData = {
+        ...userData,
+        tier: tier.name,
+        tierPrice: yearlyBilling ? tier.yearlyPrice : tier.price,
+        billing: yearlyBilling ? "yearly" : "monthly",
+      };
+      storage.set("ob", true);
+      storage.set("ob_data", newData);
+      storage.set("user_name", newData.name || "");
+      storage.set("user_tier", tier.name);
+      onComplete();
+    } catch (e) {
+      console.error("Onboarding save error:", e);
+    }
   };
 
   const totalSteps = FLOW.length;
