@@ -76,16 +76,53 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
     showToast?.("Updated");
   };
 
+  const [photoCrop, setPhotoCrop] = useState(null); // { src, scale, offsetY }
+  const cropCanvasRef = useRef();
+
   const handleProfilePhoto = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      saveProfile("photo", ev.target.result);
-      showToast?.("Photo updated");
+      setPhotoCrop({ src: ev.target.result, scale: 1, offsetY: 0 });
     };
     reader.readAsDataURL(file);
     e.target.value = "";
+  };
+
+  const removeProfilePhoto = () => {
+    saveProfile("photo", null);
+    showToast?.("Photo removed");
+  };
+
+  const applyCrop = () => {
+    if (!photoCrop) return;
+    const canvas = document.createElement("canvas");
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      const scale = photoCrop.scale;
+      const aspect = img.width / img.height;
+      let dw, dh;
+      if (aspect >= 1) {
+        dh = size * scale;
+        dw = dh * aspect;
+      } else {
+        dw = size * scale;
+        dh = dw / aspect;
+      }
+      const dx = (size - dw) / 2;
+      const dy = (size - dh) / 2 + photoCrop.offsetY * size * 0.5;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      const result = canvas.toDataURL("image/jpeg", 0.85);
+      saveProfile("photo", result);
+      setPhotoCrop(null);
+      showToast?.("Photo updated");
+    };
+    img.src = photoCrop.src;
   };
 
   const changeLang = (code) => {
@@ -171,6 +208,22 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
                 </svg>
               </div>
             </div>
+            {/* Remove photo button */}
+            {profile.photo && (
+              <button onClick={(e) => { e.stopPropagation(); removeProfilePhoto(); }} style={{
+                position: "absolute", top: -6, right: -6,
+                width: 20, height: 20, borderRadius: 10,
+                background: C.danger || "#ff4444", border: `2px solid ${C.card}`,
+                color: "#fff", fontSize: 10, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
+                zIndex: 2,
+              }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
           </div>
           <div style={{ flex: 1 }}>
             {editingField === "name" ? (
@@ -714,13 +767,16 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           </div>
         </div>
 
-        {/* Voice Selection */}
+        {/* Voice Selection — ElevenLabs Premium */}
         <div style={{ padding: "14px 0" }}>
           <div onClick={() => setShowCoachVoice(!showCoachVoice)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
             <div>
               <div style={{ fontSize: 13, color: C.text2 }}>Coach Voice</div>
               <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
-                {coachVoice === "default" ? "System default" : coachVoice}
+                {(() => {
+                  const voiceMap = { default: "Atlas — Authoritative", rachel: "Rachel — Warm & Clear", adam: "Adam — Deep & Calm", bella: "Bella — Energetic", marcus: "Marcus — Commanding" };
+                  return voiceMap[coachVoice] || "Atlas — Authoritative";
+                })()}
               </div>
             </div>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round" style={{ transform: showCoachVoice ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>
@@ -729,33 +785,51 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
           </div>
           {showCoachVoice && (
             <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
-              {(() => {
-                const voices = typeof speechSynthesis !== "undefined" ? speechSynthesis.getVoices().filter(v => v.lang.startsWith("en")).slice(0, 8) : [];
-                const options = [{ id: "default", name: "System Default", detail: "Auto-selected" }, ...voices.map(v => ({ id: v.name, name: v.name, detail: v.lang }))];
-                return options.map(v => (
-                  <button key={v.id} onClick={() => {
-                    setCoachVoice(v.id);
-                    storage.set("coach_voice", v.id);
-                    // Preview the voice
-                    if (typeof speechSynthesis !== "undefined" && v.id !== "default") {
-                      speechSynthesis.cancel();
-                      const u = new SpeechSynthesisUtterance("Forge Coach is ready.");
-                      const found = speechSynthesis.getVoices().find(sv => sv.name === v.id);
-                      if (found) u.voice = found;
-                      speechSynthesis.speak(u);
-                    }
-                    setShowCoachVoice(false);
-                  }} style={{
-                    padding: "10px 12px", textAlign: "left",
-                    background: coachVoice === v.id ? C.accent008 : "transparent",
-                    border: `1px solid ${coachVoice === v.id ? C.accent030 : C.structBorder}`,
-                    borderRadius: 6, cursor: "pointer", transition: "all 0.15s",
+              {[
+                { id: "default", name: "Atlas", detail: "Authoritative & direct — default coach tone", tier: "Premium" },
+                { id: "rachel", name: "Rachel", detail: "Warm, clear & motivating — female", tier: "Premium" },
+                { id: "adam", name: "Adam", detail: "Deep, calm & reassuring — male", tier: "Premium" },
+                { id: "bella", name: "Bella", detail: "High energy & enthusiastic — female", tier: "Elite" },
+                { id: "marcus", name: "Marcus", detail: "Commanding & intense — male", tier: "Elite" },
+              ].map(v => (
+                <button key={v.id} onClick={() => {
+                  setCoachVoice(v.id);
+                  storage.set("coach_voice", v.id);
+                  showToast?.(`Voice: ${v.name}`);
+                  setShowCoachVoice(false);
+                }} style={{
+                  padding: "12px 14px", textAlign: "left",
+                  background: coachVoice === v.id ? C.accent008 : "transparent",
+                  border: `1px solid ${coachVoice === v.id ? C.accent030 : C.structBorder}`,
+                  borderRadius: 8, cursor: "pointer", transition: "all 0.15s",
+                  display: "flex", alignItems: "center", gap: 12,
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    background: coachVoice === v.id ? C.accent010 : C.structGlass,
+                    border: `1px solid ${coachVoice === v.id ? C.accent020 : C.structBorder}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
                   }}>
-                    <div style={{ fontSize: 11, color: coachVoice === v.id ? C.accent : C.text2, fontWeight: coachVoice === v.id ? 600 : 400 }}>{v.name}</div>
-                    <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>{v.detail}</div>
-                  </button>
-                ));
-              })()}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={coachVoice === v.id ? C.accent : C.text3} strokeWidth="1.5" strokeLinecap="round">
+                      <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" /><path d="M19 10v2a7 7 0 01-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 12, color: coachVoice === v.id ? C.accent : C.text1, fontWeight: 600 }}>{v.name}</span>
+                      <span style={{ fontSize: 7, color: C.accent, fontFamily: "var(--m)", letterSpacing: ".08em", background: C.accent008, padding: "1px 5px", borderRadius: 4, fontWeight: 600 }}>{v.tier}</span>
+                    </div>
+                    <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>{v.detail}</div>
+                  </div>
+                  {coachVoice === v.id && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
+                  )}
+                </button>
+              ))}
+              <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", textAlign: "center", marginTop: 6, letterSpacing: ".06em" }}>
+                Powered by ElevenLabs · Neural voice synthesis
+              </div>
             </div>
           )}
         </div>
@@ -947,53 +1021,22 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
       {/* ─── DATA ─── */}
       <Label C={C}>DATA</Label>
 
-      {/* Backup reminder */}
-      {(() => {
-        const lastBackup = storage.get("last_backup", null);
-        const daysSince = lastBackup ? Math.floor((Date.now() - lastBackup) / 86400000) : null;
-        const needsBackup = !lastBackup || daysSince >= 7;
-        if (!needsBackup) return null;
-        return (
-          <Card C={C} style={{ padding: "12px 16px", marginBottom: 12, borderColor: C.warn + "30" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.warn} strokeWidth="2" strokeLinecap="round">
-                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: C.text2 }}>
-                  {lastBackup ? `Last backup: ${daysSince} days ago` : "No backup on file"}
-                </div>
-                <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>
-                  Export your data to protect your progress
-                </div>
-              </div>
+      <Card C={C} style={{ padding: "2px 16px" }}>
+        <div onClick={() => setShowResetModal(true)} style={{
+          padding: "14px 0", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.danger} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.danger }}>Reset All Data</div>
+              <div style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", marginTop: 1 }}>Permanently delete all progress</div>
             </div>
-          </Card>
-        );
-      })()}
-
-      <button onClick={() => {
-        const exportData = {};
-        Object.keys(localStorage).filter(k => k.startsWith("f_")).forEach(k => {
-          try { exportData[k] = JSON.parse(localStorage.getItem(k)); } catch { exportData[k] = localStorage.getItem(k); }
-        });
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = `forge-export-${new Date().toISOString().split("T")[0]}.json`; a.click();
-        URL.revokeObjectURL(url);
-        storage.set("last_backup", Date.now());
-        showToast?.("Data exported");
-      }}
-        style={{ width: "100%", padding: 14, background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.accent, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", marginBottom: 10, minHeight: 44 }}>
-        EXPORT ALL DATA
-      </button>
-
-      <button
-        style={{ width: "100%", padding: 14, background: `${C.danger}06`, border: `1.5px solid ${C.danger}25`, borderRadius: 10, color: C.danger, fontSize: 11, fontWeight: 700, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em", minHeight: 44 }}
-        onClick={() => setShowResetModal(true)}>
-        RESET ALL DATA
-      </button>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+        </div>
+      </Card>
 
       {showResetModal && (
         <Modal
@@ -1018,6 +1061,71 @@ export default function SettingsView({ C, accentId, surfaceId, changeAccent, cha
         <div style={{ fontSize: 8, color: C.text5, fontFamily: "var(--m)", letterSpacing: ".14em", marginBottom: 8 }}>PERFORMANCE SYSTEM</div>
         <div style={{ fontSize: 8, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>fitnessforge.ai</div>
       </div>
+
+      {/* ─── PHOTO CROP MODAL ─── */}
+      {photoCrop && (
+        <div onClick={() => setPhotoCrop(null)} style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,0.8)",
+          backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 24, animation: "backdropIn .2s ease",
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: C.cardGradient,
+            border: `1.5px solid ${C.structBorderStrong}`,
+            borderRadius: 16, padding: 24, maxWidth: 340, width: "100%",
+            animation: "modalIn .25s ease",
+            boxShadow: `0 20px 60px rgba(0,0,0,.5), ${C.neonShadow}`,
+          }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: C.text1, fontFamily: "var(--d)", marginBottom: 16, textAlign: "center" }}>
+              Adjust Photo
+            </div>
+
+            {/* Preview */}
+            <div style={{
+              width: 160, height: 160, borderRadius: 16, margin: "0 auto 20px",
+              overflow: "hidden", border: `2px solid ${C.accent030}`,
+              boxShadow: `0 0 20px ${C.accent015}`,
+              position: "relative",
+            }}>
+              <img src={photoCrop.src} alt="Preview" style={{
+                width: "100%", height: "100%", objectFit: "cover",
+                transform: `scale(${photoCrop.scale}) translateY(${photoCrop.offsetY * 20}px)`,
+                transition: "transform 0.1s ease",
+              }} />
+            </div>
+
+            {/* Scale slider */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>ZOOM</span>
+                <span style={{ fontSize: 11, color: C.text1, fontFamily: "var(--m)", fontWeight: 600 }}>{Math.round(photoCrop.scale * 100)}%</span>
+              </div>
+              <input type="range" min="100" max="250" value={Math.round(photoCrop.scale * 100)}
+                onChange={e => setPhotoCrop(p => ({ ...p, scale: Number(e.target.value) / 100 }))}
+                style={{ width: "100%", accentColor: C.accent }} />
+            </div>
+
+            {/* Position slider */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)", letterSpacing: ".1em" }}>POSITION</span>
+                <span style={{ fontSize: 9, color: C.text4, fontFamily: "var(--m)" }}>↕ Vertical</span>
+              </div>
+              <input type="range" min="-100" max="100" value={Math.round(photoCrop.offsetY * 100)}
+                onChange={e => setPhotoCrop(p => ({ ...p, offsetY: Number(e.target.value) / 100 }))}
+                style={{ width: "100%", accentColor: C.accent }} />
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <Button C={C} variant="ghost" onClick={() => setPhotoCrop(null)} style={{ flex: 1 }}>CANCEL</Button>
+              <Button C={C} onClick={applyCrop} style={{ flex: 1 }}>SAVE</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
