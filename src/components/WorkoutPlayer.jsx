@@ -29,7 +29,7 @@ export default function WorkoutPlayer({ day, onExit, C, showToast, coachOpen }) 
   // Persist active session state for crash recovery
   useEffect(() => {
     if (phase === "active" || phase === "paused") {
-      storage.set("active_session", { dayNum: day.d, exerciseIndex, setIndex, elapsed: elapsedAtPauseRef.current || elapsed, timestamp: Date.now() });
+      storage.set("active_session", { dayNum: day.d, exerciseIndex, setIndex, elapsed: elapsedAtPauseRef.current ?? elapsed, timestamp: Date.now() });
     }
   }, [phase, exerciseIndex, setIndex]);
 

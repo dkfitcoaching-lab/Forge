@@ -25,7 +25,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
 
   const [currentDay, setCurrentDay] = useState(() => storage.get("cd", 1));
   const dayData = DAYS[currentDay - 1] || DAYS[0];
-  const isRest = dayData.t === "REST + RECOVERY";
+  const isRest = !!dayData.rest;
 
   const [mealsChecked, setMealsChecked] = useState(() => storage.get("mc_" + todayKey, {}));
   const mealsCompleted = Object.values(mealsChecked).filter(Boolean).length;
@@ -171,7 +171,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
             { v: `${mealsCompleted}/${MEALS.length}`, l: "MEALS", pct: mealsCompleted / MEALS.length, color: C.accent, glow: C.accent020 },
             { v: `${waterCount}/${waterGoal}`, l: "WATER", pct: waterCount / waterGoal, color: C.secondary, glow: C.secondary020 },
             { v: `${suppDone}/${suppTotal}`, l: "SUPPS", pct: suppDone / suppTotal, color: C.secondary, glow: C.secondary020 },
-            { v: readiness ? readiness.score : "—", l: "READY", pct: readiness ? readiness.score / 100 : 0, color: readiness?.color || C.text4, glow: C.accent020 },
+            { v: readiness ? readiness.score : "—", l: "READY", pct: readiness ? readiness.score / 100 : 0, color: readiness ? (C[readiness.color] || C.accent) : C.text4, glow: C.accent020 },
           ].map(({ v, l, pct, color, glow }) => (
             <div key={l} style={{
               padding: "16px 6px 14px", textAlign: "center",
@@ -589,7 +589,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               ADD GLASS
             </button>
             {waterCount > 0 && (
-              <button onClick={() => { const next = Math.max(waterCount - 1, 0); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
+              <button onClick={() => { tapLight(); const next = Math.max(waterCount - 1, 0); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
                 style={{
                   padding: "10px 14px", background: C.structGlass,
                   border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,

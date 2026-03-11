@@ -13,7 +13,7 @@ export default function ProgramView({ C, onWork, onNav }) {
   const [guideCategory, setGuideCategory] = useState(0);
   const history = getWorkoutHistory();
   const dayData = DAYS[currentDay - 1] || DAYS[0];
-  const isRest = dayData.t === "REST + RECOVERY";
+  const isRest = !!dayData.rest;
   const isCompetitor = !!storage.get("posing_div", null);
 
   return (
