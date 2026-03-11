@@ -77,7 +77,7 @@ export default function CheckIn({ C, onBack, initialTab }) {
       };
       const updated = [...photos, newPhoto];
       setPhotos(updated);
-      try { storage.set("photos", updated); } catch { console.warn("Storage quota exceeded for photos"); }
+      try { storage.set("photos", updated); } catch { /* Storage quota may be exceeded for large photos */ }
     };
     reader.readAsDataURL(file);
   };
@@ -297,7 +297,7 @@ export default function CheckIn({ C, onBack, initialTab }) {
           {/* Body Weight */}
           <Card C={C} style={{ padding: 16 }}>
             <Label C={C} style={{ marginBottom: 8 }}>BODY WEIGHT</Label>
-            <input value={data.wt} onChange={e => update("wt", e.target.value)} placeholder="Enter weight (lbs)" type="number" inputMode="decimal"
+            <input value={data.wt} onChange={e => { const v = e.target.value; if (v === '' || (Number(v) >= 0 && Number(v) <= 500)) update("wt", v); }} placeholder="Enter weight (lbs)" type="number" inputMode="decimal" min="50" max="500" step="0.1"
               style={{ width: "100%", padding: "14px", background: C.structGlass, border: `1.5px solid ${C.structBorderHover}`, borderRadius: 10, color: C.text1, fontSize: 18, fontWeight: 600, fontFamily: "var(--m)", textAlign: "center", outline: "none" }} />
             {weightHistory.length >= 2 && <div style={{ marginTop: 12 }}><LineChart data={weightHistory.slice(-10)} C={C} height={60} /></div>}
           </Card>

@@ -135,7 +135,7 @@ export function computeStats() {
   if (recent.length > 0) {
     avgReadiness = Math.round(
       recent.reduce((sum, ci) => {
-        const avg = (ci.sl + ci.en + (6 - ci.st) + ci.dg + ci.ad) / 5;
+        const avg = (ci.sl + ci.en + (11 - ci.st) + ci.dg + ci.ad) / 5;
         return sum + avg;
       }, 0) / recent.length
     );
@@ -209,9 +209,9 @@ export function computeReadinessScore() {
   const adherence = latest.ad || 0;
 
   // Weighted readiness: sleep and energy matter most
-  const score = Math.round(
-    (sleep * 0.3 + energy * 0.25 + (6 - stress) * 0.2 + digestion * 0.15 + adherence * 0.1) * 20
-  );
+  // Scale is 1-10 for each metric, stress is inverted (11-stress)
+  const raw = (sleep * 0.3 + energy * 0.25 + (11 - stress) * 0.2 + digestion * 0.15 + adherence * 0.1);
+  const score = Math.min(100, Math.max(0, Math.round(raw * 10)));
 
   const label =
     score >= 80 ? "OPTIMAL" :

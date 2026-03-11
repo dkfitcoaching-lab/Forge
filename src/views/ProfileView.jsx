@@ -95,7 +95,7 @@ export default function ProfileView({ C, themeId, setThemeId }) {
       </button>
 
       <button
-        style={{ width: "100%", padding: 14, background: `${C.badge}08`, border: `1px solid ${C.badge}20`, borderRadius: 12, color: C.badge, fontSize: 12, fontWeight: 600, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em" }}
+        style={{ width: "100%", padding: 14, background: `${C.danger}08`, border: `1px solid ${C.danger}20`, borderRadius: 12, color: C.danger, fontSize: 12, fontWeight: 600, fontFamily: "var(--m)", cursor: "pointer", letterSpacing: ".1em" }}
         onClick={() => {
           if (window.confirm("Reset all Forge data? This cannot be undone.")) {
             Object.keys(localStorage).filter((k) => k.startsWith("f_")).forEach((k) => localStorage.removeItem(k));

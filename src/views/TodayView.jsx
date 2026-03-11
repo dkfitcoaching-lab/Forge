@@ -19,22 +19,23 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const dayNames = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
   const dateStr = `${dayNames[now.getDay()]} — ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  const todayKey = now.toISOString().split("T")[0]; // YYYY-MM-DD, locale-safe
 
   const [currentDay, setCurrentDay] = useState(() => storage.get("cd", 1));
   const dayData = DAYS[currentDay - 1] || DAYS[0];
   const isRest = dayData.t === "REST + RECOVERY";
 
-  const [mealsChecked, setMealsChecked] = useState(() => storage.get("mc_" + now.toDateString(), {}));
+  const [mealsChecked, setMealsChecked] = useState(() => storage.get("mc_" + todayKey, {}));
   const mealsCompleted = Object.values(mealsChecked).filter(Boolean).length;
   const [expandedMeal, setExpandedMeal] = useState(null);
-  const [foodLogs, setFoodLogs] = useState(() => storage.get("fl_" + now.toDateString(), {}));
+  const [foodLogs, setFoodLogs] = useState(() => storage.get("fl_" + todayKey, {}));
   const [editingFood, setEditingFood] = useState(null);
-  const [mealPhotos, setMealPhotos] = useState(() => storage.get("mp_" + now.toDateString(), {}));
+  const [mealPhotos, setMealPhotos] = useState(() => storage.get("mp_" + todayKey, {}));
   const mealFileRefs = useRef({});
   const toggleMeal = (i) => {
     const next = { ...mealsChecked, [i]: !mealsChecked[i] };
     setMealsChecked(next);
-    storage.set("mc_" + now.toDateString(), next);
+    storage.set("mc_" + todayKey, next);
   };
 
   const handleMealPhoto = (mealIdx, e) => {
@@ -44,20 +45,20 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
     reader.onload = (ev) => {
       const next = { ...mealPhotos, [mealIdx]: { photo: ev.target.result, time: Date.now() } };
       setMealPhotos(next);
-      storage.set("mp_" + now.toDateString(), next);
+      storage.set("mp_" + todayKey, next);
       showToast?.("Meal photo logged");
     };
     reader.readAsDataURL(file);
   };
 
-  const [waterCount, setWaterCount] = useState(() => storage.get("wt_" + now.toDateString(), 0));
+  const [waterCount, setWaterCount] = useState(() => storage.get("wt_" + todayKey, 0));
   const waterGoal = 16;
 
-  const [suppChecked, setSuppChecked] = useState(() => storage.get("sp_" + now.toDateString(), {}));
+  const [suppChecked, setSuppChecked] = useState(() => storage.get("sp_" + todayKey, {}));
   const toggleSupp = (i) => {
     const next = { ...suppChecked, [i]: !suppChecked[i] };
     setSuppChecked(next);
-    storage.set("sp_" + now.toDateString(), next);
+    storage.set("sp_" + todayKey, next);
   };
 
   const changeDay = useCallback((dir) => {
@@ -80,11 +81,12 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
   const overloadTargets = getProgressiveOverloadTargets(currentDay);
   const overloadReady = overloadTargets ? overloadTargets.filter((t) => t.shouldIncrease) : [];
 
-  const macroP = Math.round((mealsCompleted / MEALS.length) * MACRO_CAPS.p);
-  const macroC = Math.round((mealsCompleted / MEALS.length) * MACRO_CAPS.c);
-  const macroF = Math.round((mealsCompleted / MEALS.length) * MACRO_CAPS.f);
-  const totalCal = MEALS.reduce((sum, m) => sum + m.cal, 0);
-  const consumedCal = Math.round((mealsCompleted / MEALS.length) * totalCal);
+  // Sum actual macros from completed meals (not ratio-based)
+  const completedMeals = MEALS.filter((_, i) => mealsChecked[i]);
+  const macroP = completedMeals.reduce((sum, m) => sum + m.p, 0);
+  const macroC = completedMeals.reduce((sum, m) => sum + m.c, 0);
+  const macroF = completedMeals.reduce((sum, m) => sum + m.f, 0);
+  const consumedCal = completedMeals.reduce((sum, m) => sum + m.cal, 0);
 
   const suppTotal = SUPPLEMENTS.length;
   const suppDone = Object.values(suppChecked).filter(Boolean).length;
@@ -449,7 +451,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
                             const entry = { desc: desc || "Followed plan", adherence: true, p, c, f, cal, time: Date.now() };
                             const next = { ...foodLogs, [i]: entry };
                             setFoodLogs(next);
-                            storage.set("fl_" + now.toDateString(), next);
+                            storage.set("fl_" + todayKey, next);
                             setEditingFood(null);
                             if (!mealsChecked[i]) toggleMeal(i);
                           }} style={{
@@ -496,7 +498,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
             }} />
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => { const next = Math.min(waterCount + 1, 20); setWaterCount(next); storage.set("wt_" + now.toDateString(), next); }}
+            <button onClick={() => { const next = Math.min(waterCount + 1, 20); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
               style={{
                 flex: 1, padding: "10px 16px", background: C.structGlass,
                 border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,
@@ -508,7 +510,7 @@ export default function TodayView({ C, onWork, onNav, showToast }) {
               ADD GLASS
             </button>
             {waterCount > 0 && (
-              <button onClick={() => { const next = Math.max(waterCount - 1, 0); setWaterCount(next); storage.set("wt_" + now.toDateString(), next); }}
+              <button onClick={() => { const next = Math.max(waterCount - 1, 0); setWaterCount(next); storage.set("wt_" + todayKey, next); }}
                 style={{
                   padding: "10px 14px", background: C.structGlass,
                   border: `1.5px solid ${C.structBorderHover}`, borderRadius: 8,

@@ -70,6 +70,21 @@ export default function DataView({ C, onNav }) {
 
       <SectionDivider C={C} />
 
+      {/* ─── EMPTY STATE ─── */}
+      {history.length === 0 && (
+        <Card C={C} style={{ padding: 28, textAlign: "center", marginBottom: 16 }}>
+          <div style={{ fontSize: 28, marginBottom: 12 }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+              <polyline points="4,18 9,13 13,15 20,6" /><polyline points="16,6 20,6 20,10" />
+            </svg>
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.text2, marginBottom: 6 }}>No data yet</div>
+          <div style={{ fontSize: 11, color: C.text4, fontFamily: "var(--m)", lineHeight: 1.6 }}>
+            Complete your first workout to unlock performance analytics, fatigue modeling, and progressive overload tracking.
+          </div>
+        </Card>
+      )}
+
       {/* ─── FATIGUE MODEL ─── */}
       {fatigue && (
         <>

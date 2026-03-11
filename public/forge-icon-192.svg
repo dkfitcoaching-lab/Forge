@@ -6,17 +6,19 @@
       <stop offset="65%" stop-color="#7EFFF0"/>
       <stop offset="100%" stop-color="#40b8a8"/>
     </linearGradient>
-    <linearGradient id="border" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="rgba(180,195,210,0.15)"/>
-      <stop offset="50%" stop-color="rgba(180,195,210,0.35)"/>
-      <stop offset="100%" stop-color="rgba(180,195,210,0.15)"/>
+    <linearGradient id="accentBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a7868"/>
+      <stop offset="30%" stop-color="#40b8a8"/>
+      <stop offset="50%" stop-color="#7EFFF0"/>
+      <stop offset="70%" stop-color="#40b8a8"/>
+      <stop offset="100%" stop-color="#1a7868"/>
     </linearGradient>
     <filter id="glow">
       <feGaussianBlur stdDeviation="4" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="textGlow">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
+    <filter id="borderGlow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
     <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
@@ -25,17 +27,25 @@
     </linearGradient>
     <linearGradient id="topEdge" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="transparent"/>
-      <stop offset="30%" stop-color="rgba(180,195,210,0.25)"/>
-      <stop offset="70%" stop-color="rgba(180,195,210,0.25)"/>
+      <stop offset="20%" stop-color="#40b8a8"/>
+      <stop offset="50%" stop-color="#7EFFF0"/>
+      <stop offset="80%" stop-color="#40b8a8"/>
       <stop offset="100%" stop-color="transparent"/>
     </linearGradient>
+    <radialGradient id="bgGlow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="rgba(92,224,208,0.08)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
   </defs>
 
   <!-- Background -->
   <rect width="192" height="192" rx="38" fill="#020202"/>
 
-  <!-- Outer card border -->
-  <rect x="28" y="28" width="136" height="136" rx="22" fill="none" stroke="url(#border)" stroke-width="1.5"/>
+  <!-- Subtle atmosphere glow -->
+  <circle cx="96" cy="80" r="80" fill="url(#bgGlow)"/>
+
+  <!-- Outer card border with accent glow -->
+  <rect x="28" y="28" width="136" height="136" rx="22" fill="none" stroke="url(#accentBorder)" stroke-width="1.5" filter="url(#borderGlow)" opacity="0.7"/>
 
   <!-- Card glass fill -->
   <rect x="28" y="28" width="136" height="136" rx="22" fill="rgba(170,185,200,0.04)"/>
@@ -43,8 +53,8 @@
   <!-- Glass highlight (top half) -->
   <rect x="29" y="29" width="134" height="68" rx="21" fill="url(#glass)"/>
 
-  <!-- Top edge highlight -->
-  <rect x="48" y="28" width="96" height="1" fill="url(#topEdge)"/>
+  <!-- Top edge highlight — teal accent -->
+  <rect x="48" y="28" width="96" height="1.5" fill="url(#topEdge)" opacity="0.6"/>
 
   <!-- Atomic number (26) -->
   <text x="42" y="50" fill="rgba(180,195,210,0.5)" font-family="'IBM Plex Mono', 'JetBrains Mono', monospace" font-size="14" font-weight="500">26</text>

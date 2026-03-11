@@ -34,7 +34,7 @@ const ACCENTS = {
     id: 'forge', name: 'Forge',
     accent: '#5ce0d0', accentDark: '#40b8a8', accentDeep: '#1a7868',
     accentVivid: '#7EFFF0', accentBright: '#B0FFF5',
-    secondary: '#7eb8ff',
+    secondary: '#4ecdc4',
     ok: '#5ce0d0', warn: '#ff6b6b', danger: '#ff4444',
     gradient: 'linear-gradient(135deg, #1a7868, #40b8a8, #7EFFF0, #40b8a8, #1a7868)',
     gradientBtn: 'linear-gradient(135deg, rgba(200,215,225,0.12), rgba(220,230,240,0.18), rgba(200,215,225,0.12))',

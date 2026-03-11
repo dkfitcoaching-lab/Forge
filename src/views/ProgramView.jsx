@@ -14,6 +14,7 @@ export default function ProgramView({ C, onWork, onNav }) {
   const history = getWorkoutHistory();
   const dayData = DAYS[currentDay - 1] || DAYS[0];
   const isRest = dayData.t === "REST + RECOVERY";
+  const isCompetitor = !!storage.get("posing_div", null);
 
   return (
     <div>
@@ -95,11 +96,11 @@ export default function ProgramView({ C, onWork, onNav }) {
         })}
       </StaggerItem>
 
-      {/* Posing Practice */}
+      {/* Generate Program PDF */}
       <StaggerItem index={3} visible={visible}>
         <SectionDivider C={C} />
-        <Label C={C}>COMPETITION POSING</Label>
-        <Card C={C} onClick={() => onNav("posing")} accentGlow style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
+        <Label C={C}>FULL PROGRAM</Label>
+        <Card C={C} onClick={() => onNav("pdf")} accentGlow style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 10,
             background: C.structGlass, border: `1.5px solid ${C.accent030}`,
@@ -107,22 +108,51 @@ export default function ProgramView({ C, onWork, onNav }) {
             boxShadow: `0 0 12px ${C.accent010}`,
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="5" r="3" />
-              <path d="M12 8v4" />
-              <path d="M9 12l-2 8h2l3-4 3 4h2l-2-8" />
-              <path d="M8 14h8" />
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
             </svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>Posing Practice</div>
-            <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>NPC/IFBB mandatory poses by division</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>Generate Program PDF</div>
+            <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>Training, nutrition, supplements, recovery</div>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
         </Card>
       </StaggerItem>
 
+      {/* Posing Practice — only shown for competitors */}
+      {isCompetitor && (
+        <StaggerItem index={4} visible={visible}>
+          <SectionDivider C={C} />
+          <Label C={C}>COMPETITION POSING</Label>
+          <Card C={C} onClick={() => onNav("posing")} accentGlow style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10,
+              background: C.structGlass, border: `1.5px solid ${C.accent030}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: `0 0 12px ${C.accent010}`,
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="5" r="3" />
+                <path d="M12 8v4" />
+                <path d="M9 12l-2 8h2l3-4 3 4h2l-2-8" />
+                <path d="M8 14h8" />
+              </svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: C.text1 }}>Posing Practice</div>
+              <div style={{ fontSize: 10, color: C.text4, fontFamily: "var(--m)", marginTop: 2 }}>NPC/IFBB mandatory poses by division</div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.text4} strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+          </Card>
+        </StaggerItem>
+      )}
+
       {/* Program Guide */}
-      <StaggerItem index={4} visible={visible}>
+      <StaggerItem index={5} visible={visible}>
         <SectionDivider C={C} />
         <Label C={C}>PROGRAM GUIDE</Label>
         <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
