@@ -18,9 +18,9 @@ export default function LoginScreen({ C, onLogin }) {
   }, []);
 
   const features = [
-    { label: "TRAIN", desc: "Periodized systems" },
-    { label: "TRACK", desc: "Precision analytics" },
-    { label: "TRANSFORM", desc: "Visible results" },
+    { label: "YOUR DATA", desc: "Adapts to you" },
+    { label: "24 / 7", desc: "Always available" },
+    { label: "$15/MO", desc: "Not $500" },
   ];
 
   return (
@@ -168,7 +168,7 @@ export default function LoginScreen({ C, onLogin }) {
           transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s", marginBottom: 40,
           maxWidth: 300, margin: "0 auto 40px",
         }}>
-          Periodized programming, precision tracking, and data-driven progression — engineered for those who train with purpose.
+          Elite-level coaching intelligence that adapts to your body, your goals, and your response to training — for the price of two coffees a week.
         </div>
 
         {/* CTA Button */}

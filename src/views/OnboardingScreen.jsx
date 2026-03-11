@@ -11,11 +11,11 @@ import storage from "../utils/storage";
 // ══════════════════════════════════════════════════════════════
 
 const FLOW = [
-  // 0 — Opening hook: establish authority + set expectations
+  // 0 — Opening hook: establish the value gap immediately
   {
-    ai: "Welcome to Forge.\n\nI'm your personal performance coach. Over the next two minutes, I'll learn exactly what you need — and show you how Forge delivers it.\n\nLet's get started.",
+    ai: "Welcome to Forge.\n\nWhat you're about to set up would cost $500+/month from an elite coach. Same methodology. Same intelligence. Adapts to your body, your goals, your response to training.\n\nLet's build your profile.",
     autoAdvance: true,
-    delay: 2800,
+    delay: 3200,
   },
   // 1 — Primary goal: multi-select, custom SVG icons (no emojis)
   {
@@ -33,14 +33,14 @@ const FLOW = [
   {
     genAi: (d) => {
       const r = {
-        "Build Muscle": "Muscle growth is a science — not a guessing game. Forge runs a 14-day periodized split designed around progressive overload, volume accumulation, and recovery timing.",
-        "Lose Fat": "Real fat loss means keeping every pound of muscle while stripping what you don't need. Forge manages your nutrition, training load, and recovery in one system.",
-        "Get Stronger": "Strength is built on structured progression. Forge tracks every lift, detects PRs automatically, and tells you when you're ready to add weight.",
-        "Improve Mobility": "Mobility is the foundation of performance longevity. Forge monitors your recovery, readiness, and movement capacity to keep you training pain-free.",
+        "Build Muscle": "An elite coach programs hypertrophy through periodized volume, progressive overload, and recovery timing — not random sets and reps. Forge runs that same system. It tracks your volume, detects when you're ready to push harder, and pulls back when your body needs it.",
+        "Lose Fat": "A good coach keeps you in a deficit without sacrificing muscle. That means managing training load, nutrition, and recovery as one system — not three separate apps. Forge does exactly that. Your macros, your meals, your training — one place, adapted to your data.",
+        "Get Stronger": "Strength coaches don't guess when to add weight. They track every lift, analyze progression curves, and time increases to your readiness. Forge does that automatically — PR detection, overload targets, fatigue modeling — the same analytical layer elite coaches use.",
+        "Improve Mobility": "Smart coaches monitor recovery, stress, and readiness daily so you train at the edge of your capacity without crossing into injury. Forge tracks those same signals and adjusts your training intensity before your joints have to tell you.",
       };
       const goals = Array.isArray(d.goal) ? d.goal : [d.goal];
       const parts = goals.map(g => r[g]).filter(Boolean);
-      return parts.length > 0 ? parts.join("\n\n") : "Forge is engineered for serious results.";
+      return parts.length > 0 ? parts.join("\n\n") : "Forge delivers what elite coaches charge $500+/month for — real programming intelligence that adapts to your data.";
     },
     followUp: "Now tell me — what's actually holding you back? Select everything that applies.",
     options: [
@@ -63,19 +63,19 @@ const FLOW = [
       const parts = [];
 
       if (s.includes("Can't stay consistent") || s.includes("No one holding me accountable"))
-        parts.push("Here's the truth about consistency: it's not a character flaw. It's a systems problem. When you open Forge, you see exactly what to do today — your workout, your meals, your check-in. There's no decision fatigue. You just execute. That's how consistency becomes automatic.");
+        parts.push("A coach solves consistency by removing decisions. You show up, they tell you exactly what to do. Forge works the same way — open the app, see today's workout, meals, and check-in. No planning. No decision fatigue. You just execute.");
       if (s.includes("No real program"))
-        parts.push("Walking into a gym without a structured program is the most expensive mistake in fitness. You're investing time with no compounding return. Forge gives you a complete 14-day periodized split — exercise selection, rep schemes, volume progression — engineered by the same principles used by elite coaches.");
+        parts.push("A real coach would never let you walk into a gym without a structured program. Forge gives you a complete 14-day periodized split — the same progressive overload methodology that produces real results — not random workouts pulled from Instagram.");
       if (s.includes("Nutrition is a mess"))
-        parts.push("Nutrition shouldn't require a degree to figure out. The fitness industry has made it deliberately confusing because confused people buy more products. Forge simplifies it: your macros, your meals, your hydration — tracked in seconds, not hours. One system. No noise.");
+        parts.push("Good coaches make nutrition simple: here's what to eat, here's when, here are your macros. Done. Forge does the same — your meals, your macros, your hydration, tracked through conversation in seconds. Not hours of manual logging like MyFitnessPal.");
       if (s.includes("Progress has stalled"))
-        parts.push("A plateau isn't a wall — it's a signal. It means your current stimulus isn't enough. Forge's progressive overload engine analyzes your training data and identifies exactly which exercises are ready for an increase. It takes the guesswork out of breaking through.");
+        parts.push("When a client plateaus, an elite coach digs into the data — volume trends, overload curves, recovery patterns — and finds exactly what needs to change. Forge runs that same analysis automatically and tells you precisely which exercises are ready for an increase.");
       if (s.includes("Too much conflicting info"))
-        parts.push("For every fitness \"expert\" saying one thing, there's another saying the opposite. That's by design — confusion sells supplements, ebooks, and coaching packages. Forge is built on what the research actually shows. One source of truth. No agenda except your results.");
+        parts.push("A coach cuts through the noise. They don't give you ten options — they give you the one thing that works for your situation right now. Forge operates the same way. One system, built on methodology that actually produces results. No conflicting advice.");
       if (s.includes("Recovery or injury concerns"))
-        parts.push("Training intensity without recovery intelligence is a countdown to injury. Forge monitors your fatigue score, sleep quality, and stress levels daily. When your body needs a lighter session, the system tells you — before your joints have to.");
+        parts.push("Smart coaches monitor fatigue, sleep, and stress so they can dial training back before injury happens. Forge tracks those same signals daily and adjusts your readiness score in real time. The intelligence that protects your longevity.");
       if (s.includes("Can't find the time"))
-        parts.push("The problem isn't time — it's efficiency. Most people waste 30-40% of their gym session figuring out what to do next. Forge eliminates that entirely. Every set is programmed, every rest period is timed. You train with purpose and leave.");
+        parts.push("A good coach makes sessions efficient — no wandering, no wasted sets. Forge does the same. Every set is programmed, every rest period is timed. You train with purpose and leave. Most people waste 30-40% of their gym time figuring out what to do next.");
 
       if (parts.length === 0)
         parts.push("These are solvable problems — every single one of them. And they all trace back to the same root cause: no system. A system doesn't rely on motivation. It doesn't need willpower. It runs on structure. That's what Forge is.");
@@ -124,20 +124,20 @@ const FLOW = [
       const parts = [];
 
       if (t.includes("Hired a personal trainer"))
-        parts.push("Personal trainers can be valuable — but at $60–150 per session, you're paying premium for something that disappears the moment the session ends. There's no system running between appointments. No data accumulating. No intelligence improving over time. Forge delivers intelligent coaching 24/7 at a fraction of the cost — and it never forgets a single rep you've logged.");
+        parts.push("A good trainer costs $60–150 per session. That's $500+ a month — and the coaching disappears the moment the session ends. No system running between appointments. No data accumulating. Forge delivers that same coaching intelligence 24/7 for the price of two coffees a week. And it never forgets a single rep you've logged.");
       if (t.includes("Bought an online program"))
-        parts.push("Most online programs are static PDFs marketed as personalization. They were written for everyone, which means they were designed for no one. They can't see your data. They can't adapt to your progress. They can't tell you when to push harder or when to back off. Forge is a living system that evolves with you.");
+        parts.push("Online programs are static PDFs written for everyone, designed for no one. They can't see your data. They can't adapt to your progress. They can't tell you when to push harder or pull back. Forge is a living system that reads your actual training data and evolves with you.");
       if (t.includes("Used a fitness app"))
-        parts.push("Most fitness apps are glorified counters. They record what you did — but they don't know what you should do next. That's the critical difference. Forge doesn't just track. It analyzes. It detects patterns, identifies overload opportunities, monitors fatigue, and drives intelligent decisions.");
+        parts.push("Most fitness apps make you do all the work manually. Log this, track that, figure out the rest yourself. Forge is the opposite — it analyzes your data, detects patterns, identifies when you're ready to progress, and monitors fatigue. The difference between a counter and a coach.");
       if (t.includes("Followed YouTube / social media"))
-        parts.push("Social media fitness content exists to get views, not to get you results. What works for someone with elite genetics on performance-enhancing drugs is not a program — it's entertainment. Forge is built on evidence-based exercise science. No trends. No hype. Just what works.");
+        parts.push("Social media fitness content is entertainment marketed as education. What works for someone with elite genetics isn't a program — it's a highlight reel. Forge is built on the same methodology real coaches use with real clients getting real results. No trends. No hype.");
       if (t.includes("Group fitness classes"))
-        parts.push("Group classes are great for general activity, but they fundamentally cannot be optimized for you. Thirty people, one program, zero individualization. Forge programs around your goals, your recovery, your progression. That specificity is what drives real transformation.");
+        parts.push("Group classes are one program for thirty people. Zero individualization. A real coach programs around YOUR goals, YOUR recovery, YOUR progression. That specificity is what drives transformation — and it's exactly what Forge delivers at scale.");
 
       if (parts.length === 0 && t.includes("This is my first step"))
-        parts.push("Smart first move. Most people waste months or years trying everything before finding a system that actually works. You're skipping straight to the solution. Forge gives you the same programming intelligence and tracking tools that elite coaches use — from your very first session.");
+        parts.push("Smart first move. Most people waste years bouncing between random approaches before finding a real system. You're getting coaching-grade intelligence from day one — the same methodology that produces results for elite clients, accessible to everyone.");
       else if (parts.length === 0)
-        parts.push("The pattern behind every failed approach is the same: no system was working for you between sessions. No data was accumulating. No intelligence was improving. Forge changes that equation entirely.");
+        parts.push("The pattern behind every failed approach is the same: no coaching intelligence working between sessions. No data accumulating. No system adapting to your progress. Forge changes that equation.");
 
       return parts.slice(0, 2).join("\n\n");
     },
@@ -246,11 +246,11 @@ const FLOW = [
         `Goal — ${goals}\n` +
         `Training — ${freq} per week\n` +
         `Experience — ${exp}\n` +
-        `Program — AI-periodized, adapts to your data every session\n` +
-        `Nutrition — Full macro tracking with guided meal framework\n` +
-        `Analytics — Fatigue model, PR detection, volume trends, readiness scoring\n` +
-        `Coach — On-demand intelligence that reads your real data, 24/7\n\n` +
-        `Everything is built around what you told me. Choose the plan that matches your commitment:`;
+        `Program — Periodized and adaptive, built from your data\n` +
+        `Nutrition — Macro tracking, meal framework, hydration\n` +
+        `Analytics — Fatigue model, PR detection, overload targets\n` +
+        `Coaching — 24/7 intelligence that reads your actual data\n\n` +
+        `This is what costs $500+/month from an elite coach. Choose your plan:`;
     },
     showTiers: true,
   },
